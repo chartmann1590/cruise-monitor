@@ -48,6 +48,7 @@ fun CruiseWatchNavHost(
     authViewModel: AuthViewModel,
     repository: CruiseRepository = CruiseRepository(),
     onCruiseAdded: () -> Unit = {},
+    onGoogleSignInClick: () -> Unit = {},
 ) {
     val navController = rememberNavController()
     val isSignedIn by authViewModel.isSignedIn.collectAsState()
@@ -56,7 +57,7 @@ fun CruiseWatchNavHost(
     val scope = rememberCoroutineScope()
 
     if (!isSignedIn) {
-        SignInScreen(authViewModel)
+        SignInScreen(authViewModel, onGoogleSignInClick = onGoogleSignInClick)
         return
     }
 

@@ -6,6 +6,7 @@ import com.cruisewatch.app.data.CruiseRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,6 +43,15 @@ class AuthViewModel(
 
     fun signUp(email: String, password: String) = runAuthAction {
         auth.createUserWithEmailAndPassword(email, password).await()
+    }
+
+    fun signInWithGoogle(idToken: String) = runAuthAction {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential).await()
+    }
+
+    fun setGoogleSignInError(message: String) {
+        _error.value = message
     }
 
     fun signOut() {

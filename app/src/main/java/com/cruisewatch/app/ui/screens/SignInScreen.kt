@@ -2,6 +2,7 @@ package com.cruisewatch.app.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,7 +10,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -19,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -26,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.auth.AuthViewModel
 
 @Composable
-fun SignInScreen(viewModel: AuthViewModel) {
+fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {}) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isSignUp by remember { mutableStateOf(false) }
@@ -46,6 +50,24 @@ fun SignInScreen(viewModel: AuthViewModel) {
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 24.dp, top = 8.dp),
         )
+
+        OutlinedButton(
+            onClick = onGoogleSignInClick,
+            enabled = !isLoading,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+        ) {
+            Text("Continue with Google")
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.dp)) {
+            HorizontalDivider(modifier = Modifier.weight(1f))
+            Text(
+                "  or  ",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            HorizontalDivider(modifier = Modifier.weight(1f))
+        }
 
         OutlinedTextField(
             value = email,
