@@ -17,8 +17,15 @@ data class TrackedCruise(
      * room, and pricing/eligibility for price-drop policies works
      * differently for these. Check your confirmation for a code ending in
      * "GTY" (e.g. Royal Caribbean's "ZI GTY") to tell.
+     *
+     * Explicit @PropertyName is required here: Firestore's POJO mapper
+     * strips a leading "is" off Boolean property names by Java Beans
+     * convention (Kotlin generates an `isGuarantee()` getter for a Boolean
+     * named `isGuarantee`, which the mapper then treats as a property
+     * called "guarantee") — without this annotation, reads/writes silently
+     * target the wrong field name and the checkbox has no effect.
      */
-    val isGuarantee: Boolean = false,
+    @get:PropertyName("isGuarantee") val isGuarantee: Boolean = false,
     val farePaid: Double = 0.0,
     val currency: String = "USD",
     val finalPaymentDate: String = "",
