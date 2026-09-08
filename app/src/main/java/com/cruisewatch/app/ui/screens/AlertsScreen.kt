@@ -36,12 +36,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.cruisewatch.app.R
 import com.cruisewatch.app.data.Alert
 import com.cruisewatch.app.data.CruiseLinePolicy
 import com.cruisewatch.app.ui.CallButton
-import com.cruisewatch.app.ui.SparkleOverlay
-import com.cruisewatch.app.ui.WaveHero
-import com.cruisewatch.app.ui.theme.CelebrationGradient
+import com.cruisewatch.app.ui.PhotoHero
 import com.cruisewatch.app.ui.theme.Gold
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -56,8 +55,8 @@ fun AlertsScreen(
 
     if (alertList.isEmpty()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            WaveHero(gradient = CelebrationGradient, height = 150.dp) {
-                Column(modifier = Modifier.padding(24.dp)) {
+            PhotoHero(photoRes = R.drawable.hero_celebrate, height = 190.dp) {
+                Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
                     Icon(Icons.Filled.NotificationsActive, contentDescription = null, tint = Color.White)
                     Text("Price Alerts", style = MaterialTheme.typography.headlineMedium, color = Color.White)
                 }
@@ -84,9 +83,8 @@ fun AlertsScreen(
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
-            WaveHero(gradient = CelebrationGradient, height = 130.dp) {
-                SparkleOverlay(modifier = Modifier.fillMaxSize())
-                Column(modifier = Modifier.padding(24.dp)) {
+            PhotoHero(photoRes = R.drawable.hero_celebrate, height = 190.dp) {
+                Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
                     Text("Price Alerts", style = MaterialTheme.typography.headlineMedium, color = Color.White)
                     Text(
                         "${alertList.count { !it.claimed }} unclaimed drop${if (alertList.count { !it.claimed } == 1) "" else "s"} waiting for you",

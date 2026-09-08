@@ -8,7 +8,6 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -26,10 +25,6 @@ val CoralLight = Color(0xFFFFA98F)
 val Gold = Color(0xFFFFC94D)
 val Sand = Color(0xFFFFF8EC)
 val Ink = Color(0xFF0B1D2A)
-
-val OceanGradient = Brush.linearGradient(listOf(OceanDeep, OceanMid, Teal))
-val SunsetGradient = Brush.linearGradient(listOf(Coral, Gold))
-val CelebrationGradient = Brush.linearGradient(listOf(Color(0xFF00C9A7), Color(0xFF00B4D8)))
 
 private val LightColors = lightColorScheme(
     primary = OceanMid,

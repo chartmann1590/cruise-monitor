@@ -11,14 +11,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Sailing
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,11 +37,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.cruisewatch.app.R
 import com.cruisewatch.app.ads.BannerAd
 import com.cruisewatch.app.data.TrackedCruise
-import com.cruisewatch.app.ui.SparkleOverlay
-import com.cruisewatch.app.ui.WaveHero
-import com.cruisewatch.app.ui.theme.OceanGradient
+import com.cruisewatch.app.ui.GlassPanel
+import com.cruisewatch.app.ui.PhotoHero
+import com.cruisewatch.app.ui.theme.Coral
+import com.cruisewatch.app.ui.theme.Gold
 import com.cruisewatch.app.ui.theme.brandFor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -64,9 +69,11 @@ fun TrackedCruisesScreen(
         },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            WaveHero(gradient = OceanGradient, height = 150.dp) {
-                SparkleOverlay(modifier = Modifier.fillMaxSize())
-                Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.Center) {
+            PhotoHero(photoRes = R.drawable.hero_cruises, height = 210.dp) {
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(24.dp),
+                    verticalArrangement = Arrangement.Bottom,
+                ) {
                     Text("Your Cruises", style = MaterialTheme.typography.headlineMedium, color = Color.White)
                     Text(
                         "${cruiseList.size} sailing${if (cruiseList.size == 1) "" else "s"} being watched 24/7",
@@ -77,29 +84,38 @@ fun TrackedCruisesScreen(
             }
 
             if (cruiseList.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize().weight(1f), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            Icons.Filled.Sailing,
-                            contentDescription = null,
-                            modifier = Modifier.size(56.dp),
-                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
-                        )
-                        Text(
-                            "No cruises tracked yet",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(top = 12.dp),
-                        )
-                        Text(
-                            "Tap \"Add cruise\" to start watching one you've already booked",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp),
-                        )
+                GlassPanel(
+                    modifier = Modifier.fillMaxSize().weight(1f).offset(y = (-20).dp),
+                    tint = MaterialTheme.colorScheme.surface,
+                    tintAlpha = 1f,
+                ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                Icons.Filled.Sailing,
+                                contentDescription = null,
+                                modifier = Modifier.size(56.dp),
+                                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                            )
+                            Text(
+                                "No cruises tracked yet",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(top = 12.dp),
+                            )
+                            Text(
+                                "Tap \"Add cruise\" to start watching one you've already booked",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 4.dp),
+                            )
+                        }
                     }
                 }
             } else {
-                LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize().weight(1f).offset(y = (-20).dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 12.dp),
+                ) {
                     itemsIndexed(cruiseList, key = { _, c -> c.id }) { index, cruise ->
                         AnimatedVisibility(
                             visible = true,
@@ -147,43 +163,49 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
         }
 
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Column {
-                    Text(
-                        "You paid",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Text(
-                        "${cruise.currency} ${"%.2f".format(cruise.farePaid)}",
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                }
-                if (daysLeft != null && daysLeft >= 0) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Box(
-                            modifier = Modifier
-                                .size(56.dp)
-                                .background(MaterialTheme.colorScheme.tertiaryContainer, CircleShape),
+            Text(
+                "You paid",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                "${cruise.currency} ${"%.2f".format(cruise.farePaid)}",
+                style = MaterialTheme.typography.titleLarge,
+            )
+
+            if (daysLeft != null) {
+                val urgent = daysLeft in 0..7
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .background(
+                            (if (urgent) Coral else Gold).copy(alpha = 0.16f),
+                            RoundedCornerShape(50),
                         )
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                "$daysLeft",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            )
-                            Text(
-                                "days",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            )
-                        }
-                    }
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                ) {
+                    Icon(
+                        Icons.Filled.HourglassBottom,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = if (urgent) Coral else Color(0xFFB8860B),
+                    )
+                    Text(
+                        if (daysLeft >= 0) {
+                            " $daysLeft day${if (daysLeft == 1) "" else "s"} left to lock in your best price — final payment due"
+                        } else {
+                            " Final payment was due"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (urgent) Coral else Color(0xFFB8860B),
+                    )
                 }
             }
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 10.dp),
+                modifier = Modifier.padding(top = 8.dp),
             ) {
                 Icon(
                     Icons.Filled.CalendarMonth,
@@ -192,7 +214,7 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    " Final payment ${cruise.finalPaymentDate}",
+                    " Final payment date: ${cruise.finalPaymentDate}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

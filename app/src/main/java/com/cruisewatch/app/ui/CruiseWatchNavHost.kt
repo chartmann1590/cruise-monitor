@@ -22,8 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -38,11 +40,15 @@ import com.cruisewatch.app.data.PolicyRepository
 import com.cruisewatch.app.ui.screens.AddCruiseScreen
 import com.cruisewatch.app.ui.screens.AlertsScreen
 import com.cruisewatch.app.ui.screens.ClaimsScreen
+import com.cruisewatch.app.ui.screens.OnboardingScreen
 import com.cruisewatch.app.ui.screens.PriceHistoryScreen
 import com.cruisewatch.app.ui.screens.SignInScreen
 import com.cruisewatch.app.ui.screens.TrackedCruisesScreen
 import com.cruisewatch.app.ui.theme.Teal
 import kotlinx.coroutines.launch
+
+private const val PREFS_NAME = "cruisewatch_prefs"
+private const val KEY_ONBOARDED = "has_seen_onboarding"
 
 private object Routes {
     const val SIGN_IN = "sign_in"
@@ -69,6 +75,16 @@ fun CruiseWatchNavHost(
     val context = LocalContext.current
     val policyRepository = remember { PolicyRepository(context) }
     val scope = rememberCoroutineScope()
+    val prefs = remember { context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE) }
+    var hasOnboarded by remember { mutableStateOf(prefs.getBoolean(KEY_ONBOARDED, false)) }
+
+    if (!hasOnboarded) {
+        OnboardingScreen(onFinish = {
+            prefs.edit().putBoolean(KEY_ONBOARDED, true).apply()
+            hasOnboarded = true
+        })
+        return
+    }
 
     if (!isSignedIn) {
         SignInScreen(authViewModel, onGoogleSignInClick = onGoogleSignInClick)
@@ -132,7 +148,10 @@ fun CruiseWatchNavHost(
             }
             composable(Routes.PRICE_HISTORY) { entry ->
                 val cruiseId = entry.arguments?.getString("cruiseId") ?: return@composable
-                PriceHistoryScreen(snapshots = repository.priceHistory(cruiseId))
+                PriceHistoryScreen(
+                    snapshots = repository.priceHistory(cruiseId),
+                    onBack = { navController.popBackStack() },
+                )
             }
             composable(Routes.ALERTS) {
                 AlertsScreen(

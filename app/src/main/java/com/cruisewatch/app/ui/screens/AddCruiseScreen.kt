@@ -31,11 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.cruisewatch.app.R
 import com.cruisewatch.app.data.CABIN_CATEGORIES
 import com.cruisewatch.app.data.CruiseLine
 import com.cruisewatch.app.data.TrackedCruise
-import com.cruisewatch.app.ui.WaveHero
-import com.cruisewatch.app.ui.theme.SunsetGradient
+import com.cruisewatch.app.ui.PhotoHero
+import androidx.compose.foundation.layout.Arrangement
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,8 +58,8 @@ fun AddCruiseScreen(onSave: (TrackedCruise) -> Unit) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        WaveHero(gradient = SunsetGradient, height = 140.dp) {
-            Column(modifier = Modifier.padding(24.dp)) {
+        PhotoHero(photoRes = R.drawable.hero_add_cruise, height = 180.dp) {
+            Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
                 Icon(Icons.Filled.AddCircle, contentDescription = null, tint = Color.White)
                 Text(
                     "Add a cruise you've booked",

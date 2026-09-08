@@ -1,7 +1,9 @@
 package com.cruisewatch.app.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,10 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.cruisewatch.app.R
 import com.cruisewatch.app.data.CruiseLinePolicy
 import com.cruisewatch.app.ui.CallButton
-import com.cruisewatch.app.ui.WaveHero
-import com.cruisewatch.app.ui.theme.OceanGradient
+import com.cruisewatch.app.ui.PhotoHero
 import com.cruisewatch.app.ui.theme.brandFor
 
 /** Browse every covered line's price-protection policy, even without an active alert. */
@@ -29,8 +31,8 @@ import com.cruisewatch.app.ui.theme.brandFor
 fun ClaimsScreen(policies: List<CruiseLinePolicy>) {
     LazyColumn {
         item {
-            WaveHero(gradient = OceanGradient, height = 130.dp) {
-                Column(modifier = Modifier.padding(24.dp)) {
+            PhotoHero(photoRes = R.drawable.hero_policies, height = 190.dp) {
+                Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
                     Text("Policies", style = MaterialTheme.typography.headlineMedium, color = Color.White)
                     Text(
                         "Every covered line's price-protection rules, in plain English.",

@@ -1,10 +1,9 @@
 package com.cruisewatch.app.ui.screens
 
 import androidx.compose.animation.core.EaseOutBack
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -40,10 +40,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.cruisewatch.app.R
 import com.cruisewatch.app.auth.AuthViewModel
-import com.cruisewatch.app.ui.SparkleOverlay
-import com.cruisewatch.app.ui.WaveHero
-import com.cruisewatch.app.ui.theme.OceanGradient
+import com.cruisewatch.app.ui.GlassPanel
+import com.cruisewatch.app.ui.PhotoHero
 
 @Composable
 fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {}) {
@@ -61,18 +61,17 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
     )
 
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        WaveHero(gradient = OceanGradient, height = 260.dp) {
-            SparkleOverlay(modifier = Modifier.fillMaxSize())
+        PhotoHero(photoRes = R.drawable.hero_sign_in, height = 340.dp) {
             Column(
                 modifier = Modifier.fillMaxSize().padding(24.dp),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.Bottom,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Filled.Sailing,
                         contentDescription = null,
                         tint = Color.White,
-                        modifier = Modifier.size(36.dp),
+                        modifier = Modifier.size(34.dp),
                     )
                     Text(
                         "CruiseWatch",
@@ -82,89 +81,119 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                     )
                 }
                 Text(
-                    "Track your fare. Get alerted the moment it drops. Sail on, save cash. 🌴",
+                    "Track your fare. Get alerted the moment it drops.",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White.copy(alpha = 0.92f),
-                    modifier = Modifier.padding(top = 10.dp, end = 32.dp),
+                    modifier = Modifier.padding(top = 8.dp, end = 24.dp),
                 )
             }
         }
 
-        Column(
+        GlassPanel(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(top = 8.dp, bottom = 24.dp)
-                .offset(y = ((1f - entrance) * 24).dp)
-                .alpha(entrance),
+                .offset(y = (-28).dp)
+                .padding(top = 0.dp),
         ) {
-            OutlinedButton(
-                onClick = onGoogleSignInClick,
-                enabled = !isLoading,
-                shape = MaterialTheme.shapes.large,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 32.dp, bottom = 28.dp)
+                    .alpha(entrance),
             ) {
-                Text("Continue with Google")
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.dp)) {
-                HorizontalDivider(modifier = Modifier.weight(1f))
                 Text(
-                    "  or  ",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    "Welcome aboard",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White,
+                    modifier = Modifier.padding(bottom = 16.dp),
                 )
-                HorizontalDivider(modifier = Modifier.weight(1f))
-            }
 
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                singleLine = true,
-                shape = MaterialTheme.shapes.medium,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-            )
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                singleLine = true,
-                shape = MaterialTheme.shapes.medium,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            )
-
-            if (error != null) {
-                Text(
-                    error ?: "",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
-            }
-
-            Button(
-                onClick = { if (isSignUp) viewModel.signUp(email, password) else viewModel.signIn(email, password) },
-                enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
-                shape = MaterialTheme.shapes.large,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                modifier = Modifier.fillMaxWidth().size(52.dp),
-            ) {
-                if (isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.size(22.dp), color = Color.White)
-                } else {
-                    Text(if (isSignUp) "Create account" else "Sign in")
+                OutlinedButton(
+                    onClick = onGoogleSignInClick,
+                    enabled = !isLoading,
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                ) {
+                    Text("Continue with Google")
                 }
-            }
 
-            TextButton(
-                onClick = { isSignUp = !isSignUp },
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-            ) {
-                Text(if (isSignUp) "Already have an account? Sign in" else "New here? Create an account")
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.dp)) {
+                    HorizontalDivider(modifier = Modifier.weight(1f), color = Color.White.copy(alpha = 0.24f))
+                    Text(
+                        "  or  ",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.7f),
+                    )
+                    HorizontalDivider(modifier = Modifier.weight(1f), color = Color.White.copy(alpha = 0.24f))
+                }
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium,
+                    colors = glassFieldColors(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium,
+                    colors = glassFieldColors(),
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                )
+
+                if (error != null) {
+                    Text(
+                        error ?: "",
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(bottom = 8.dp),
+                    )
+                }
+
+                Button(
+                    onClick = { if (isSignUp) viewModel.signUp(email, password) else viewModel.signIn(email, password) },
+                    enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                    modifier = Modifier.fillMaxWidth().size(52.dp),
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(22.dp), color = Color.White)
+                    } else {
+                        Text(if (isSignUp) "Create account" else "Sign in")
+                    }
+                }
+
+                TextButton(
+                    onClick = { isSignUp = !isSignUp },
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                ) {
+                    Text(
+                        if (isSignUp) "Already have an account? Sign in" else "New here? Create an account",
+                        color = Color.White.copy(alpha = 0.85f),
+                    )
+                }
             }
         }
     }
 }
+
+@Composable
+private fun glassFieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = Color.White,
+    unfocusedTextColor = Color.White,
+    focusedBorderColor = Color.White.copy(alpha = 0.6f),
+    unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+    focusedLabelColor = Color.White.copy(alpha = 0.8f),
+    unfocusedLabelColor = Color.White.copy(alpha = 0.6f),
+    cursorColor = Color.White,
+)
