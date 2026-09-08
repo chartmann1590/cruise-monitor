@@ -59,6 +59,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "707544969798-fqbq916i255uibdjldfubfrmgq6d93b9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cruisewatch.app.wear",
+            "certificate_hash": "f5969a36cc064a2b260b9fd58eed02b4f95a6366"
+          }
+        },
+        {
           "client_id": "707544969798-p1aem6dhlk35opa3ra4k24ctkqjgt391.apps.googleusercontent.com",
           "client_type": 3
         }

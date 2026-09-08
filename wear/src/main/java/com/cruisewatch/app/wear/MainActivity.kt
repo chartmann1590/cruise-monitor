@@ -45,13 +45,49 @@ import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.tasks.await
 
 class MainActivity : ComponentActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val repository = WearRepository()
+
+    private val googleSignInClient: GoogleSignInClient by lazy {
+        val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        GoogleSignIn.getClient(this, options)
+    }
+
+    private var onGoogleSignInResult: ((Boolean, String?) -> Unit)? = null
+
+    private val googleSignInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val idToken = account.idToken
+            if (idToken != null) {
+                auth.signInWithCredential(GoogleAuthProvider.getCredential(idToken, null))
+                    .addOnSuccessListener { onGoogleSignInResult?.invoke(true, null) }
+                    .addOnFailureListener { e -> onGoogleSignInResult?.invoke(false, e.message) }
+            } else {
+                onGoogleSignInResult?.invoke(false, "Google sign-in didn't return a token")
+            }
+        } catch (e: ApiException) {
+            if (e.statusCode != 12501) { // user cancelled the picker — not an error worth showing
+                onGoogleSignInResult?.invoke(false, "Google sign-in failed: ${e.statusCode}")
+            }
+        }
+    }
 
     private val requestNotificationPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -75,6 +111,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme(colors = CruiseWatchWearColors) {
                 var isSignedIn by remember { mutableStateOf(auth.currentUser != null) }
+                var googleError by remember { mutableStateOf<String?>(null) }
+                LaunchedEffect(Unit) {
+                    onGoogleSignInResult = { success, error ->
+                        if (success) { isSignedIn = true; googleError = null } else { googleError = error }
+                    }
+                }
                 LaunchedEffect(isSignedIn) {
                     if (isSignedIn) {
                         runCatching {
@@ -87,6 +129,8 @@ class MainActivity : ComponentActivity() {
                     repository = repository,
                     isSignedIn = isSignedIn,
                     onSignedIn = { isSignedIn = true },
+                    onGoogleSignInClick = { googleSignInLauncher.launch(googleSignInClient.signInIntent) },
+                    googleSignInError = googleError,
                 )
             }
         }
@@ -94,7 +138,13 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CruiseWatchWearApp(repository: WearRepository, isSignedIn: Boolean, onSignedIn: () -> Unit) {
+fun CruiseWatchWearApp(
+    repository: WearRepository,
+    isSignedIn: Boolean,
+    onSignedIn: () -> Unit,
+    onGoogleSignInClick: () -> Unit = {},
+    googleSignInError: String? = null,
+) {
     var selectedCruiseId by remember { mutableStateOf<String?>(null) }
     val dataLayerSummary by DataLayerStore.summary.collectAsState()
 
@@ -118,7 +168,11 @@ fun CruiseWatchWearApp(repository: WearRepository, isSignedIn: Boolean, onSigned
                         onCruiseClick = { selectedCruiseId = it },
                     )
                 } else {
-                    WearSignInScreen(onSignedIn = onSignedIn)
+                    WearSignInScreen(
+                        onSignedIn = onSignedIn,
+                        onGoogleSignInClick = onGoogleSignInClick,
+                        googleSignInError = googleSignInError,
+                    )
                 }
             }
             else -> {

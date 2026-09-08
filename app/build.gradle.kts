@@ -101,5 +101,8 @@ dependencies {
     implementation("androidx.glance:glance-material3:1.1.1")
     implementation("androidx.work:work-runtime-ktx:2.9.1")
 
+    // On-device LLM refund assistant (see ai/ package) — runs fully offline once the model is downloaded.
+    implementation("com.google.mediapipe:tasks-genai:0.10.24")
+
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -30,7 +31,12 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun WearSignInScreen(auth: FirebaseAuth = FirebaseAuth.getInstance(), onSignedIn: () -> Unit) {
+fun WearSignInScreen(
+    auth: FirebaseAuth = FirebaseAuth.getInstance(),
+    onSignedIn: () -> Unit,
+    onGoogleSignInClick: () -> Unit = {},
+    googleSignInError: String? = null,
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
@@ -50,6 +56,27 @@ fun WearSignInScreen(auth: FirebaseAuth = FirebaseAuth.getInstance(), onSignedIn
                     style = MaterialTheme.typography.title3,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 10.dp),
+                )
+                Chip(
+                    onClick = onGoogleSignInClick,
+                    label = { Text("Continue with Google") },
+                    colors = ChipDefaults.chipColors(backgroundColor = Color.White.copy(alpha = 0.14f)),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                )
+                if (googleSignInError != null) {
+                    Text(
+                        googleSignInError,
+                        color = MaterialTheme.colors.error,
+                        style = MaterialTheme.typography.caption3,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                    )
+                }
+                Text(
+                    "or",
+                    style = MaterialTheme.typography.caption3,
+                    color = Color.LightGray,
+                    modifier = Modifier.padding(bottom = 6.dp),
                 )
                 AndroidView(
                     factory = { context ->

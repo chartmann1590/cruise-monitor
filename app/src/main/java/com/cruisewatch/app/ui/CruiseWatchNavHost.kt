@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Policy
+import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -39,6 +40,7 @@ import com.cruisewatch.app.data.CruiseRepository
 import com.cruisewatch.app.data.PolicyRepository
 import com.cruisewatch.app.ui.screens.AddCruiseScreen
 import com.cruisewatch.app.ui.screens.AlertsScreen
+import com.cruisewatch.app.ui.screens.AssistantScreen
 import com.cruisewatch.app.ui.screens.ClaimsScreen
 import com.cruisewatch.app.ui.screens.OnboardingScreen
 import com.cruisewatch.app.ui.screens.PriceHistoryScreen
@@ -57,11 +59,12 @@ private object Routes {
     const val PRICE_HISTORY = "price_history/{cruiseId}"
     const val ALERTS = "alerts"
     const val CLAIMS = "claims"
+    const val ASSISTANT = "assistant"
 
     fun priceHistory(cruiseId: String) = "price_history/$cruiseId"
 }
 
-private val topLevelRoutes = setOf(Routes.CRUISES, Routes.ALERTS, Routes.CLAIMS)
+private val topLevelRoutes = setOf(Routes.CRUISES, Routes.ALERTS, Routes.CLAIMS, Routes.ASSISTANT)
 
 @Composable
 fun CruiseWatchNavHost(
@@ -125,6 +128,13 @@ fun CruiseWatchNavHost(
                     label = { Text("Policies") },
                     colors = navColors(),
                 )
+                NavigationBarItem(
+                    selected = currentRoute == Routes.ASSISTANT,
+                    onClick = { navController.navigateTopLevel(Routes.ASSISTANT) },
+                    icon = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
+                    label = { Text("Assistant") },
+                    colors = navColors(),
+                )
             }
         },
     ) { padding ->
@@ -169,6 +179,9 @@ fun CruiseWatchNavHost(
             }
             composable(Routes.CLAIMS) {
                 ClaimsScreen(policies = policyRepository.all())
+            }
+            composable(Routes.ASSISTANT) {
+                AssistantScreen()
             }
         }
     }
