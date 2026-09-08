@@ -3,14 +3,22 @@
 
     <uses-feature android:name="android.hardware.type.watch" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+        android:name=".CruiseWatchWearApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.DeviceDefault">
 
-        <!-- Standalone: talks to Firebase directly over the watch's own internet connection, no phone/Bluetooth pairing required. -->
+        <!--
+          standalone=true: this app works fully over the watch's own internet connection
+          (direct Firebase sign-in) with no phone required. It ALSO listens for Data Layer
+          summaries pushed over Bluetooth from the phone app (CruiseWatchDataListenerService
+          below) as a fallback for watches without their own internet — whichever source has
+          data, the watch shows it.
+        -->
         <meta-data
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
@@ -24,5 +32,29 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".CruiseWatchDataListenerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data
+                    android:scheme="wear"
+                    android:host="*"
+                    android:pathPrefix="/cruisewatch" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".WearMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/price_drop_channel_id" />
     </application>
 </manifest>

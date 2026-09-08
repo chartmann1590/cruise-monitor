@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CruiseWatch</string>
+    <string name="price_drop_channel_id">price_drop_alerts</string>
+    <string name="price_drop_channel_name">Price drop alerts</string>
 </resources>

@@ -15,26 +15,28 @@ private const val TAG = "WearSync"
 private const val PATH = "/cruisewatch/summary"
 
 /**
- * Pushes a small JSON summary of tracked cruises + unclaimed alerts to any
- * paired Wear OS watch via the Data Layer API. The watch has no Firebase
- * config of its own — it only ever sees what the phone hands it here, kept
- * in sync at the same moments the home screen widget refreshes (sign-in, a
- * new cruise, an FCM price-drop push).
+ * Pushes a small JSON summary of tracked cruises + alert history to any
+ * paired Wear OS watch via the Data Layer API — the fallback sync path for
+ * watches with no internet of their own. Kept in sync at the same moments
+ * the home screen widget refreshes (sign-in, a new cruise, an FCM push).
  */
 object WearSync {
     suspend fun pushLatest(context: Context, repository: CruiseRepository = CruiseRepository()) {
         val cruises = repository.trackedCruisesOnce()
-        val alerts = repository.alertsOnce().filter { !it.claimed }
+        val alerts = repository.alertsOnce()
         val shipByCruiseId = cruises.associateBy({ it.id }, { it.ship })
 
         val cruisesJson = JSONArray().apply {
-            cruises.take(5).forEach { cruise ->
+            cruises.take(10).forEach { cruise ->
                 val daysLeft = runCatching {
                     LocalDate.now().until(LocalDate.parse(cruise.finalPaymentDate, DateTimeFormatter.ISO_LOCAL_DATE)).days
                 }.getOrNull()
                 put(
                     JSONObject().apply {
+                        put("id", cruise.id)
                         put("ship", cruise.ship)
+                        put("cabinCategory", cruise.cabinCategory)
+                        put("sailDate", cruise.sailDate)
                         put("farePaid", cruise.farePaid)
                         put("currency", cruise.currency)
                         put("daysLeft", daysLeft ?: JSONObject.NULL)
@@ -44,12 +46,16 @@ object WearSync {
         }
 
         val alertsJson = JSONArray().apply {
-            alerts.take(5).forEach { alert ->
+            alerts.take(20).forEach { alert ->
                 put(
                     JSONObject().apply {
+                        put("id", alert.id)
+                        put("cruiseId", alert.cruiseId)
                         put("ship", shipByCruiseId[alert.cruiseId] ?: "Your cruise")
                         put("dropAmount", alert.dropAmount)
                         put("currentFare", alert.currentFare)
+                        put("farePaid", alert.farePaid)
+                        put("claimed", alert.claimed)
                     },
                 )
             }

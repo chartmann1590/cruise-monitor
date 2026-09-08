@@ -1,22 +1,28 @@
 package com.cruisewatch.app.wear
 
+import android.graphics.Color as AndroidColor
 import android.widget.EditText
 import android.text.InputType
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Sailing
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
+import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.google.android.gms.tasks.OnFailureListener
@@ -32,17 +38,25 @@ fun WearSignInScreen(auth: FirebaseAuth = FirebaseAuth.getInstance(), onSignedIn
 
     LazyColumn(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
         item {
-            Column {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                Icon(
+                    Icons.Filled.Sailing,
+                    contentDescription = null,
+                    tint = Teal,
+                    modifier = Modifier.padding(top = 20.dp).size(22.dp),
+                )
                 Text(
-                    "Sign in",
+                    "Sign in to CruiseWatch",
                     style = MaterialTheme.typography.title3,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 10.dp),
                 )
                 AndroidView(
                     factory = { context ->
                         EditText(context).apply {
                             hint = "Email"
+                            setTextColor(AndroidColor.WHITE)
+                            setHintTextColor(AndroidColor.LTGRAY)
                             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
                             addTextChangedListener { email = it?.toString() ?: "" }
                         }
@@ -53,6 +67,8 @@ fun WearSignInScreen(auth: FirebaseAuth = FirebaseAuth.getInstance(), onSignedIn
                     factory = { context ->
                         EditText(context).apply {
                             hint = "Password"
+                            setTextColor(AndroidColor.WHITE)
+                            setHintTextColor(AndroidColor.LTGRAY)
                             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
                             addTextChangedListener { password = it?.toString() ?: "" }
                         }
