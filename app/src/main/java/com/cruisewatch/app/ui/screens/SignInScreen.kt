@@ -174,7 +174,10 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                 }
 
                 TextButton(
-                    onClick = { isSignUp = !isSignUp },
+                    onClick = {
+                        isSignUp = !isSignUp
+                        viewModel.clearError()
+                    },
                     modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                 ) {
                     Text(

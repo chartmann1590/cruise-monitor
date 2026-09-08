@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
@@ -20,42 +23,36 @@ import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
-import com.google.android.gms.wearable.Wearable
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
+    private val auth = FirebaseAuth.getInstance()
+    private val repository = WearRepository()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // The listener service only fires on new data — if the phone synced before this
-        // activity ever ran, ask the Data Layer for what's already there.
-        Wearable.getDataClient(this).dataItems.addOnSuccessListener { buffer ->
-            buffer.forEach { item ->
-                if (item.uri.path == "/cruisewatch/summary") {
-                    val dataMap = com.google.android.gms.wearable.DataMapItem.fromDataItem(item).dataMap
-                    SummaryStore.update(
-                        parseWearSummary(dataMap.getString("cruises"), dataMap.getString("alerts")),
-                    )
-                }
-            }
-            buffer.release()
-        }
-
         setContent {
             MaterialTheme {
-                CruiseWatchWearApp()
+                var isSignedIn by remember { mutableStateOf(auth.currentUser != null) }
+                if (isSignedIn) {
+                    CruiseWatchWearApp(repository)
+                } else {
+                    WearSignInScreen(auth) { isSignedIn = true }
+                }
             }
         }
     }
 }
 
 @Composable
-fun CruiseWatchWearApp() {
-    val summary by SummaryStore.summary.collectAsState()
+fun CruiseWatchWearApp(repository: WearRepository) {
+    val cruises by repository.trackedCruises().collectAsState(initial = null)
+    val alerts by repository.unclaimedAlerts().collectAsState(initial = emptyList())
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
-            summary == null -> CenteredMessage("Open CruiseWatch on your phone to sync")
-            summary!!.alerts.isEmpty() && summary!!.cruises.isEmpty() -> CenteredMessage("No cruises tracked yet")
+            cruises == null -> CenteredMessage("Loading…")
+            alerts.isEmpty() && cruises!!.isEmpty() -> CenteredMessage("No cruises tracked yet")
             else -> {
                 ScalingLazyColumn(modifier = Modifier.fillMaxSize()) {
                     item {
@@ -66,7 +63,7 @@ fun CruiseWatchWearApp() {
                             modifier = Modifier.padding(bottom = 4.dp),
                         )
                     }
-                    if (summary!!.alerts.isNotEmpty()) {
+                    if (alerts.isNotEmpty()) {
                         item {
                             Text(
                                 "Price drops",
@@ -74,16 +71,16 @@ fun CruiseWatchWearApp() {
                                 modifier = Modifier.padding(top = 4.dp, bottom = 2.dp),
                             )
                         }
-                        items(summary!!.alerts) { alert ->
+                        items(alerts) { alert ->
                             Chip(
                                 onClick = {},
                                 label = { Text("🎉 $${"%.0f".format(alert.dropAmount)} off") },
-                                secondaryLabel = { Text(alert.ship) },
-                                colors = ChipDefaults.chipColors(backgroundColor = androidx.compose.ui.graphics.Color(0xFF5C2A1E)),
+                                secondaryLabel = { Text("New fare $${"%.0f".format(alert.currentFare)}") },
+                                colors = ChipDefaults.chipColors(backgroundColor = Color(0xFF5C2A1E)),
                             )
                         }
                     }
-                    if (summary!!.cruises.isNotEmpty()) {
+                    if (cruises!!.isNotEmpty()) {
                         item {
                             Text(
                                 "Tracked cruises",
@@ -91,15 +88,12 @@ fun CruiseWatchWearApp() {
                                 modifier = Modifier.padding(top = 8.dp, bottom = 2.dp),
                             )
                         }
-                        items(summary!!.cruises) { cruise ->
+                        items(cruises!!) { cruise ->
                             Chip(
                                 onClick = {},
                                 label = { Text(cruise.ship) },
                                 secondaryLabel = {
-                                    Text(
-                                        "${cruise.currency} ${"%.0f".format(cruise.farePaid)}" +
-                                            (cruise.daysLeft?.let { " · ${it}d left" } ?: ""),
-                                    )
+                                    Text("${cruise.currency} ${"%.0f".format(cruise.farePaid)} · sails ${cruise.sailDate}")
                                 },
                             )
                         }

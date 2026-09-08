@@ -1,0 +1,84 @@
+{
+  "project_info": {
+    "project_number": "707544969798",
+    "project_id": "cruisewatch-app",
+    "storage_bucket": "cruisewatch-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707544969798:android:017d4a71f2ea6e09f01047",
+        "android_client_info": {
+          "package_name": "com.cruisewatch.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "707544969798-1gc84jvvaovtnbf0110nt2s69jj6h0k1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cruisewatch.app",
+            "certificate_hash": "f5969a36cc064a2b260b9fd58eed02b4f95a6366"
+          }
+        },
+        {
+          "client_id": "707544969798-djrdjtmk1h4q1bvaesq65j5lncf68r61.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cruisewatch.app",
+            "certificate_hash": "ad066b11eecddf89aa9246850e03eec1717a2bcc"
+          }
+        },
+        {
+          "client_id": "707544969798-p1aem6dhlk35opa3ra4k24ctkqjgt391.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC94HnLbiNpqC0RGiKAyMNFYwHpCF9jDC4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "707544969798-p1aem6dhlk35opa3ra4k24ctkqjgt391.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707544969798:android:4ca9780d1af6c066f01047",
+        "android_client_info": {
+          "package_name": "com.cruisewatch.app.wear"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "707544969798-p1aem6dhlk35opa3ra4k24ctkqjgt391.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC94HnLbiNpqC0RGiKAyMNFYwHpCF9jDC4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "707544969798-p1aem6dhlk35opa3ra4k24ctkqjgt391.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

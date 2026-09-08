@@ -56,6 +56,11 @@ class AuthViewModel(
         _error.value = message
     }
 
+    /** Called when switching between sign-in and create-account mode, so an error from the mode you left doesn't linger in the one you're entering. */
+    fun clearError() {
+        _error.value = null
+    }
+
     fun signOut() {
         auth.signOut()
         _isSignedIn.value = false
