@@ -33,12 +33,20 @@ Android app (Kotlin, Jetpack Compose)
 
 Why this shape: GitHub Actions gives free scheduled compute without needing to run/pay for a server. Firestore free tier easily covers a personal-scale app (50K reads/20K writes per day). FCM is free at any volume. The Android app itself never talks to cruise line sites directly — it only reads Firestore — so scraping logic, cruise-line-specific fragility, and any future IP-blocking risk stay isolated in the backend repo and can be iterated on without app releases.
 
+**Monetization (added during Phase 2, per request):** AdMob banner + interstitial ads in the Android app. Currently wired to Google's public test ad unit IDs — needs a real AdMob account before Play Store release (see `03-phase2-android-app.md`).
+
+## Live infrastructure (as of Phase 2 completion)
+
+- GitHub repo: [chartmann1590/cruise-monitor](https://github.com/chartmann1590/cruise-monitor) (private), CI verified green
+- Firebase project: `cruisewatch-app` — Firestore (native mode, `nam5`), Auth, FCM, Android app registered as `com.cruisewatch.app`
+- Full scraper -> Firestore -> alert pipeline verified end-to-end against real data
+
 ## Phases
 
-1. [Phase 0 — Skeleton & data model](01-phase0-skeleton.md)
-2. [Phase 1 — Royal Caribbean + Celebrity scraping](02-phase1-rc-celebrity-scraping.md)
-3. [Phase 2 — Android app MVP](03-phase2-android-app.md)
-4. [Phase 3 — Remaining 3 lines (Carnival, Princess, NCL)](04-phase3-remaining-lines.md)
+1. [Phase 0 — Skeleton & data model](01-phase0-skeleton.md) — done
+2. [Phase 1 — Royal Caribbean + Celebrity scraping](02-phase1-rc-celebrity-scraping.md) — done
+3. [Phase 2 — Android app MVP](03-phase2-android-app.md) — done
+4. [Phase 3 — Remaining 3 lines (Carnival, Princess, NCL)](04-phase3-remaining-lines.md) — in progress
 5. [Phase 4 — Play Store readiness](05-phase4-play-store.md)
 6. [Key risks](06-risks.md)
 7. [Verification checklist](07-verification.md)
