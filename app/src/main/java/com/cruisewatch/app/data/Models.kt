@@ -46,6 +46,8 @@ data class Alert(
     @DocumentId val id: String = "",
     val userId: String = "",
     val cruiseId: String = "",
+    /** Denormalized from the tracked cruise, so the app can show that line's claim instructions without a join. */
+    val line: String = "",
     val policyId: String = "",
     val currentFare: Double = 0.0,
     val farePaid: Double = 0.0,
@@ -60,10 +62,12 @@ data class CruiseLinePolicy(
     val id: String = "",
     val displayName: String = "",
     val monitoring: String = "",
+    val phone: String = "",
     val policies: List<PolicyRule> = emptyList(),
     val exclusions: List<String> = emptyList(),
     val eligibility: String = "",
     @get:PropertyName("claimChannel") val claimChannel: String = "",
+    val howToClaim: List<String> = emptyList(),
 )
 
 data class PolicyRule(

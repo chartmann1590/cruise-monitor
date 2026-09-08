@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.tasks.await
 class AuthViewModel(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val repository: CruiseRepository = CruiseRepository(),
+    private val messaging: FirebaseMessaging = FirebaseMessaging.getInstance(),
 ) : ViewModel() {
 
     private val _isSignedIn = MutableStateFlow(auth.currentUser != null)
@@ -59,11 +61,34 @@ class AuthViewModel(
         _isSignedIn.value = false
     }
 
-    /** Called once after sign-in to store this device's FCM token for push. */
+    /**
+     * Called from MainActivity whenever a fresh token arrives (initial
+     * fetch, or FCM rotating it). Only succeeds once actually signed in;
+     * silently no-ops otherwise (registerFcmTokenAfterSignIn covers the
+     * "just signed in" case instead, since a token fetched before sign-in
+     * would otherwise never get registered).
+     */
     fun registerFcmTokenIfAvailable(token: String?) {
         if (token == null) return
         viewModelScope.launch {
             runCatching { repository.registerFcmToken(token) }
+        }
+    }
+
+    /**
+     * Fetches the current FCM token and registers it, called right after a
+     * successful sign-in. Needed because MainActivity's own token fetch
+     * (on app launch) can complete before the user has finished signing
+     * in — that attempt silently fails ("Not signed in") and is never
+     * retried, so a fresh sign-in would otherwise register no token and
+     * never receive push notifications until the token happens to rotate.
+     */
+    private fun registerFcmTokenAfterSignIn() {
+        viewModelScope.launch {
+            runCatching {
+                val token = messaging.token.await()
+                repository.registerFcmToken(token)
+            }
         }
     }
 
@@ -77,6 +102,7 @@ class AuthViewModel(
             try {
                 block()
                 _isSignedIn.value = true
+                registerFcmTokenAfterSignIn()
             } catch (e: Exception) {
                 _error.value = errorFor(e)
             } finally {

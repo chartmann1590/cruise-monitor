@@ -30,10 +30,12 @@ class PolicyRepository(private val context: Context) {
         id = obj.getString("id"),
         displayName = obj.getString("displayName"),
         monitoring = obj.getString("monitoring"),
+        phone = obj.optString("phone", ""),
         policies = parsePolicies(obj.getJSONArray("policies")),
         exclusions = parseStringArray(obj.getJSONArray("exclusions")),
         eligibility = obj.getString("eligibility"),
         claimChannel = obj.getString("claimChannel"),
+        howToClaim = if (obj.has("howToClaim")) parseStringArray(obj.getJSONArray("howToClaim")) else emptyList(),
     )
 
     private fun parsePolicies(arr: JSONArray): List<PolicyRule> = (0 until arr.length()).map { i ->

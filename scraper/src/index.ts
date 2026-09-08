@@ -40,9 +40,25 @@ async function processCruise(cruise: TrackedCruise): Promise<void> {
     return;
   }
 
+  // Avoid re-alerting (and re-pushing) every run while the price stays low —
+  // only create a new alert if there isn't already an unclaimed one for
+  // this cruise. The user already has an actionable alert; repeating it
+  // every 6 hours would just be push spam.
+  const existingUnclaimed = await db()
+    .collection("alerts")
+    .where("cruiseId", "==", cruise.id)
+    .where("claimed", "==", false)
+    .limit(1)
+    .get();
+  if (!existingUnclaimed.empty) {
+    console.log(`[${cruise.id}] price still dropped but an unclaimed alert already exists — skipping`);
+    return;
+  }
+
   await db().collection("alerts").add({
     userId: cruise.userId,
     cruiseId: cruise.id,
+    line: cruise.line,
     policyId: applicablePolicy.name,
     currentFare: lookup.fare,
     farePaid: cruise.farePaid,

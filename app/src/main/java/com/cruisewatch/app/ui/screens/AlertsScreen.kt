@@ -19,12 +19,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.data.Alert
+import com.cruisewatch.app.data.CruiseLinePolicy
+import com.cruisewatch.app.ui.CallButton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun AlertsScreen(
     alerts: Flow<List<Alert>> = emptyFlow(),
+    policyFor: (String) -> CruiseLinePolicy? = { null },
     onMarkClaimed: (String) -> Unit,
 ) {
     val alertList by alerts.collectAsState(initial = emptyList())
@@ -38,13 +41,13 @@ fun AlertsScreen(
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(alertList, key = { it.id }) { alert ->
-            AlertCard(alert, onMarkClaimed = { onMarkClaimed(alert.id) })
+            AlertCard(alert, policy = policyFor(alert.line), onMarkClaimed = { onMarkClaimed(alert.id) })
         }
     }
 }
 
 @Composable
-private fun AlertCard(alert: Alert, onMarkClaimed: () -> Unit) {
+private fun AlertCard(alert: Alert, policy: CruiseLinePolicy?, onMarkClaimed: () -> Unit) {
     Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -62,7 +65,28 @@ private fun AlertCard(alert: Alert, onMarkClaimed: () -> Unit) {
                 modifier = Modifier.padding(top = 4.dp),
             )
 
-            Row(modifier = Modifier.padding(top = 8.dp), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.End) {
+            if (!alert.claimed && policy != null && policy.howToClaim.isNotEmpty()) {
+                Text(
+                    "How to get your refund",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+                )
+                policy.howToClaim.forEachIndexed { index, step ->
+                    Row(modifier = Modifier.padding(top = 8.dp)) {
+                        Text(
+                            "${index + 1}.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(end = 8.dp),
+                        )
+                        Text(step, style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
+                if (policy.phone.isNotBlank()) {
+                    CallButton(policy.phone, modifier = Modifier.fillMaxWidth().padding(top = 16.dp))
+                }
+            }
+
+            Row(modifier = Modifier.padding(top = 12.dp), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.End) {
                 if (alert.claimed) {
                     Text("Claimed", style = MaterialTheme.typography.labelLarge)
                 } else {

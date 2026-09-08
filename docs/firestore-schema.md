@@ -48,6 +48,7 @@ Written when a price drop is detected inside an applicable policy window.
 | Field | Type | Notes |
 |---|---|---|
 | `userId` | string | denormalized from the tracked cruise, for security-rule scoping and direct querying |
+| `line` | string | denormalized from the tracked cruise, so the app can show that line's claim instructions (phone number, script) without a join |
 | `cruiseId` | string | reference to `trackedCruises/{cruiseId}` |
 | `policyId` | string | which policy from `cruise-line-policies.json` applies (matches a `policies[].name` under the cruise's `line`) |
 | `currentFare` | number | fare observed at detection time |

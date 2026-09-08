@@ -116,6 +116,7 @@ fun CruiseWatchNavHost(
             composable(Routes.ALERTS) {
                 AlertsScreen(
                     alerts = repository.alerts(),
+                    policyFor = { lineId -> policyRepository.forLine(lineId) },
                     onMarkClaimed = { alertId -> scope.launch { repository.markAlertClaimed(alertId) } },
                 )
             }

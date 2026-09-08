@@ -1,10 +1,11 @@
 {
-  "_comment": "Static reference data for each cruise line's price-drop / price-protection policy. Sourced from https://cruisesignal.app/coverage. Used by the scraper (to decide whether a detected price drop is currently claimable) and by the Android app's Claims screen. Update when a cruise line changes its policy.",
+  "_comment": "Static reference data for each cruise line's price-drop / price-protection policy. Sourced from https://cruisesignal.app/coverage. Phone numbers verified 2026-09-08 against each line's own contact page / cross-referenced consumer-service directories. Used by the scraper (to decide whether a detected price drop is currently claimable) and by the Android app's Claims and Alerts screens. Update when a cruise line changes its policy or phone number.",
   "lines": [
     {
       "id": "royal_caribbean",
       "displayName": "Royal Caribbean International",
       "monitoring": "Public fares matching ship, sail date, and stateroom category. Royal Caribbean-owned booking channels only.",
+      "phone": "1-866-562-7625",
       "policies": [
         {
           "name": "Best Price Guarantee",
@@ -25,12 +26,21 @@
         "Non-refundable fares only match to other non-refundable prices"
       ],
       "eligibility": "U.S. and Canadian residents only; must be same currency.",
-      "claimChannel": "Filed by the customer directly through Royal Caribbean."
+      "claimChannel": "Filed by the customer directly through Royal Caribbean.",
+      "howToClaim": [
+        "Have ready: your reservation number, ship name, sail date, cabin category, and the new lower price (this app shows it on the Alert).",
+        "Call Royal Caribbean at 1-866-562-7625 — or contact your travel agent first if you booked through one.",
+        "Say: \"I'd like to request the Best Price Guarantee on my reservation — I found a lower publicly advertised price for the same ship, sail date, and cabin category.\"",
+        "Give them your reservation number and the new price when asked.",
+        "If it's within 24 hours of a payment you just made, ask about the 24-Hour Upgrade Window instead — you may be able to upgrade cabins for the difference rather than get cash/OBC back.",
+        "This must be done before your final payment date. Once approved, you'll get a refund or onboard credit — ask which one applies to your booking."
+      ]
     },
     {
       "id": "carnival",
       "displayName": "Carnival Cruise Line",
       "monitoring": "Public Carnival pricing across two separate guarantee programs.",
+      "phone": "1-800-764-7419",
       "policies": [
         {
           "name": "Early Saver",
@@ -54,12 +64,21 @@
         "Not offered on Carnival Australia sailings"
       ],
       "eligibility": "USD bookings only.",
-      "claimChannel": "Filed by the customer directly through Carnival."
+      "claimChannel": "Filed by the customer directly through Carnival.",
+      "howToClaim": [
+        "Have ready: your booking number, ship name, sail date, cabin category, and the new lower price.",
+        "Call Carnival Guest Care at 1-800-764-7419 — or your travel agent if you booked through one.",
+        "If you're more than 2 business days from sailing: ask for \"Early Saver price protection\" — you'll get a refund or onboard credit for the difference.",
+        "If it's within 48 hours of when you booked: ask about the \"110% Lowest Price Guarantee\" instead — a non-refundable onboard credit worth 110% of the difference.",
+        "Have the new price ready to reference — they'll check it against Carnival's own current public pricing.",
+        "Note: this doesn't apply to Super Saver, Fun Saver, Pack & Go, or Flash Sale fares, group/travel-agent rates, or Carnival Australia sailings — if your fare type was one of these, the rep will tell you it doesn't qualify."
+      ]
     },
     {
       "id": "princess",
       "displayName": "Princess Cruises",
       "monitoring": "Princess.com public fares only.",
+      "phone": "1-800-774-6237",
       "policies": [
         {
           "name": "Better Than Best Price Guarantee",
@@ -73,12 +92,20 @@
         "Non-Princess.com bookings"
       ],
       "eligibility": "U.S./Canadian residents in matching currency; Princess.com bookings only.",
-      "claimChannel": "Filed by the customer before the final payment deadline."
+      "claimChannel": "Filed by the customer before the final payment deadline.",
+      "howToClaim": [
+        "Have ready: your booking number, ship name, sail date, cabin category, your fare bundle (Princess Plus or Princess Standard), and the new lower price you found on princess.com.",
+        "Call Princess at 1-800-774-6237 — or your travel agent if you booked through one — before your final payment date.",
+        "Ask for the \"Better Than Best Price Guarantee.\"",
+        "The new price must be on princess.com itself (not a travel agency or OTA site) and for the same bundle (Plus vs. Standard) as your booking.",
+        "If approved, you'll get onboard credit equal to 120% of the difference, capped at $2,000 — it's non-refundable and expires at the end of your cruise, so plan to actually use it onboard."
+      ]
     },
     {
       "id": "celebrity",
       "displayName": "Celebrity Cruises",
       "monitoring": "Celebrity's public pricing channels.",
+      "phone": "1-800-647-2251",
       "policies": [
         {
           "name": "Repricing",
@@ -105,12 +132,21 @@
         "Group, corporate, and consolidator fares"
       ],
       "eligibility": "US/Canada residents get full program; UK and other residents limited to the 10% program.",
-      "claimChannel": "Filed by the customer directly through Celebrity."
+      "claimChannel": "Filed by the customer directly through Celebrity.",
+      "howToClaim": [
+        "Have ready: your reservation number, ship name, sail date, cabin category, and the new lower price.",
+        "Call Celebrity at 1-800-647-2251 — or your travel agent if you booked through one.",
+        "Before or at your final payment date: ask them to \"reprice\" your reservation to the new lower public fare.",
+        "If you're within 48 hours after your final payment: ask about the \"48-Hour OBC\" program instead — 100% of the difference as onboard credit.",
+        "If you're outside the US/Canada (e.g. UK): ask about the separate 10% program, which is more limited.",
+        "OBC from the 48-hour program is forfeited at 10 PM on the last night of the cruise, so use it before then."
+      ]
     },
     {
       "id": "norwegian",
       "displayName": "Norwegian Cruise Line (NCL)",
       "monitoring": "Public fares on matching itinerary elements. Regional variation applies.",
+      "phone": "1-866-234-7350",
       "policies": [
         {
           "name": "Regional Price Protection",
@@ -126,7 +162,14 @@
         "Stateroom guarantees"
       ],
       "eligibility": "Varies by region and booking channel.",
-      "claimChannel": "Filed by the customer; timing windows vary by applicable program."
+      "claimChannel": "Filed by the customer; timing windows vary by applicable program.",
+      "howToClaim": [
+        "Have ready: your booking number, ship name, sail date, cabin category, and the new lower price.",
+        "Call Norwegian at 1-866-234-7350 — or your travel agent if you booked through one.",
+        "Ask what price-protection options apply to your specific booking — NCL's policy varies by region, booking channel, and fare type, so there's no single guaranteed remedy to ask for by name.",
+        "Mention the new price you found and ask them to check it against the same ship, sail date, and cabin category.",
+        "Group fares, partner-rate fares, restricted promotional fares, and stateroom guarantees are typically excluded — if your fare type was one of these, expect the rep to say it doesn't qualify."
+      ]
     }
   ]
 }
