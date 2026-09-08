@@ -16,7 +16,9 @@ plan/      Plan, one file per phase
 - Phase 0 (skeleton & data model): done — see [`plan/01-phase0-skeleton.md`](plan/01-phase0-skeleton.md)
 - Phase 1 (Royal Caribbean + Celebrity scraping): done, both lines live-verified — see [`plan/02-phase1-rc-celebrity-scraping.md`](plan/02-phase1-rc-celebrity-scraping.md)
 - Phase 2 (Android app MVP): done, builds successfully, Firebase infra live, CI verified green — see [`plan/03-phase2-android-app.md`](plan/03-phase2-android-app.md)
-- Phase 3 (Carnival, Princess, Norwegian scraping): in progress — see [`plan/04-phase3-remaining-lines.md`](plan/04-phase3-remaining-lines.md)
+- Phase 3 (Carnival, Princess, Norwegian scraping): done, all 3 lines live-verified — see [`plan/04-phase3-remaining-lines.md`](plan/04-phase3-remaining-lines.md)
+
+**All 5 cruise lines are now fully implemented and live-verified.** Next up: Phase 4 (Play Store readiness).
 
 ## Live infrastructure
 

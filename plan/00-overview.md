@@ -46,10 +46,12 @@ Why this shape: GitHub Actions gives free scheduled compute without needing to r
 1. [Phase 0 — Skeleton & data model](01-phase0-skeleton.md) — done
 2. [Phase 1 — Royal Caribbean + Celebrity scraping](02-phase1-rc-celebrity-scraping.md) — done
 3. [Phase 2 — Android app MVP](03-phase2-android-app.md) — done
-4. [Phase 3 — Remaining 3 lines (Carnival, Princess, NCL)](04-phase3-remaining-lines.md) — in progress
-5. [Phase 4 — Play Store readiness](05-phase4-play-store.md)
+4. [Phase 3 — Remaining 3 lines (Carnival, Princess, NCL)](04-phase3-remaining-lines.md) — done
+5. [Phase 4 — Play Store readiness](05-phase4-play-store.md) — not started
 6. [Key risks](06-risks.md)
 7. [Verification checklist](07-verification.md)
+
+**All 5 cruise lines now have real, live-verified scraper implementations.** Royal Caribbean and Celebrity need a Python subprocess (Akamai TLS-fingerprint bypass); Carnival, Princess, and Norwegian all work with plain Node `fetch()`. See each phase file for per-line detail and exact verified prices.
 
 ## Repo layout
 
