@@ -14,11 +14,12 @@ scraper/python/.venv/
 .env*
 
 # Android
-app/.gradle/
+.gradle/
+build/
 app/build/
-app/local.properties
-app/.idea/
-app/*.iml
+local.properties
+.idea/
+*.iml
 app/captures/
 app/.cxx/
 

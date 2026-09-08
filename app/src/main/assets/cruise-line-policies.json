@@ -1,0 +1,132 @@
+{
+  "_comment": "Static reference data for each cruise line's price-drop / price-protection policy. Sourced from https://cruisesignal.app/coverage. Used by the scraper (to decide whether a detected price drop is currently claimable) and by the Android app's Claims screen. Update when a cruise line changes its policy.",
+  "lines": [
+    {
+      "id": "royal_caribbean",
+      "displayName": "Royal Caribbean International",
+      "monitoring": "Public fares matching ship, sail date, and stateroom category. Royal Caribbean-owned booking channels only.",
+      "policies": [
+        {
+          "name": "Best Price Guarantee",
+          "window": "before_final_payment",
+          "outcome": "refund_or_obc",
+          "notes": "Standard pre-final-payment price match/guarantee."
+        },
+        {
+          "name": "24-Hour Upgrade Window",
+          "window": "hours_after_payment:24",
+          "outcome": "upgrade",
+          "notes": "Applies only in the 24 hours immediately after making a payment."
+        }
+      ],
+      "exclusions": [
+        "Group bookings",
+        "Certain promotions",
+        "Non-refundable fares only match to other non-refundable prices"
+      ],
+      "eligibility": "U.S. and Canadian residents only; must be same currency.",
+      "claimChannel": "Filed by the customer directly through Royal Caribbean."
+    },
+    {
+      "id": "carnival",
+      "displayName": "Carnival Cruise Line",
+      "monitoring": "Public Carnival pricing across two separate guarantee programs.",
+      "policies": [
+        {
+          "name": "Early Saver",
+          "window": "until:2_business_days_before_sailing",
+          "outcome": "refund_or_obc",
+          "notes": "Refund or onboard credit, valid up to 2 business days before sailing."
+        },
+        {
+          "name": "110% Lowest Price Guarantee",
+          "window": "hours_after_booking:48",
+          "outcome": "obc_non_refundable",
+          "notes": "Non-refundable OBC equal to 110% of the difference, valid 48 hours post-booking."
+        }
+      ],
+      "exclusions": [
+        "Super Saver",
+        "Fun Saver",
+        "Pack & Go",
+        "Flash Sale",
+        "Group and travel-agent rates",
+        "Not offered on Carnival Australia sailings"
+      ],
+      "eligibility": "USD bookings only.",
+      "claimChannel": "Filed by the customer directly through Carnival."
+    },
+    {
+      "id": "princess",
+      "displayName": "Princess Cruises",
+      "monitoring": "Princess.com public fares only.",
+      "policies": [
+        {
+          "name": "Better Than Best Price Guarantee",
+          "window": "before_final_payment",
+          "outcome": "obc_capped",
+          "outcomeDetail": "120% of the difference, capped at US$2,000 onboard credit. Non-refundable, expires at end of cruise.",
+          "notes": "Before final payment only; bundle matching required."
+        }
+      ],
+      "exclusions": [
+        "Non-Princess.com bookings"
+      ],
+      "eligibility": "U.S./Canadian residents in matching currency; Princess.com bookings only.",
+      "claimChannel": "Filed by the customer before the final payment deadline."
+    },
+    {
+      "id": "celebrity",
+      "displayName": "Celebrity Cruises",
+      "monitoring": "Celebrity's public pricing channels.",
+      "policies": [
+        {
+          "name": "Repricing",
+          "window": "before_or_at_final_payment",
+          "outcome": "reprice",
+          "notes": "Fare is repriced down to the new lower public fare."
+        },
+        {
+          "name": "48-Hour OBC",
+          "window": "hours_after_payment:48",
+          "outcome": "obc_full",
+          "outcomeDetail": "100% of the difference as onboard credit. Forfeited at 10 PM on the last night of the cruise.",
+          "notes": "Applies in the 48 hours after final payment."
+        },
+        {
+          "name": "UK/Non-US-Canada 10% Program",
+          "window": "varies",
+          "outcome": "obc_partial",
+          "notes": "Separate, more limited program for UK and other non-US/Canada residents."
+        }
+      ],
+      "exclusions": [
+        "Celebrity Exciting Deals",
+        "Group, corporate, and consolidator fares"
+      ],
+      "eligibility": "US/Canada residents get full program; UK and other residents limited to the 10% program.",
+      "claimChannel": "Filed by the customer directly through Celebrity."
+    },
+    {
+      "id": "norwegian",
+      "displayName": "Norwegian Cruise Line (NCL)",
+      "monitoring": "Public fares on matching itinerary elements. Regional variation applies.",
+      "policies": [
+        {
+          "name": "Regional Price Protection",
+          "window": "varies_by_region_and_fare_type",
+          "outcome": "varies",
+          "notes": "No guaranteed remedy; programs differ by region, booking channel, and fare type."
+        }
+      ],
+      "exclusions": [
+        "Group fares",
+        "Partner-rate fares",
+        "Restricted promotional fares",
+        "Stateroom guarantees"
+      ],
+      "eligibility": "Varies by region and booking channel.",
+      "claimChannel": "Filed by the customer; timing windows vary by applicable program."
+    }
+  ]
+}
