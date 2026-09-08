@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "707544969798-djrdjtmk1h4q1bvaesq65j5lncf68r61.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cruisewatch.app",
+            "certificate_hash": "ad066b11eecddf89aa9246850e03eec1717a2bcc"
+          }
+        },
+        {
           "client_id": "707544969798-p1aem6dhlk35opa3ra4k24ctkqjgt391.apps.googleusercontent.com",
           "client_type": 3
         }
