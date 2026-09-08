@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "707544969798",
+    "project_id": "cruisewatch-app",
+    "storage_bucket": "cruisewatch-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707544969798:android:017d4a71f2ea6e09f01047",
+        "android_client_info": {
+          "package_name": "com.cruisewatch.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC94HnLbiNpqC0RGiKAyMNFYwHpCF9jDC4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

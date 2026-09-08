@@ -2,6 +2,7 @@ import { db } from "./firestore.js";
 import { getLineScraper } from "./lines/index.js";
 import { getLinePolicy } from "./policies.js";
 import { isWithinPolicyWindow } from "./policyWindow.js";
+import { sendPriceDropPush } from "./fcm.js";
 import type { TrackedCruise } from "./types.js";
 
 async function loadActiveCruises(): Promise<TrackedCruise[]> {
@@ -55,7 +56,14 @@ async function processCruise(cruise: TrackedCruise): Promise<void> {
     `[${cruise.id}] ALERT: ${cruise.line} dropped from ${cruise.farePaid} to ${lookup.fare} — "${applicablePolicy.name}" applies`
   );
 
-  // TODO (Phase 2): trigger FCM push to cruise.userId's registered device tokens.
+  await sendPriceDropPush({
+    userId: cruise.userId,
+    line: cruise.line,
+    dropAmount: cruise.farePaid - lookup.fare,
+    currentFare: lookup.fare,
+    policyName: applicablePolicy.name,
+    cruiseId: cruise.id,
+  });
 }
 
 async function main(): Promise<void> {

@@ -1,0 +1,32 @@
+rules_version = '2';
+
+// Matches docs/firestore-schema.md's "Security rules" section.
+// - users/{userId}, trackedCruises/{cruiseId}, alerts/{alertId}: a user can
+//   only read/write their own documents (matched by userId field or doc id).
+// - priceSnapshots subcollection: client reads are scoped to the owning
+//   cruise's userId; writes come only from the scraper's Admin SDK service
+//   account, which bypasses these rules entirely.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /trackedCruises/{cruiseId} {
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+
+      match /priceSnapshots/{snapshotId} {
+        allow read: if request.auth != null
+          && request.auth.uid == get(/databases/$(database)/documents/trackedCruises/$(cruiseId)).data.userId;
+        allow write: if false; // scraper writes via Admin SDK, which bypasses rules
+      }
+    }
+
+    match /alerts/{alertId} {
+      allow read, update: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow delete: if false;
+    }
+  }
+}
