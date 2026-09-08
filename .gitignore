@@ -1,0 +1,27 @@
+# Node / scraper
+scraper/node_modules/
+scraper/dist/
+scraper/*.log
+
+# Python (scraper/python)
+scraper/python/__pycache__/
+scraper/python/.venv/
+*.pyc
+
+# Firebase / secrets — never commit a service account key
+**/firebase-service-account*.json
+**/*.env
+.env*
+
+# Android
+app/.gradle/
+app/build/
+app/local.properties
+app/.idea/
+app/*.iml
+app/captures/
+app/.cxx/
+
+# OS
+.DS_Store
+Thumbs.db
