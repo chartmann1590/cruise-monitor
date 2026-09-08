@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cruisewatch.app.data.CruiseRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,9 +26,19 @@ class AuthViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    fun signIn(email: String, password: String) = runAuthAction {
-        auth.signInWithEmailAndPassword(email, password).await()
-    }
+    fun signIn(email: String, password: String) = runAuthAction(
+        // Deliberately generic: Firebase distinguishes "no such user" from
+        // "wrong password" in its own exception message, which lets an
+        // attacker enumerate registered emails if surfaced verbatim.
+        errorFor = { e ->
+            if (e is FirebaseAuthInvalidUserException || e is FirebaseAuthInvalidCredentialsException) {
+                "Invalid email or password"
+            } else {
+                e.message ?: "Something went wrong"
+            }
+        },
+        block = { auth.signInWithEmailAndPassword(email, password).await() },
+    )
 
     fun signUp(email: String, password: String) = runAuthAction {
         auth.createUserWithEmailAndPassword(email, password).await()
@@ -45,7 +57,10 @@ class AuthViewModel(
         }
     }
 
-    private fun runAuthAction(block: suspend () -> Unit) {
+    private fun runAuthAction(
+        errorFor: (Exception) -> String = { it.message ?: "Something went wrong" },
+        block: suspend () -> Unit,
+    ) {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
@@ -53,7 +68,7 @@ class AuthViewModel(
                 block()
                 _isSignedIn.value = true
             } catch (e: Exception) {
-                _error.value = e.message ?: "Something went wrong"
+                _error.value = errorFor(e)
             } finally {
                 _isLoading.value = false
             }
