@@ -10,7 +10,7 @@
 
 ### Screens (all implemented)
 
-- **Sign In** (`ui/screens/SignInScreen.kt`) — email/password sign-in or sign-up via `AuthViewModel`.
+- **Sign In** (`ui/screens/SignInScreen.kt`) — email/password sign-in or sign-up, plus "Continue with Google", via `AuthViewModel`.
 - **Tracked Cruises** (`ui/screens/TrackedCruisesScreen.kt`) — list of active tracked cruises from Firestore, FAB to add one, banner ad pinned at the bottom.
 - **Add Cruise** (`ui/screens/AddCruiseScreen.kt`) — line/cabin-category dropdowns, ship/dates/fare fields, writes a `trackedCruises` doc; shows an interstitial ad on successful save (see Ads below).
 - **Price History** (`ui/screens/PriceHistoryScreen.kt`) — simple Canvas line chart + list, backed by the `priceSnapshots` subcollection.
@@ -18,6 +18,15 @@
 - **Claims reference** (`ui/screens/ClaimsScreen.kt`) — browses all 5 lines' policies from bundled `assets/cruise-line-policies.json` (a manually-synced copy of `docs/cruise-line-policies.json` — no build-time sync step yet, keep them in sync by hand when a policy changes).
 
 Bottom nav switches between Cruises / Alerts / Policies (`ui/CruiseWatchNavHost.kt`).
+
+### Auth providers (Email/Password + Google)
+
+**Root cause of an earlier "account creation failed" report**: the Email/Password provider hadn't been enabled in Firebase Auth yet — the app code was correct, the backend just wasn't configured to accept it. Fixed on the Firebase console side, then verified for real: signed up a live test account on-device via adb, confirmed it via the Identity Toolkit API (`accounts:query`), then deleted it.
+
+Google Sign-In was added on top once both providers were enabled:
+- Registered the debug keystore's SHA-1 fingerprint with the Firebase Android app (`firebase apps:android:sha:create`) — required for Google Sign-In to validate the app's signature — then re-downloaded `google-services.json`, which now carries the OAuth client info (a Web client ID Google Sign-In needs for `requestIdToken`).
+- `com.google.android.gms:play-services-auth` + a `GoogleSignInClient`/`ActivityResultLauncher` in `MainActivity.kt`, feeding a Google `idToken` into `AuthViewModel.signInWithGoogle` (`FirebaseAuth.signInWithCredential` + `GoogleAuthProvider`).
+- **Release builds need their own SHA-1 registered too** (the release keystore differs from the debug one) — not yet done, since there's no release keystore yet (Phase 4).
 
 ### Push notifications
 
@@ -51,7 +60,7 @@ Added per explicit request. `ads/AdIds.kt`, `ads/BannerAd.kt`, `ads/Interstitial
 
 - No automated test suite yet (manual build verification only).
 - `assets/cruise-line-policies.json` is a manual copy of `docs/cruise-line-policies.json` — no sync tooling.
-- Not yet run on an actual device/emulator — only verified via `gradle assembleDebug` (compiles, links resources, packages correctly) and `compileDebugKotlin`. Installing and clicking through the real UI (sign-up flow, adding a cruise, seeing the banner/interstitial render) is still open — see `plan/07-verification.md`.
+- Installed and manually tested on a real device (Pixel 8 Pro) via adb: launched, notification permission granted, signed up a real account end-to-end (verified in Firebase Auth), landed on the main Cruises screen, bottom nav and AdMob test banner both rendered correctly. Not yet tested: adding a cruise, price history, alerts, Google Sign-In's actual account picker flow (needs interactive tap-through of the Google account chooser, not yet automated).
 - `local.properties` (SDK path) and Gradle wrapper are machine-specific/standard respectively; `local.properties` is gitignored as usual.
 
 ## Status checklist
@@ -63,5 +72,7 @@ Added per explicit request. `ads/AdIds.kt`, `ads/BannerAd.kt`, `ads/Interstitial
 - [x] Firebase project, Firestore, security rules, indexes — created and deployed via CLI
 - [x] GitHub Actions CI verified green end-to-end
 - [x] Full scraper-to-Firestore pipeline verified against real data
-- [ ] Installed and manually tested on a device/emulator
+- [x] Installed and manually tested on a real device (Pixel 8 Pro) via adb — sign-up verified end-to-end against real Firebase Auth
+- [x] Google Sign-In wired (Email/Password + Google both confirmed enabled server-side; debug SHA-1 registered)
 - [ ] Real AdMob account/App ID/ad units (deferred to Phase 4, Play Store readiness)
+- [ ] Release keystore SHA-1 registered with Firebase (deferred to Phase 4 — no release keystore exists yet)
