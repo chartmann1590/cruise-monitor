@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,6 +44,7 @@ import kotlinx.coroutines.flow.emptyFlow
 fun PriceHistoryScreen(
     snapshots: Flow<List<PriceSnapshot>> = emptyFlow(),
     onBack: () -> Unit = {},
+    onAskAssistant: () -> Unit = {},
 ) {
     val history by snapshots.collectAsState(initial = emptyList())
 
@@ -51,7 +53,10 @@ fun PriceHistoryScreen(
             IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
-            Text("Price history", style = MaterialTheme.typography.headlineMedium)
+            Text("Price history", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
+            IconButton(onClick = onAskAssistant) {
+                Icon(Icons.Filled.SmartToy, contentDescription = "Ask the assistant")
+            }
         }
         Text(
             "Every check we've made against the public fare.",

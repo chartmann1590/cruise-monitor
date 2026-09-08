@@ -49,10 +49,10 @@ import com.cruisewatch.app.ui.theme.Teal
 import kotlinx.coroutines.launch
 
 @Composable
-fun AssistantScreen(viewModel: AssistantViewModel = viewModel()) {
+fun AssistantScreen(focusCruiseId: String? = null, viewModel: AssistantViewModel = viewModel()) {
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(Unit) { viewModel.checkModelState() }
+    LaunchedEffect(Unit) { viewModel.checkModelState(focusCruiseId) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         PhotoHero(photoRes = R.drawable.hero_policies, height = 150.dp) {

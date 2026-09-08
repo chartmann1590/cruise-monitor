@@ -65,6 +65,7 @@ fun TrackedCruisesScreen(
                 containerColor = MaterialTheme.colorScheme.secondary,
                 icon = { Icon(Icons.Filled.Add, contentDescription = null) },
                 text = { Text("Add cruise") },
+                modifier = Modifier.padding(bottom = 64.dp),
             )
         },
     ) { padding ->

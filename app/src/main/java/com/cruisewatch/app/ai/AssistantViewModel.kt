@@ -40,11 +40,13 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
     val isThinking: StateFlow<Boolean> = _isThinking.asStateFlow()
 
     private var engine: LlmChatEngine? = null
+    private var focusCruiseId: String? = null
 
     val recommendedTier = DeviceCapability.recommend(application)
     val deviceRamGb = DeviceCapability.totalRamGb(application)
 
-    fun checkModelState() {
+    fun checkModelState(focusCruiseId: String? = null) {
+        this.focusCruiseId = focusCruiseId
         val savedId = prefs.getString(KEY_MODEL_ID, null)
         val model = savedId?.let { LlmModelCatalog.byId(it) } ?: LlmModelCatalog.recommended(recommendedTier)
         val existing = ModelDownloadManager.localFile(getApplication(), model)
@@ -74,16 +76,41 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
                 engine = newEngine
             }.onSuccess {
                 _state.value = AssistantState.Ready
-                _messages.value = listOf(
-                    ChatMessage(
-                        fromUser = false,
-                        text = "Hi! I'm your refund assistant. I can see your tracked cruises and any price drops — " +
-                            "ask me what to do to get your money back.",
-                    ),
-                )
+                val cruiseId = focusCruiseId
+                if (cruiseId != null) {
+                    sendFocusedGreeting(cruiseId)
+                } else {
+                    _messages.value = listOf(
+                        ChatMessage(
+                            fromUser = false,
+                            text = "Hi! I'm your refund assistant. I can see your tracked cruises and any price drops — " +
+                                "ask me what to do to get your money back.",
+                        ),
+                    )
+                }
             }.onFailure { e ->
                 _state.value = AssistantState.Error(e.message ?: "Couldn't load the model")
             }
+        }
+    }
+
+    private fun sendFocusedGreeting(cruiseId: String) {
+        val activeEngine = engine ?: return
+        _isThinking.value = true
+        viewModelScope.launch {
+            val cruises = runCatching { repository.trackedCruises().first() }.getOrDefault(emptyList())
+            val alerts = runCatching { repository.alerts().first() }.getOrDefault(emptyList())
+            val systemPrompt = RefundAssistantContext.buildSystemPrompt(
+                cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, cruiseId,
+            )
+            val kickoff = "Greet me and immediately explain, step by step, exactly what I need to do right now " +
+                "to get my refund for this cruise."
+            val response = runCatching { activeEngine.send(systemPrompt, kickoff) }
+                .getOrElse {
+                    "Hi! I can see this cruise's price drop — let me know if you'd like the steps to claim it."
+                }
+            _messages.value = listOf(ChatMessage(fromUser = false, text = response))
+            _isThinking.value = false
         }
     }
 
@@ -95,7 +122,9 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             val cruises = runCatching { repository.trackedCruises().first() }.getOrDefault(emptyList())
             val alerts = runCatching { repository.alerts().first() }.getOrDefault(emptyList())
-            val systemPrompt = RefundAssistantContext.buildSystemPrompt(cruises, alerts) { lineId -> policyRepository.forLine(lineId) }
+            val systemPrompt = RefundAssistantContext.buildSystemPrompt(
+                cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, focusCruiseId,
+            )
             val response = runCatching { activeEngine.send(systemPrompt, text) }
                 .getOrElse { "Sorry, something went wrong answering that: ${it.message}" }
             _messages.value = _messages.value + ChatMessage(fromUser = false, text = response)

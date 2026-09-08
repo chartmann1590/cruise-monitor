@@ -14,6 +14,7 @@ object RefundAssistantContext {
         cruises: List<TrackedCruise>,
         alerts: List<Alert>,
         policyFor: (String) -> CruiseLinePolicy?,
+        focusCruiseId: String? = null,
     ): String {
         val sb = StringBuilder()
         sb.append(
@@ -28,6 +29,18 @@ object RefundAssistantContext {
         if (cruises.isEmpty()) {
             sb.append("The user has no cruises tracked yet. Encourage them to add one from the Cruises tab.\n")
             return sb.toString()
+        }
+
+        val focusCruise = focusCruiseId?.let { id -> cruises.firstOrNull { it.id == id } }
+        if (focusCruise != null) {
+            val focusAlert = alerts.filter { it.cruiseId == focusCruiseId }
+                .maxByOrNull { it.detectedAt ?: java.util.Date(0) }
+            sb.append(
+                "== The user just opened you directly from their ${focusCruise.ship} " +
+                    (if (focusAlert != null) "price-drop alert" else "cruise") + " ==\n" +
+                    "Assume that is what they're asking about unless they clearly say otherwise. Do NOT ask which " +
+                    "cruise they mean — lead immediately with concrete next steps for THIS one.\n\n",
+            )
         }
 
         sb.append("== Their tracked cruises ==\n")

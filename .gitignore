@@ -12,6 +12,7 @@ scraper/python/.venv/
 **/firebase-service-account*.json
 **/*.env
 .env*
+.firebase/
 
 # Android
 .gradle/

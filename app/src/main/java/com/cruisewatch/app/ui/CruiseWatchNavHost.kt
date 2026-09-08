@@ -31,10 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.cruisewatch.app.auth.AuthViewModel
 import com.cruisewatch.app.data.CruiseRepository
 import com.cruisewatch.app.data.PolicyRepository
@@ -59,9 +61,10 @@ private object Routes {
     const val PRICE_HISTORY = "price_history/{cruiseId}"
     const val ALERTS = "alerts"
     const val CLAIMS = "claims"
-    const val ASSISTANT = "assistant"
+    const val ASSISTANT = "assistant?cruiseId={cruiseId}"
 
     fun priceHistory(cruiseId: String) = "price_history/$cruiseId"
+    fun assistant(cruiseId: String? = null) = if (cruiseId != null) "assistant?cruiseId=$cruiseId" else "assistant"
 }
 
 private val topLevelRoutes = setOf(Routes.CRUISES, Routes.ALERTS, Routes.CLAIMS, Routes.ASSISTANT)
@@ -130,7 +133,7 @@ fun CruiseWatchNavHost(
                 )
                 NavigationBarItem(
                     selected = currentRoute == Routes.ASSISTANT,
-                    onClick = { navController.navigateTopLevel(Routes.ASSISTANT) },
+                    onClick = { navController.navigateTopLevel(Routes.assistant()) },
                     icon = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
                     label = { Text("Assistant") },
                     colors = navColors(),
@@ -168,6 +171,7 @@ fun CruiseWatchNavHost(
                 PriceHistoryScreen(
                     snapshots = repository.priceHistory(cruiseId),
                     onBack = { navController.popBackStack() },
+                    onAskAssistant = { navController.navigate(Routes.assistant(cruiseId)) },
                 )
             }
             composable(Routes.ALERTS) {
@@ -175,13 +179,17 @@ fun CruiseWatchNavHost(
                     alerts = repository.alerts(),
                     policyFor = { lineId -> policyRepository.forLine(lineId) },
                     onMarkClaimed = { alertId -> scope.launch { repository.markAlertClaimed(alertId) } },
+                    onAskAssistant = { cruiseId -> navController.navigate(Routes.assistant(cruiseId)) },
                 )
             }
             composable(Routes.CLAIMS) {
                 ClaimsScreen(policies = policyRepository.all())
             }
-            composable(Routes.ASSISTANT) {
-                AssistantScreen()
+            composable(
+                route = Routes.ASSISTANT,
+                arguments = listOf(navArgument("cruiseId") { type = NavType.StringType; nullable = true; defaultValue = null }),
+            ) { entry ->
+                AssistantScreen(focusCruiseId = entry.arguments?.getString("cruiseId"))
             }
         }
     }

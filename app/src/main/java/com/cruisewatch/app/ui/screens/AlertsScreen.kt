@@ -19,7 +19,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.TrendingDown
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -42,6 +45,7 @@ import com.cruisewatch.app.data.CruiseLinePolicy
 import com.cruisewatch.app.ui.CallButton
 import com.cruisewatch.app.ui.PhotoHero
 import com.cruisewatch.app.ui.theme.Gold
+import com.cruisewatch.app.ui.theme.Teal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -50,6 +54,7 @@ fun AlertsScreen(
     alerts: Flow<List<Alert>> = emptyFlow(),
     policyFor: (String) -> CruiseLinePolicy? = { null },
     onMarkClaimed: (String) -> Unit,
+    onAskAssistant: (String) -> Unit = {},
 ) {
     val alertList by alerts.collectAsState(initial = emptyList())
 
@@ -95,13 +100,18 @@ fun AlertsScreen(
             }
         }
         items(alertList, key = { it.id }) { alert ->
-            AlertCard(alert, policy = policyFor(alert.line), onMarkClaimed = { onMarkClaimed(alert.id) })
+            AlertCard(
+                alert,
+                policy = policyFor(alert.line),
+                onMarkClaimed = { onMarkClaimed(alert.id) },
+                onAskAssistant = { onAskAssistant(alert.cruiseId) },
+            )
         }
     }
 }
 
 @Composable
-private fun AlertCard(alert: Alert, policy: CruiseLinePolicy?, onMarkClaimed: () -> Unit) {
+private fun AlertCard(alert: Alert, policy: CruiseLinePolicy?, onMarkClaimed: () -> Unit, onAskAssistant: () -> Unit) {
     val pop by animateFloatAsState(
         targetValue = 1f,
         animationSpec = tween(500, easing = EaseOutBack),
@@ -177,6 +187,18 @@ private fun AlertCard(alert: Alert, policy: CruiseLinePolicy?, onMarkClaimed: ()
                 }
                 if (policy.phone.isNotBlank()) {
                     CallButton(policy.phone, modifier = Modifier.fillMaxWidth().padding(top = 16.dp))
+                }
+            }
+
+            if (!alert.claimed) {
+                Button(
+                    onClick = onAskAssistant,
+                    colors = ButtonDefaults.buttonColors(containerColor = Teal.copy(alpha = 0.14f), contentColor = Teal),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                ) {
+                    Icon(Icons.Filled.SmartToy, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Text(" Ask the assistant about this", modifier = Modifier.padding(start = 4.dp))
                 }
             }
 

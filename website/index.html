@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CruiseWatch — Get money back when your cruise fare drops</title>
+<meta name="description" content="CruiseWatch watches the cruise you already booked and tells you the moment the fare drops — with exact steps to claim your refund. Free on Android, with a Wear OS companion and an on-device AI refund assistant." />
+<style>
+  :root {
+    --ocean-deep: #012a4a;
+    --ocean-mid: #01497c;
+    --teal: #00b4a6;
+    --teal-light: #6feddd;
+    --coral: #ff6b57;
+    --coral-light: #ffa98f;
+    --gold: #ffc94d;
+    --sand: #fff8ec;
+    --ink: #0b1d2a;
+    --bg: #011627;
+    --panel: #062338;
+    --panel-border: rgba(255,255,255,0.08);
+    --text: #eaf6f4;
+    --text-dim: #a9c2c4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: radial-gradient(120% 100% at 50% -10%, var(--ocean-mid) 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  header.hero {
+    padding: 72px 0 40px;
+    text-align: center;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,180,166,0.14);
+    border: 1px solid rgba(0,180,166,0.35);
+    color: var(--teal-light);
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+    margin-bottom: 22px;
+  }
+  h1 {
+    font-size: clamp(32px, 5vw, 56px);
+    margin: 0 0 16px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  h1 span { color: var(--gold); }
+  .lede {
+    max-width: 640px; margin: 0 auto 30px;
+    color: var(--text-dim);
+    font-size: clamp(16px, 2vw, 19px);
+  }
+  .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 8px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 26px; border-radius: 14px;
+    font-weight: 700; font-size: 15px; text-decoration: none;
+    border: 1px solid transparent;
+  }
+  .btn.primary { background: var(--coral); color: #241008; }
+  .btn.ghost { background: rgba(255,255,255,0.06); color: var(--text); border-color: var(--panel-border); }
+  .fineprint { color: var(--text-dim); font-size: 13px; margin-top: 18px; }
+
+  .hero-shots {
+    display: flex; justify-content: center; align-items: flex-end;
+    gap: 22px; margin-top: 56px; flex-wrap: wrap;
+  }
+  .frame {
+    border-radius: 30px;
+    border: 6px solid #0d2436;
+    background: #000;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  .frame.phone { width: 230px; }
+  .frame.phone img { width: 100%; display: block; }
+  .frame.watch {
+    width: 168px; height: 168px; border-radius: 50%;
+    border: 6px solid #c7cdd2;
+  }
+  .frame.watch img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  section { padding: 64px 0; }
+  .section-head { text-align: center; max-width: 620px; margin: 0 auto 44px; }
+  .section-head h2 { font-size: clamp(24px, 3.4vw, 34px); margin: 0 0 12px; font-weight: 800; }
+  .section-head p { color: var(--text-dim); margin: 0; }
+  .eyebrow {
+    display: block; color: var(--gold); font-weight: 700; font-size: 13px;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;
+  }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  @media (max-width: 860px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--panel); border: 1px solid var(--panel-border);
+    border-radius: 20px; padding: 26px;
+  }
+  .card .icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 16px;
+    background: rgba(0,180,166,0.14);
+  }
+  .card h3 { margin: 0 0 8px; font-size: 18px; }
+  .card p { margin: 0; color: var(--text-dim); font-size: 14.5px; }
+
+  .split {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
+  }
+  @media (max-width: 800px) { .split { grid-template-columns: 1fr; } .split.reverse .shots { order: -1; } }
+  .split h2 { font-size: clamp(24px, 3vw, 32px); margin: 0 0 14px; font-weight: 800; }
+  .split p { color: var(--text-dim); margin: 0 0 14px; }
+  .split ul { color: var(--text-dim); padding-left: 20px; margin: 0 0 14px; }
+  .split li { margin-bottom: 8px; }
+  .shots { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; }
+
+  .lines {
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+  }
+  .line-pill {
+    background: var(--panel); border: 1px solid var(--panel-border);
+    padding: 10px 18px; border-radius: 999px; font-weight: 600; font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  .assistant-banner {
+    background: linear-gradient(135deg, rgba(0,180,166,0.16), rgba(255,107,87,0.10));
+    border: 1px solid rgba(0,180,166,0.3);
+    border-radius: 24px; padding: 40px;
+    display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center;
+  }
+  @media (max-width: 800px) { .assistant-banner { grid-template-columns: 1fr; } }
+  .assistant-banner h2 { margin: 0 0 14px; font-size: clamp(22px, 3vw, 30px); }
+  .assistant-banner p { color: var(--text-dim); margin: 0 0 12px; }
+  .pill-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .pill { background: rgba(255,255,255,0.08); padding: 6px 12px; border-radius: 999px; font-size: 13px; }
+
+  footer {
+    padding: 40px 0 60px; text-align: center; color: var(--text-dim); font-size: 13px;
+    border-top: 1px solid var(--panel-border); margin-top: 20px;
+  }
+  footer a.link { color: var(--teal-light); text-decoration: none; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">🚢 Free · Android · Wear OS</span>
+    <h1>You already paid full price.<br />Don't stay that way — <span>get it back.</span></h1>
+    <p class="lede">
+      CruiseWatch watches the cruise you've already booked and tells you the moment the public fare drops below
+      what you paid — then walks you through exactly how to claim the refund, credit, or upgrade your cruise
+      line owes you.
+    </p>
+    <div class="cta-row">
+      <a class="btn primary" href="#features">See how it works</a>
+      <a class="btn ghost" href="#assistant">Meet the refund assistant</a>
+    </div>
+    <p class="fineprint">Royal Caribbean · Celebrity · Carnival · Princess · Norwegian — all 5 major lines covered</p>
+
+    <div class="hero-shots">
+      <div class="frame phone"><img src="assets/screenshots/phone-cruises.png" alt="CruiseWatch tracked cruises screen" /></div>
+      <div class="frame phone"><img src="assets/screenshots/phone-alerts.png" alt="CruiseWatch price drop alert with claim steps" /></div>
+      <div class="frame watch"><img src="assets/screenshots/watch-price-drops.png" alt="CruiseWatch Wear OS companion showing a price drop" /></div>
+    </div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">What it does</span>
+      <h2>A 24/7 watcher for the fare you already paid</h2>
+      <p>Add a cruise once — ship, sail date, cabin category, what you paid. CruiseWatch checks the public fare
+        around the clock and tells you the second it's worth a claim.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="icon">📉</div>
+        <h3>Automatic price checks</h3>
+        <p>Real fare checks against each cruise line's own public pricing — no manual refreshing, ever.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🔔</div>
+        <h3>Instant push alerts</h3>
+        <p>The moment your fare drops within your cruise line's claim window, you get a notification — on your
+          phone and your watch.</p>
+      </div>
+      <div class="card">
+        <div class="icon">📞</div>
+        <h3>Exact claim steps</h3>
+        <p>Every alert comes with the real phone number, what to say, and the deadline — sourced from each
+          line's actual price-protection policy.</p>
+      </div>
+      <div class="card">
+        <div class="icon">⌚</div>
+        <h3>Wear OS companion</h3>
+        <p>See your cruises, alerts, and full alert history right on your wrist — synced live or over Bluetooth
+          when your watch isn't online.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🤖</div>
+        <h3>On-device AI assistant</h3>
+        <p>A refund-focused AI chat, running entirely on your phone, that already knows your cruises and what
+          to do — nothing you ask it ever leaves your device.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🆓</div>
+        <h3>Actually free</h3>
+        <p>No subscription, no paywalled alerts. Track as many cruises as you've booked.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Coverage</span>
+      <h2>Every major cruise line, one app</h2>
+    </div>
+    <div class="lines">
+      <span class="line-pill">Royal Caribbean International</span>
+      <span class="line-pill">Celebrity Cruises</span>
+      <span class="line-pill">Carnival Cruise Line</span>
+      <span class="line-pill">Princess Cruises</span>
+      <span class="line-pill">Norwegian Cruise Line</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap split">
+    <div>
+      <span class="eyebrow">Price alerts</span>
+      <h2>Not just a notification — a checklist</h2>
+      <p>Every alert shows the drop amount, the new fare, and which of your cruise line's policies applies —
+        Best Price Guarantee, Early Saver, 24-Hour Upgrade Window, and more, depending on the line.</p>
+      <ul>
+        <li>Step-by-step claim instructions, written in plain English</li>
+        <li>One-tap call button for the exact department to reach</li>
+        <li>Mark alerts claimed to keep your list tidy</li>
+      </ul>
+    </div>
+    <div class="shots">
+      <div class="frame phone"><img src="assets/screenshots/phone-alerts.png" alt="Price alert detail with refund steps" /></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap split reverse">
+    <div class="shots">
+      <div class="frame phone"><img src="assets/screenshots/phone-policies.png" alt="Cruise line policy reference screen" /></div>
+    </div>
+    <div>
+      <span class="eyebrow">Policies, decoded</span>
+      <h2>Every line's fine print, made readable</h2>
+      <p>Browse the full price-protection policy for any covered cruise line any time — even before you have an
+        active alert — so you know your rights before final payment ever comes due.</p>
+    </div>
+  </div>
+</section>
+
+<section id="assistant">
+  <div class="wrap">
+    <div class="assistant-banner">
+      <div>
+        <span class="eyebrow">On-device AI</span>
+        <h2>A refund assistant that already knows your cruise</h2>
+        <p>Tap "Ask the assistant" straight from a price alert, and it opens already knowing the ship, the sail
+          date, the drop amount, and the exact cruise line policy that applies — no explaining required.</p>
+        <p>It runs fully on your phone using a locally downloaded LiteRT / Qwen model, sized to your device's
+          RAM automatically. Nothing about your cruises or your questions is ever sent anywhere.</p>
+        <div class="pill-row">
+          <span class="pill">Runs 100% offline</span>
+          <span class="pill">Auto-sized to your device</span>
+          <span class="pill">Scoped strictly to refunds</span>
+        </div>
+      </div>
+      <div class="shots">
+        <div class="frame phone"><img src="assets/screenshots/phone-assistant-contextual.png" alt="AI refund assistant opened from a price alert, already explaining the claim steps" /></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap split">
+    <div>
+      <span class="eyebrow">Wear OS companion</span>
+      <h2>Your cruises and alerts, on your wrist</h2>
+      <p>Install the watch app straight from the Play Store listing — it's bundled automatically with the phone
+        app. Sign in with the same account, or with Google in one tap.</p>
+      <ul>
+        <li>Live price drops synced directly over the internet</li>
+        <li>Bluetooth sync as a fallback for watches without their own connection</li>
+        <li>Tap any tracked cruise to see its full alert history</li>
+        <li>Same push notifications as the phone, right on your wrist</li>
+      </ul>
+    </div>
+    <div class="shots">
+      <div class="frame watch"><img src="assets/screenshots/watch-tracked-cruises.png" alt="Wear OS tracked cruises list" /></div>
+      <div class="frame watch"><img src="assets/screenshots/watch-alert-history.png" alt="Wear OS alert history for a cruise" /></div>
+      <div class="frame watch"><img src="assets/screenshots/watch-signin.png" alt="Wear OS sign-in screen with Google Sign-In" /></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>CruiseWatch is an independent tracker for fares on cruises you've already booked. It is not affiliated
+      with Royal Caribbean, Celebrity, Carnival, Princess, or Norwegian Cruise Line — always confirm claim
+      details directly with your cruise line.</p>
+  </div>
+</footer>
+
+</body>
+</html>
