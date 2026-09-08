@@ -32,7 +32,9 @@ Input shape:
   "cabinClassType": "INTERIOR" | "OUTSIDE" | "BALCONY" | "DELUXE",
   "currency": "USD",
   "numAdults": 2,
-  "numChildren": 0
+  "numChildren": 0,
+  "isGuarantee": false                # true -> return the GTY-coded subtype's
+                                       # price instead of excluding it
 }
 
 Output shape (success):
@@ -104,6 +106,7 @@ def fetch_room_pricing(req: dict) -> dict:
     currency = req.get("currency", "USD")
     num_adults = req.get("numAdults", 2)
     num_children = req.get("numChildren", 0)
+    is_guarantee = req.get("isGuarantee", False)
 
     headers = {
         "user-agent": USER_AGENT_WEB,
@@ -156,11 +159,19 @@ def fetch_room_pricing(req: dict) -> dict:
             f"No stateroom type '{cabin_class_type}' found for this sailing. Available: {available}"
         )
 
+    def is_gty(code):
+        return code in GTY_CODES or (code and code.endswith("GTY"))
+
     best = None  # (price, subtypeCode, categoryCode)
     for subtype in matching_type.get("stateroomSubtypes", []):
         code = subtype.get("code")
         category_code = subtype.get("categoryCode")
-        if code in GTY_CODES or (code and code.endswith("GTY")):
+        # isGuarantee=true: track ONLY the guarantee-coded subtype, since
+        # that's the rate this specific booking's price-drop policy actually
+        # applies to. isGuarantee=false (default): exclude it, matching the
+        # reference project — assigned-room and guarantee rates aren't
+        # directly comparable, and most bookings are assigned rooms.
+        if is_guarantee != is_gty(code):
             continue
         price = subtype.get("pricing", {}).get("invoice", {}).get("total")
         if price is None:
@@ -169,8 +180,9 @@ def fetch_room_pricing(req: dict) -> dict:
             best = (price, code, category_code)
 
     if best is None:
+        kind = "guarantee" if is_guarantee else "non-guarantee"
         raise RuntimeError(
-            f"No priced, non-guarantee subtype found under stateroom type '{cabin_class_type}'."
+            f"No priced, {kind} subtype found under stateroom type '{cabin_class_type}'."
         )
 
     fare, subtype_code, category_code = best
@@ -180,7 +192,7 @@ def fetch_room_pricing(req: dict) -> dict:
         "cabinClassType": cabin_class_type,
         "subtypeCode": subtype_code,
         "categoryCode": category_code,
-        "source": "rccl.typeAndSubtype",
+        "source": "rccl.typeAndSubtype.guarantee" if is_guarantee else "rccl.typeAndSubtype",
     }
 
 

@@ -5,6 +5,14 @@ export interface TrackedCruise {
   ship: string;
   sailDate: string;
   cabinCategory: string;
+  /**
+   * True if the booking is a Guarantee (GTY) stateroom — the passenger
+   * doesn't pick an exact room, and pricing/eligibility for price-drop
+   * policies works differently for these (see docs/cruise-line-policies.json
+   * and each line's scraper module). Defaults to false (an assigned room)
+   * when absent from older data.
+   */
+  isGuarantee?: boolean;
   farePaid: number;
   currency: string;
   finalPaymentDate: string;

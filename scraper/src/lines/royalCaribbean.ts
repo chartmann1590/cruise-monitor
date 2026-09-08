@@ -21,7 +21,12 @@ export const royalCaribbean: LineScraper = async (cruise) => {
     shipCode: ship.shipCode,
     cabinCategory: cruise.cabinCategory,
     currency: cruise.currency,
+    isGuarantee: cruise.isGuarantee,
   });
 
-  return { fare: pricing.fare, currency: pricing.currency, source: "royalCaribbean.typeAndSubtype" };
+  return {
+    fare: pricing.fare,
+    currency: pricing.currency,
+    source: cruise.isGuarantee ? "royalCaribbean.typeAndSubtype.guarantee" : "royalCaribbean.typeAndSubtype",
+  };
 };

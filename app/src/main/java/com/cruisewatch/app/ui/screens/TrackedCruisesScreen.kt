@@ -75,7 +75,7 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(cruise.ship, style = MaterialTheme.typography.titleMedium)
             Text(
-                "${cruise.cabinCategory} · Sailing ${cruise.sailDate}",
+                "${cruise.cabinCategory}${if (cruise.isGuarantee) " (Guarantee)" else ""} · Sailing ${cruise.sailDate}",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(

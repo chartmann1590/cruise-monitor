@@ -12,6 +12,13 @@ data class TrackedCruise(
     val ship: String = "",
     val sailDate: String = "",
     val cabinCategory: String = "",
+    /**
+     * True if this is a Guarantee (GTY) stateroom — you don't pick an exact
+     * room, and pricing/eligibility for price-drop policies works
+     * differently for these. Check your confirmation for a code ending in
+     * "GTY" (e.g. Royal Caribbean's "ZI GTY") to tell.
+     */
+    val isGuarantee: Boolean = false,
     val farePaid: Double = 0.0,
     val currency: String = "USD",
     val finalPaymentDate: String = "",

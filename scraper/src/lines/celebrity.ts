@@ -21,7 +21,12 @@ export const celebrity: LineScraper = async (cruise) => {
     shipCode: ship.shipCode,
     cabinCategory: cruise.cabinCategory,
     currency: cruise.currency,
+    isGuarantee: cruise.isGuarantee,
   });
 
-  return { fare: pricing.fare, currency: pricing.currency, source: "celebrity.typeAndSubtype" };
+  return {
+    fare: pricing.fare,
+    currency: pricing.currency,
+    source: cruise.isGuarantee ? "celebrity.typeAndSubtype.guarantee" : "celebrity.typeAndSubtype",
+  };
 };

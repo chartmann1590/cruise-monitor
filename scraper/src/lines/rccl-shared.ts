@@ -170,6 +170,7 @@ export async function fetchRoomPricing(args: {
   shipCode: string;
   cabinCategory: string;
   currency: string;
+  isGuarantee?: boolean;
 }): Promise<RoomPricingResult> {
   const request = {
     domain: args.domain,
@@ -180,6 +181,7 @@ export async function fetchRoomPricing(args: {
     currency: args.currency,
     numAdults: 2,
     numChildren: 0,
+    isGuarantee: args.isGuarantee ?? false,
   };
 
   const result = await new Promise<string>((resolvePromise, reject) => {

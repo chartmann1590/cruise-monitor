@@ -23,6 +23,7 @@ One doc per cruise a user is watching.
 | `ship` | string | ship name, as it appears on the line's booking flow |
 | `sailDate` | string (ISO date) | |
 | `cabinCategory` | string | e.g. "Interior", "Balcony", "Suite" — must match the line's category naming for scraper lookups to work |
+| `isGuarantee` | boolean | true if this is a Guarantee (GTY) stateroom (no exact room picked) — pricing/eligibility works differently for these. Currently only affects Royal Caribbean/Celebrity's scraper (`scraper/src/lines/rccl-shared.ts`), which tracks the GTY-coded rate specifically when true, instead of excluding it. Carnival/Princess/Norwegian don't yet distinguish guarantee rates — the flag is accepted but has no effect for those lines. Defaults to `false`. |
 | `farePaid` | number | cruise fare only, no taxes/fees (matches CruiseSignal's "fare only" comparison approach) |
 | `currency` | string | ISO 4217, e.g. "USD" |
 | `finalPaymentDate` | string (ISO date) | used to compute which policy window (pre/post final payment) currently applies |
