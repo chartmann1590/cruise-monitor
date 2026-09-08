@@ -29,9 +29,16 @@ class LlmChatEngine(private val context: Context, private val modelFile: java.io
         session = LlmInferenceSession.createFromOptions(inference, sessionOptions)
     }
 
-    suspend fun send(systemContext: String, userMessage: String): String = withContext(Dispatchers.Default) {
+    /**
+     * [systemContext] must only be passed on the FIRST call of a conversation. The session keeps
+     * its own running history internally (via addQueryChunk/generateResponse), so re-sending the
+     * full system prompt on every turn just floods the small context window and makes the model
+     * lose the thread — it starts re-greeting instead of answering. Later turns should pass null.
+     */
+    suspend fun send(userMessage: String, systemContext: String? = null): String = withContext(Dispatchers.Default) {
         val active = session ?: error("Model not loaded")
-        active.addQueryChunk("$systemContext\n\nUser: $userMessage\nAssistant:")
+        val turn = if (systemContext != null) "$systemContext\n\nUser: $userMessage\nAssistant:" else "User: $userMessage\nAssistant:"
+        active.addQueryChunk(turn)
         active.generateResponse()
     }
 

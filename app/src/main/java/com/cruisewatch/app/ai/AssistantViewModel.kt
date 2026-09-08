@@ -41,6 +41,7 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
 
     private var engine: LlmChatEngine? = null
     private var focusCruiseId: String? = null
+    private var systemPrimed = false
 
     val recommendedTier = DeviceCapability.recommend(application)
     val deviceRamGb = DeviceCapability.totalRamGb(application)
@@ -70,6 +71,7 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
     private fun loadEngine(file: java.io.File) {
         viewModelScope.launch {
             _state.value = AssistantState.Loading
+            systemPrimed = false
             runCatching {
                 val newEngine = LlmChatEngine(getApplication(), file)
                 newEngine.load()
@@ -105,10 +107,11 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
             )
             val kickoff = "Greet me and immediately explain, step by step, exactly what I need to do right now " +
                 "to get my refund for this cruise."
-            val response = runCatching { activeEngine.send(systemPrompt, kickoff) }
+            val response = runCatching { activeEngine.send(kickoff, systemPrompt) }
                 .getOrElse {
                     "Hi! I can see this cruise's price drop — let me know if you'd like the steps to claim it."
                 }
+            systemPrimed = true
             _messages.value = listOf(ChatMessage(fromUser = false, text = response))
             _isThinking.value = false
         }
@@ -120,13 +123,20 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
         _messages.value = _messages.value + ChatMessage(fromUser = true, text = text)
         _isThinking.value = true
         viewModelScope.launch {
-            val cruises = runCatching { repository.trackedCruises().first() }.getOrDefault(emptyList())
-            val alerts = runCatching { repository.alerts().first() }.getOrDefault(emptyList())
-            val systemPrompt = RefundAssistantContext.buildSystemPrompt(
-                cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, focusCruiseId,
-            )
-            val response = runCatching { activeEngine.send(systemPrompt, text) }
+            // The system prompt is only sent once, on the first turn of the session — the model's
+            // own session state carries the conversation from there. See LlmChatEngine.send().
+            val systemPrompt = if (!systemPrimed) {
+                val cruises = runCatching { repository.trackedCruises().first() }.getOrDefault(emptyList())
+                val alerts = runCatching { repository.alerts().first() }.getOrDefault(emptyList())
+                RefundAssistantContext.buildSystemPrompt(
+                    cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, focusCruiseId,
+                )
+            } else {
+                null
+            }
+            val response = runCatching { activeEngine.send(text, systemPrompt) }
                 .getOrElse { "Sorry, something went wrong answering that: ${it.message}" }
+            systemPrimed = true
             _messages.value = _messages.value + ChatMessage(fromUser = false, text = response)
             _isThinking.value = false
         }

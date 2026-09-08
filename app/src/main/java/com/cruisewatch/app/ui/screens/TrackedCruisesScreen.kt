@@ -23,10 +23,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Sailing
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -159,6 +161,15 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.9f),
                     )
+                }
+                val context = androidx.compose.ui.platform.LocalContext.current
+                IconButton(onClick = {
+                    val text = "I'm watching the fare on ${cruise.ship} (sailing ${cruise.sailDate}) with CruiseWatch — " +
+                        "you paid ${cruise.currency} ${"%.2f".format(cruise.farePaid)}, and I'll let you know the moment " +
+                        "the price drops so you can claim a refund.\n\nhttps://cruisewatch-app.web.app"
+                    com.cruisewatch.app.ui.shareText(context, "I'm tracking your cruise fare", text)
+                }) {
+                    Icon(Icons.Filled.Share, contentDescription = "Share this cruise", tint = Color.White)
                 }
             }
         }
