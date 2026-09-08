@@ -1,5 +1,7 @@
 package com.cruisewatch.app.ui.screens
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,10 +20,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.data.PriceSnapshot
+import com.cruisewatch.app.ui.theme.Coral
+import com.cruisewatch.app.ui.theme.Teal
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlinx.coroutines.flow.Flow
@@ -33,7 +41,13 @@ fun PriceHistoryScreen(
     val history by snapshots.collectAsState(initial = emptyList())
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Price history", style = MaterialTheme.typography.titleLarge)
+        Text("Price history", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            "Every check we've made against the public fare.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 2.dp, bottom = 8.dp),
+        )
 
         if (history.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -42,17 +56,28 @@ fun PriceHistoryScreen(
             return@Column
         }
 
-        PriceHistoryChart(history, modifier = Modifier.fillMaxWidth().height(180.dp).padding(vertical = 16.dp))
+        Card(shape = MaterialTheme.shapes.large, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+            PriceHistoryChart(
+                history,
+                modifier = Modifier.fillMaxWidth().height(200.dp).padding(16.dp),
+            )
+        }
 
         val dateFormat = remember { SimpleDateFormat("MMM d, h:mm a", Locale.getDefault()) }
         LazyColumn {
             items(history.reversed()) { snapshot ->
-                Column(modifier = Modifier.padding(vertical = 6.dp)) {
-                    Text("$${"%.2f".format(snapshot.fare)}", style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        snapshot.timestamp?.let { dateFormat.format(it) } ?: "",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
+                Card(
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text("$${"%.2f".format(snapshot.fare)}", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            snapshot.timestamp?.let { dateFormat.format(it) } ?: "",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }
@@ -65,21 +90,49 @@ private fun PriceHistoryChart(history: List<PriceSnapshot>, modifier: Modifier =
     val max = history.maxOf { it.fare }
     val range = (max - min).takeIf { it > 0 } ?: 1.0
 
+    val progress by animateFloatAsState(targetValue = 1f, animationSpec = tween(900), label = "chart-draw")
+
     Canvas(modifier = modifier) {
         val stepX = size.width / (history.size - 1).coerceAtLeast(1)
         val points = history.mapIndexed { index, snapshot ->
             val x = index * stepX
             val y = size.height - ((snapshot.fare - min) / range * size.height).toFloat()
-            androidx.compose.ui.geometry.Offset(x, y)
+            Offset(x, y)
         }
-        for (i in 0 until points.size - 1) {
-            drawLine(
-                color = Color(0xFF0B5FA5),
-                start = points[i],
-                end = points[i + 1],
-                strokeWidth = 6f,
-                cap = StrokeCap.Round,
+
+        val visibleCount = (points.size * progress).toInt().coerceIn(1, points.size)
+        val visiblePoints = points.take(visibleCount)
+
+        if (visiblePoints.size > 1) {
+            val fillPath = Path().apply {
+                moveTo(visiblePoints.first().x, size.height)
+                visiblePoints.forEach { lineTo(it.x, it.y) }
+                lineTo(visiblePoints.last().x, size.height)
+                close()
+            }
+            drawPath(
+                fillPath,
+                brush = Brush.verticalGradient(listOf(Teal.copy(alpha = 0.35f), Teal.copy(alpha = 0f))),
             )
+
+            val linePath = Path().apply {
+                moveTo(visiblePoints.first().x, visiblePoints.first().y)
+                visiblePoints.drop(1).forEach { lineTo(it.x, it.y) }
+            }
+            drawPath(
+                linePath,
+                color = Teal,
+                style = androidx.compose.ui.graphics.drawscope.Stroke(width = 7f, cap = StrokeCap.Round),
+            )
+        }
+
+        // Highlight the lowest fare — the one that matters most. Y is inverted
+        // (0 = top = highest fare), so the lowest fare is the largest y.
+        points.maxByOrNull { it.y }?.let { lowest ->
+            if (visiblePoints.contains(lowest)) {
+                drawCircle(color = Color.White, radius = 9f, center = lowest)
+                drawCircle(color = Coral, radius = 6f, center = lowest)
+            }
         }
     }
 }

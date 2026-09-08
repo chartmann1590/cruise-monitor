@@ -1,5 +1,13 @@
 package com.cruisewatch.app.ui
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -8,6 +16,7 @@ import androidx.compose.material.icons.filled.Policy
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +26,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -30,6 +41,7 @@ import com.cruisewatch.app.ui.screens.ClaimsScreen
 import com.cruisewatch.app.ui.screens.PriceHistoryScreen
 import com.cruisewatch.app.ui.screens.SignInScreen
 import com.cruisewatch.app.ui.screens.TrackedCruisesScreen
+import com.cruisewatch.app.ui.theme.Teal
 import kotlinx.coroutines.launch
 
 private object Routes {
@@ -42,6 +54,8 @@ private object Routes {
 
     fun priceHistory(cruiseId: String) = "price_history/$cruiseId"
 }
+
+private val topLevelRoutes = setOf(Routes.CRUISES, Routes.ALERTS, Routes.CLAIMS)
 
 @Composable
 fun CruiseWatchNavHost(
@@ -66,24 +80,27 @@ fun CruiseWatchNavHost(
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            NavigationBar(tonalElevation = 8.dp) {
                 NavigationBarItem(
                     selected = currentRoute == Routes.CRUISES,
-                    onClick = { navController.navigate(Routes.CRUISES) },
+                    onClick = { navController.navigateTopLevel(Routes.CRUISES) },
                     icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
                     label = { Text("Cruises") },
+                    colors = navColors(),
                 )
                 NavigationBarItem(
                     selected = currentRoute == Routes.ALERTS,
-                    onClick = { navController.navigate(Routes.ALERTS) },
+                    onClick = { navController.navigateTopLevel(Routes.ALERTS) },
                     icon = { Icon(Icons.Filled.Notifications, contentDescription = null) },
                     label = { Text("Alerts") },
+                    colors = navColors(),
                 )
                 NavigationBarItem(
                     selected = currentRoute == Routes.CLAIMS,
-                    onClick = { navController.navigate(Routes.CLAIMS) },
+                    onClick = { navController.navigateTopLevel(Routes.CLAIMS) },
                     icon = { Icon(Icons.Filled.Policy, contentDescription = null) },
                     label = { Text("Policies") },
+                    colors = navColors(),
                 )
             }
         },
@@ -92,6 +109,10 @@ fun CruiseWatchNavHost(
             navController = navController,
             startDestination = Routes.CRUISES,
             modifier = Modifier.padding(padding),
+            enterTransition = { crossFadeOrSlideIn() },
+            exitTransition = { crossFadeOrSlideOut() },
+            popEnterTransition = { crossFadeOrSlideIn() },
+            popExitTransition = { crossFadeOrSlideOut() },
         ) {
             composable(Routes.CRUISES) {
                 TrackedCruisesScreen(
@@ -126,3 +147,32 @@ fun CruiseWatchNavHost(
         }
     }
 }
+
+private fun androidx.navigation.NavHostController.navigateTopLevel(route: String) {
+    navigate(route) {
+        popUpTo(Routes.CRUISES) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
+private fun AnimatedContentTransitionScope<androidx.navigation.NavBackStackEntry>.crossFadeOrSlideIn() =
+    if (targetState.destination.route in topLevelRoutes) {
+        fadeIn(tween(220)) + scaleIn(tween(220), initialScale = 0.96f)
+    } else {
+        slideInHorizontally(tween(280), initialOffsetX = { it / 3 }) + fadeIn(tween(280))
+    }
+
+private fun AnimatedContentTransitionScope<androidx.navigation.NavBackStackEntry>.crossFadeOrSlideOut() =
+    if (initialState.destination.route in topLevelRoutes && targetState.destination.route in topLevelRoutes) {
+        fadeOut(tween(180)) + scaleOut(tween(180), targetScale = 0.96f)
+    } else {
+        slideOutHorizontally(tween(280), targetOffsetX = { -it / 3 }) + fadeOut(tween(280))
+    }
+
+@Composable
+private fun navColors() = NavigationBarItemDefaults.colors(
+    selectedIconColor = Teal,
+    selectedTextColor = Teal,
+    indicatorColor = Teal.copy(alpha = 0.15f),
+)

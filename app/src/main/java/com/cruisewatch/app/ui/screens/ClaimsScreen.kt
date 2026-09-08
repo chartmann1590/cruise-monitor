@@ -1,24 +1,45 @@
 package com.cruisewatch.app.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.data.CruiseLinePolicy
 import com.cruisewatch.app.ui.CallButton
+import com.cruisewatch.app.ui.WaveHero
+import com.cruisewatch.app.ui.theme.OceanGradient
+import com.cruisewatch.app.ui.theme.brandFor
 
 /** Browse every covered line's price-protection policy, even without an active alert. */
 @Composable
 fun ClaimsScreen(policies: List<CruiseLinePolicy>) {
     LazyColumn {
+        item {
+            WaveHero(gradient = OceanGradient, height = 130.dp) {
+                Column(modifier = Modifier.padding(24.dp)) {
+                    Text("Policies", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+                    Text(
+                        "Every covered line's price-protection rules, in plain English.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.9f),
+                    )
+                }
+            }
+        }
         items(policies, key = { it.id }) { policy ->
             PolicyCard(policy)
         }
@@ -27,13 +48,29 @@ fun ClaimsScreen(policies: List<CruiseLinePolicy>) {
 
 @Composable
 private fun PolicyCard(policy: CruiseLinePolicy) {
-    Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+    val brand = brandFor(policy.id)
+    Card(
+        shape = MaterialTheme.shapes.large,
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().background(brand.gradient).padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(brand.icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(26.dp))
+            Text(
+                policy.displayName,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                modifier = Modifier.padding(start = 10.dp),
+            )
+        }
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(policy.displayName, style = MaterialTheme.typography.titleMedium)
             Text(
                 policy.monitoring,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),
+                modifier = Modifier.padding(bottom = 12.dp),
             )
 
             if (policy.howToClaim.isNotEmpty()) {
