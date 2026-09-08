@@ -12,8 +12,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.cruisewatch.app.ads.InterstitialAdManager
 import com.cruisewatch.app.auth.AuthViewModel
+import com.cruisewatch.app.data.CruiseRepository
 import com.cruisewatch.app.ui.CruiseWatchNavHost
 import com.cruisewatch.app.ui.theme.CruiseWatchTheme
+import com.cruisewatch.app.wear.WearSync
+import com.cruisewatch.app.widget.WidgetUpdater
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -74,7 +80,13 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     CruiseWatchNavHost(
                         authViewModel = authViewModel,
-                        onCruiseAdded = { interstitialAdManager.showIfReady(this) },
+                        onCruiseAdded = {
+                            interstitialAdManager.showIfReady(this)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                WidgetUpdater.refresh(applicationContext)
+                                WearSync.pushLatest(applicationContext, CruiseRepository())
+                            }
+                        },
                         onGoogleSignInClick = { googleSignInLauncher.launch(googleSignInClient.signInIntent) },
                     )
                 }

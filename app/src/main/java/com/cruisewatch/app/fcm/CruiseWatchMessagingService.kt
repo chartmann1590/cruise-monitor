@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat
 import com.cruisewatch.app.MainActivity
 import com.cruisewatch.app.R
 import com.cruisewatch.app.data.CruiseRepository
+import com.cruisewatch.app.wear.WearSync
+import com.cruisewatch.app.widget.WidgetUpdater
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineScope
@@ -53,6 +55,12 @@ class CruiseWatchMessagingService : FirebaseMessagingService() {
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
         if (hasPermission) {
             NotificationManagerCompat.from(this).notify(cruiseId.hashCode(), notification)
+        }
+
+        // A price drop is exactly the moment the widget and watch should refresh, not just when the app is open.
+        scope.launch {
+            runCatching { WidgetUpdater.refresh(applicationContext) }
+            runCatching { WearSync.pushLatest(applicationContext, repository) }
         }
     }
 }

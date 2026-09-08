@@ -77,6 +77,23 @@ class CruiseRepository(
         emit(emptyList())
     }
 
+    /** One-shot (non-listening) reads for contexts with no long-running lifecycle — widgets, Wear sync. */
+    suspend fun trackedCruisesOnce(): List<TrackedCruise> = runCatching {
+        db.collection("trackedCruises")
+            .whereEqualTo("userId", requireUserId())
+            .whereEqualTo("active", true)
+            .get().await()
+            .toObjects(TrackedCruise::class.java)
+    }.onFailure { Log.e(TAG, "trackedCruisesOnce failed", it) }.getOrDefault(emptyList())
+
+    suspend fun alertsOnce(): List<Alert> = runCatching {
+        db.collection("alerts")
+            .whereEqualTo("userId", requireUserId())
+            .orderBy("detectedAt", Query.Direction.DESCENDING)
+            .get().await()
+            .toObjects(Alert::class.java)
+    }.onFailure { Log.e(TAG, "alertsOnce failed", it) }.getOrDefault(emptyList())
+
     suspend fun addTrackedCruise(cruise: TrackedCruise) {
         val withUser = cruise.copy(userId = requireUserId())
         db.collection("trackedCruises").add(withUser).await()

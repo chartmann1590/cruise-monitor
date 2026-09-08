@@ -78,6 +78,13 @@ fun CruiseWatchNavHost(
     val prefs = remember { context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE) }
     var hasOnboarded by remember { mutableStateOf(prefs.getBoolean(KEY_ONBOARDED, false)) }
 
+    androidx.compose.runtime.LaunchedEffect(isSignedIn) {
+        if (isSignedIn) {
+            com.cruisewatch.app.widget.WidgetUpdater.refresh(context)
+            com.cruisewatch.app.wear.WearSync.pushLatest(context, repository)
+        }
+    }
+
     if (!hasOnboarded) {
         OnboardingScreen(onFinish = {
             prefs.edit().putBoolean(KEY_ONBOARDED, true).apply()

@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import com.cruisewatch.app.widget.WidgetRefreshWorker
 import com.google.android.gms.ads.MobileAds
 
 class CruiseWatchApp : Application() {
@@ -11,6 +12,7 @@ class CruiseWatchApp : Application() {
         super.onCreate()
         createNotificationChannel()
         MobileAds.initialize(this)
+        WidgetRefreshWorker.schedule(this)
     }
 
     private fun createNotificationChannel() {
