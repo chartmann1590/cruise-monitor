@@ -31,4 +31,6 @@
     <string name="assistant_download_progress">%1$d MB / %2$d MB</string>
     <string name="assistant_thinking">Thinking…</string>
     <string name="assistant_input_placeholder">Ask how to get your refund…</string>
+    <string name="claims_title">Policies</string>
+    <string name="claims_how_to_refund">How to get your refund</string>
 </resources>

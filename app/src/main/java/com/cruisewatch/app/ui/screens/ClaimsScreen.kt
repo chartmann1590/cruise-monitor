@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.R
 import com.cruisewatch.app.data.CruiseLinePolicy
+import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.ui.CallButton
 import com.cruisewatch.app.ui.PhotoHero
 import com.cruisewatch.app.ui.theme.brandFor
@@ -33,7 +34,7 @@ fun ClaimsScreen(policies: List<CruiseLinePolicy>) {
         item {
             PhotoHero(photoRes = R.drawable.hero_policies, height = 190.dp) {
                 Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
-                    Text("Policies", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+                    Text(tr(R.string.claims_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
                     Text(
                         "Every covered line's price-protection rules, in plain English.",
                         style = MaterialTheme.typography.bodyMedium,
@@ -76,7 +77,7 @@ private fun PolicyCard(policy: CruiseLinePolicy) {
             )
 
             if (policy.howToClaim.isNotEmpty()) {
-                Text("How to get your refund", style = MaterialTheme.typography.titleSmall)
+                Text(tr(R.string.claims_how_to_refund), style = MaterialTheme.typography.titleSmall)
                 policy.howToClaim.forEachIndexed { index, step ->
                     Row(modifier = Modifier.padding(top = 8.dp)) {
                         Text(
