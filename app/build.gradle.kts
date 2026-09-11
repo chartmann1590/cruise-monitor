@@ -17,6 +17,24 @@ val keystoreProperties = Properties().apply {
     }
 }
 
+// AdMob IDs — never hardcoded. Resolved from (in order): CI environment
+// variables (GitHub Actions secrets) > local.properties (gitignored, for
+// local dev) > Google's public TEST IDs (safe fallback so the app always
+// builds and runs, but never serves real ads or earns revenue unless real
+// IDs are supplied). See plan/05-phase4-play-store.md.
+val localPropertiesFile = rootProject.file("local.properties")
+val localProperties = Properties().apply {
+    if (localPropertiesFile.exists()) {
+        load(localPropertiesFile.inputStream())
+    }
+}
+fun secret(key: String, testDefault: String): String =
+    System.getenv(key) ?: localProperties.getProperty(key) ?: testDefault
+
+val admobAppId = secret("ADMOB_APP_ID", "ca-app-pub-3940256099942544~3347511713")
+val admobBannerAdUnitId = secret("ADMOB_BANNER_AD_UNIT_ID", "ca-app-pub-3940256099942544/6300978111")
+val admobInterstitialAdUnitId = secret("ADMOB_INTERSTITIAL_AD_UNIT_ID", "ca-app-pub-3940256099942544/1033173712")
+
 android {
     namespace = "com.cruisewatch.app"
     compileSdk = 34
@@ -27,6 +45,10 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "0.1.0"
+
+        manifestPlaceholders["admobAppId"] = admobAppId
+        buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", "\"$admobBannerAdUnitId\"")
+        buildConfigField("String", "ADMOB_INTERSTITIAL_AD_UNIT_ID", "\"$admobInterstitialAdUnitId\"")
     }
 
     signingConfigs {
@@ -60,6 +82,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"

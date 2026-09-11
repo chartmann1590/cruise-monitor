@@ -1,0 +1,1 @@
+Initial release: track cruises you've already booked, get push alerts the moment the fare drops, and see the exact steps to claim your refund. Includes a Wear OS companion app and an on-device AI refund assistant.

@@ -3,10 +3,26 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- Funnel -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M54,24 C36,24 22,44 22,64 C22,64 30,58 54,58 C78,58 86,64 86,64 C86,44 72,24 54,24 Z" />
+        android:pathData="M50,26 L60,26 L62,40 L48,40 Z" />
+    <!-- Superstructure -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M20,74 L88,74 L82,86 L26,86 Z" />
+        android:pathData="M36,40 L72,40 L72,60 L36,60 Z" />
+    <!-- Hull -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M22,60 L86,60 L77,76 L31,76 Z" />
+    <!-- Price-drop badge -->
+    <path
+        android:fillColor="#FFB300"
+        android:pathData="M67,66 A13,13 0 1,0 93,66 A13,13 0 1,0 67,66 Z" />
+    <path
+        android:fillColor="#012A4A"
+        android:pathData="M77,59 L83,59 L83,68 L77,68 Z" />
+    <path
+        android:fillColor="#012A4A"
+        android:pathData="M73,68 L87,68 L80,76 Z" />
 </vector>

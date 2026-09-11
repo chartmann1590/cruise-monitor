@@ -5,6 +5,7 @@ on-device AI refund assistant. See [`plan/00-overview.md`](plan/00-overview.md) 
 architecture, and phase breakdown.
 
 **Website:** https://cruisewatch-app.web.app
+**Demo video:** [website/assets/video/cruisewatch-promo.mp4](website/assets/video/cruisewatch-promo.mp4) (also embedded on the website)
 
 ## What it does
 

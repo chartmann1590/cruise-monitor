@@ -1,0 +1,28 @@
+You already booked your cruise. Now the fare drops $600 a week later — and unless someone tells you, you'll never see that money.
+
+CruiseWatch watches the public fare on cruises you've already booked and tells you the moment it drops below what you paid, so you can claim the difference before the window closes.
+
+HOW IT WORKS
+• Add your booked cruise — ship, sail date, and cabin category.
+• CruiseWatch checks public pricing across Royal Caribbean, Celebrity, Carnival, Princess, and Norwegian.
+• The instant a lower fare appears, you get a push alert with the new price and how much you're owed.
+• Every alert shows exactly what to do next: the cruise line's phone number, a ready-to-read script, and your claim deadline — pulled from each line's actual price-drop / "Best Price Guarantee" policy.
+
+ON-DEVICE AI REFUND ASSISTANT
+Have a question about your specific alert? Open the built-in AI assistant for step-by-step help getting your refund or onboard credit. It runs entirely on your device — your booking details never leave your phone.
+
+WEAR OS COMPANION
+Install the CruiseWatch app on your Android phone and the Wear OS companion comes with it automatically. See price-drop alerts and your claim history right on your watch — no need to pull out your phone.
+
+WHY IT MATTERS
+Most cruise lines will refund the difference or give you onboard credit if the fare drops before your final payment date — but only if you notice in time and ask. CruiseWatch does the watching for you.
+
+• Free to use
+• Works with cruises already booked on Royal Caribbean, Celebrity, Carnival, Princess, and Norwegian
+• Push notifications the moment a tracked fare drops
+• Exact claim steps and deadlines per cruise line
+• On-device AI assistant, fully offline
+• Wear OS companion app included
+• Home screen widget for at-a-glance status
+
+CruiseWatch is an independent tool and is not affiliated with, endorsed by, or sponsored by any cruise line. Pricing and policy information is provided for reference; always confirm current terms directly with your cruise line before requesting a refund. This app is supported by ads.

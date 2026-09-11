@@ -1,14 +1,14 @@
 package com.cruisewatch.app.ads
 
+import com.cruisewatch.app.BuildConfig
+
 /**
- * Ad unit IDs. These are Google's public TEST ad unit IDs (safe to ship in
- * debug builds, always serve test creatives, never earn real revenue).
- * Replace with real ad unit IDs from your own AdMob account
- * (admob.google.com -> Apps -> CruiseWatch -> Ad units) before a Play Store
- * release, alongside the real App ID in AndroidManifest.xml. See
- * plan/03-phase2-android-app.md.
+ * Ad unit IDs, resolved at build time from a CI secret or local.properties
+ * (never hardcoded — see ADMOB_* handling in app/build.gradle.kts). Falls
+ * back to Google's public TEST ad unit IDs if neither is set, so the app
+ * always builds and runs but only serves real ads with real IDs configured.
  */
 object AdIds {
-    const val BANNER = "ca-app-pub-3940256099942544/6300978111"
-    const val INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712"
+    val BANNER = BuildConfig.ADMOB_BANNER_AD_UNIT_ID
+    val INTERSTITIAL = BuildConfig.ADMOB_INTERSTITIAL_AD_UNIT_ID
 }

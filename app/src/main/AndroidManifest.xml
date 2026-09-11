@@ -46,14 +46,13 @@
             android:value="@string/price_drop_channel_id" />
 
         <!--
-          AdMob App ID. This is Google's public TEST App ID — safe to ship in debug
-          builds, but MUST be replaced with a real App ID from your own AdMob
-          account (admob.google.com) before a Play Store release, or ads won't
-          serve for real. See plan/03-phase2-android-app.md.
+          AdMob App ID — supplied via manifestPlaceholders["admobAppId"] in
+          app/build.gradle.kts, resolved from a CI secret or local.properties,
+          falling back to Google's public TEST App ID. Never hardcoded here.
         -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="${admobAppId}" />
 
         <!-- AdMob's SDK and Firebase Analytics both declare this; keep AdMob's (Ad Services / privacy sandbox config). -->
         <property
