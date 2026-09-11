@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Sailing
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -58,6 +59,7 @@ fun TrackedCruisesScreen(
     cruises: Flow<List<TrackedCruise>> = emptyFlow(),
     onAddCruise: () -> Unit,
     onOpenCruise: (String) -> Unit,
+    onOpenSettings: () -> Unit,
 ) {
     val cruiseList by cruises.collectAsState(initial = emptyList())
 
@@ -74,20 +76,25 @@ fun TrackedCruisesScreen(
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             PhotoHero(photoRes = R.drawable.hero_cruises, height = 210.dp) {
-                Column(
-                    modifier = Modifier.fillMaxSize().padding(24.dp),
-                    verticalArrangement = Arrangement.Bottom,
-                ) {
-                    Text(tr(R.string.cruises_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
-                    Text(
-                        tr(
-                            R.string.cruises_sailing_count,
-                            cruiseList.size,
-                            if (cruiseList.size == 1) "" else "s",
-                        ),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.9f),
-                    )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(24.dp),
+                        verticalArrangement = Arrangement.Bottom,
+                    ) {
+                        Text(tr(R.string.cruises_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
+                        Text(
+                            tr(
+                                R.string.cruises_sailing_count,
+                                cruiseList.size,
+                                if (cruiseList.size == 1) "" else "s",
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White.copy(alpha = 0.9f),
+                        )
+                    }
+                    IconButton(onClick = onOpenSettings, modifier = Modifier.align(Alignment.TopEnd).padding(12.dp)) {
+                        Icon(Icons.Filled.Settings, contentDescription = tr(R.string.settings_title), tint = Color.White)
+                    }
                 }
             }
 

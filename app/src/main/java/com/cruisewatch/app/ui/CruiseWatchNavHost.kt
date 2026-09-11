@@ -50,6 +50,7 @@ import com.cruisewatch.app.ui.screens.AssistantScreen
 import com.cruisewatch.app.ui.screens.ClaimsScreen
 import com.cruisewatch.app.ui.screens.OnboardingScreen
 import com.cruisewatch.app.ui.screens.PriceHistoryScreen
+import com.cruisewatch.app.ui.screens.SettingsScreen
 import com.cruisewatch.app.ui.screens.SignInScreen
 import com.cruisewatch.app.ui.screens.TrackedCruisesScreen
 import com.cruisewatch.app.ui.theme.Teal
@@ -66,6 +67,7 @@ private object Routes {
     const val ALERTS = "alerts"
     const val CLAIMS = "claims"
     const val ASSISTANT = "assistant?cruiseId={cruiseId}"
+    const val SETTINGS = "settings"
 
     fun priceHistory(cruiseId: String) = "price_history/$cruiseId"
     fun assistant(cruiseId: String? = null) = if (cruiseId != null) "assistant?cruiseId=$cruiseId" else "assistant"
@@ -168,7 +170,11 @@ fun CruiseWatchNavHost(
                         cruises = repository.trackedCruises(),
                         onAddCruise = { navController.navigate(Routes.ADD_CRUISE) },
                         onOpenCruise = { cruiseId -> navController.navigate(Routes.priceHistory(cruiseId)) },
+                        onOpenSettings = { navController.navigate(Routes.SETTINGS) },
                     )
+                }
+                composable(Routes.SETTINGS) {
+                    SettingsScreen(translationManager = translationManager, onBack = { navController.popBackStack() })
                 }
                 composable(Routes.ADD_CRUISE) {
                     AddCruiseScreen(onSave = { cruise ->

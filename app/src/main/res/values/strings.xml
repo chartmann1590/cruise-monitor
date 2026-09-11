@@ -100,4 +100,7 @@
     <string name="language_picker_wifi_required_body">This language pack is about 30 MB. Download on Wi-Fi, or continue now on your current connection.</string>
     <string name="language_picker_wifi_wait">Wait for Wi-Fi</string>
     <string name="language_picker_wifi_now">Download now</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_language_row">Language</string>
+    <string name="settings_back">Back</string>
 </resources>
