@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.R
 import com.cruisewatch.app.ads.BannerAd
 import com.cruisewatch.app.data.TrackedCruise
+import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.ui.GlassPanel
 import com.cruisewatch.app.ui.PhotoHero
 import com.cruisewatch.app.ui.theme.Coral
@@ -66,7 +67,7 @@ fun TrackedCruisesScreen(
                 onClick = onAddCruise,
                 containerColor = MaterialTheme.colorScheme.secondary,
                 icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-                text = { Text("Add cruise") },
+                text = { Text(tr(R.string.cruises_add_cruise)) },
                 modifier = Modifier.padding(bottom = 64.dp),
             )
         },
@@ -77,7 +78,7 @@ fun TrackedCruisesScreen(
                     modifier = Modifier.fillMaxSize().padding(24.dp),
                     verticalArrangement = Arrangement.Bottom,
                 ) {
-                    Text("Your Cruises", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+                    Text(tr(R.string.cruises_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
                     Text(
                         "${cruiseList.size} sailing${if (cruiseList.size == 1) "" else "s"} being watched 24/7",
                         style = MaterialTheme.typography.bodyMedium,

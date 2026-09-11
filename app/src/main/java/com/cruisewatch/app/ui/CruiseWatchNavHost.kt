@@ -37,11 +37,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.cruisewatch.app.R
 import com.cruisewatch.app.auth.AuthViewModel
 import com.cruisewatch.app.data.CruiseRepository
 import com.cruisewatch.app.data.PolicyRepository
 import com.cruisewatch.app.i18n.ProvideTranslations
 import com.cruisewatch.app.i18n.TranslationManager
+import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.ui.screens.AddCruiseScreen
 import com.cruisewatch.app.ui.screens.AlertsScreen
 import com.cruisewatch.app.ui.screens.AssistantScreen
@@ -119,28 +121,28 @@ fun CruiseWatchNavHost(
                         selected = currentRoute == Routes.CRUISES,
                         onClick = { navController.navigateTopLevel(Routes.CRUISES) },
                         icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
-                        label = { Text("Cruises") },
+                        label = { Text(tr(R.string.nav_cruises)) },
                         colors = navColors(),
                     )
                     NavigationBarItem(
                         selected = currentRoute == Routes.ALERTS,
                         onClick = { navController.navigateTopLevel(Routes.ALERTS) },
                         icon = { Icon(Icons.Filled.Notifications, contentDescription = null) },
-                        label = { Text("Alerts") },
+                        label = { Text(tr(R.string.nav_alerts)) },
                         colors = navColors(),
                     )
                     NavigationBarItem(
                         selected = currentRoute == Routes.CLAIMS,
                         onClick = { navController.navigateTopLevel(Routes.CLAIMS) },
                         icon = { Icon(Icons.Filled.Policy, contentDescription = null) },
-                        label = { Text("Policies") },
+                        label = { Text(tr(R.string.nav_policies)) },
                         colors = navColors(),
                     )
                     NavigationBarItem(
                         selected = currentRoute == Routes.ASSISTANT,
                         onClick = { navController.navigateTopLevel(Routes.assistant()) },
                         icon = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
-                        label = { Text("Assistant") },
+                        label = { Text(tr(R.string.nav_assistant)) },
                         colors = navColors(),
                     )
                 }

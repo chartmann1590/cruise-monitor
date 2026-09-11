@@ -2,4 +2,10 @@
     <string name="app_name">CruiseWatch</string>
     <string name="price_drop_channel_id">price_drop_alerts</string>
     <string name="price_drop_channel_name">Price drop alerts</string>
+    <string name="nav_cruises">Cruises</string>
+    <string name="nav_alerts">Alerts</string>
+    <string name="nav_policies">Policies</string>
+    <string name="nav_assistant">Assistant</string>
+    <string name="cruises_title">Your Cruises</string>
+    <string name="cruises_add_cruise">Add cruise</string>
 </resources>
