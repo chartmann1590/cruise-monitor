@@ -1,0 +1,238 @@
+# On-device UI translation (ML Kit) — design spec
+
+Date: 2026-09-11
+Status: approved for planning
+
+## Summary
+
+Let the user pick a native language during onboarding (and change it later from
+a new Settings screen). Every static UI string in the phone app translates via
+Google ML Kit Translate, running fully on-device and free (no API key, no
+per-call cost, works offline once a language pack is downloaded). The
+on-device AI refund assistant is separately steered to respond in the chosen
+language via its existing system prompt. Scope is the phone app
+(`app/` module) only — the Wear OS companion (`wear/`) and the home-screen
+widget (`app/.../widget/`) stay English-only for this iteration.
+
+## Background
+
+The app currently has zero i18n infrastructure: `app/src/main/res/values/strings.xml`
+is a 5-line stub, and ~104 `Text("...")` calls across
+`app/src/main/java/com/cruisewatch/app/ui/screens/*.kt` (and a few shared
+composables) hardcode English literals directly. There is no Settings screen
+today — the bottom nav has four tabs (Cruises, Alerts, Policies, Assistant).
+The app has no DI framework (no Hilt/Dagger); state is wired manually via
+`remember`/`ViewModel` factories, and simple persistence already goes through
+a plain `SharedPreferences` instance (`cruisewatch_prefs`, see
+`CruiseWatchNavHost.kt` and `AssistantViewModel.kt`).
+
+## Goals
+
+- User selects a language during onboarding; the rest of onboarding renders
+  in that language immediately after selection.
+- User can change language any time from a new Settings screen; the whole app
+  re-renders in the new language.
+- Translation covers all static UI copy (labels, buttons, headers, hints) in
+  the phone app.
+- The on-device AI refund assistant (MediaPipe LLM) responds in the selected
+  language.
+- Support the full ML Kit Translate language set (59 languages) for free,
+  on-device, no network dependency after the one-time model download.
+
+## Non-goals
+
+- Wear OS app and home-screen widget translation (English-only, unchanged).
+- Translating dynamic data from Firestore (cruise names, ship names, price
+  values) — these are proper nouns / numbers, not translated.
+- Real-time language auto-detection of arbitrary text (source is always
+  English; ML Kit's Language Identification model is not used).
+- RTL layout support (e.g. Arabic, Hebrew reading direction) — text
+  translates, but layout mirroring is out of scope for this iteration.
+
+## Architecture
+
+### 1. Language catalog
+
+New file `app/src/main/java/com/cruisewatch/app/i18n/SupportedLanguages.kt`:
+a plain `object` exposing a `List<SupportedLanguage>` where each entry pairs
+an ML Kit `TranslateLanguage` constant with a native display name (e.g.
+`TranslateLanguage.SPANISH` → "Español"). Covers all ~59 languages ML Kit
+Translate supports. English is first in the list and requires no download
+(it's the source language strings.xml is authored in).
+
+### 2. Preference storage
+
+Reuses the existing `cruisewatch_prefs` `SharedPreferences` file (no new
+dependency, matches current convention):
+
+- `KEY_LANGUAGE` (String, ML Kit language code) — selected language, default
+  resolved once at first launch: device locale if ML Kit supports it, else
+  `"en"`.
+- `KEY_TRANSLATIONS_<langCode>` (String, JSON) — cached `Map<Int, String>` of
+  string-resource-id → translated text for that language, written once after
+  a successful translation pass and reused on every subsequent launch (no
+  repeat ML Kit calls until the user switches language again).
+
+### 3. `strings.xml` retrofit
+
+All ~104 hardcoded literals move into `app/src/main/res/values/strings.xml`
+as keyed resources, English source of truth (e.g.
+`<string name="onboarding_title_1">Add the cruise you already booked</string>`).
+Call sites change from `Text("Add the cruise you already booked")` to
+`Text(tr(R.string.onboarding_title_1))`.
+
+### 4. `TranslationManager`
+
+New file `app/src/main/java/com/cruisewatch/app/i18n/TranslationManager.kt`.
+Responsibilities:
+
+- Given a target language code, build an ML Kit `Translator` (English →
+  target), download the model if not already present
+  (`DownloadConditions` requiring Wi-Fi by default; caller can pass
+  `allowCellular = true` when the user explicitly opts in on a
+  network-warning prompt).
+- Run one translation pass: read every string resource key referenced by the
+  app (a generated/maintained list, see below), call `translator.translate()`
+  per string (ML Kit has no batch API — calls run concurrently via
+  coroutines, bounded to a small parallelism to avoid overwhelming the
+  translator), and assemble the resulting `Map<Int, String>`.
+- Persist that map to `SharedPreferences` as JSON under
+  `KEY_TRANSLATIONS_<langCode>`.
+- Expose current-language state as a `StateFlow<Map<Int, String>>` (or
+  equivalent) that the UI observes.
+- For English: skip ML Kit entirely, map is just resource IDs → their
+  default (English) string values.
+
+The list of string-resource keys to translate is generated by scanning
+`strings.xml` at translation time (all keys in the file) — no separate
+manifest to maintain by hand.
+
+### 5. `LocalStrings` / `tr()` lookup
+
+A `CompositionLocal<Map<Int, String>>` (`LocalStrings`), provided near the
+app root (inside `CruiseWatchNavHost` or above it) from
+`TranslationManager`'s current state. A small helper:
+
+```kotlin
+@Composable
+fun tr(@StringRes id: Int): String =
+    LocalStrings.current[id] ?: stringResource(id)
+```
+
+Falls back to the raw English resource if the key isn't in the translated
+map yet (keeps things safe; shouldn't happen once a translation pass
+completes, since the pass covers every key in `strings.xml`).
+
+### 6. Onboarding flow
+
+`OnboardingScreen.kt` gets a new first page: a searchable list of all 59
+supported languages (native names shown, English name as secondary text) plus
+an "English (skip)" affordance. Selecting a language:
+
+1. Shows a full-screen blocking progress state ("Downloading language
+   pack…" then "Translating…", using existing `GlassPanel`/theme styling)
+   while `TranslationManager` downloads the model and runs the translation
+   pass.
+2. On completion, the map becomes active via `LocalStrings` and the
+   remaining onboarding pages render in the chosen language.
+3. On failure (no network for a metered-only download, or an ML Kit error),
+   show an inline error with Retry and a "Continue in English" fallback so
+   onboarding is never blocked indefinitely.
+
+Selecting English needs no wait — proceeds immediately.
+
+### 7. Settings screen (new)
+
+`app/src/main/java/com/cruisewatch/app/ui/screens/SettingsScreen.kt` — new,
+minimal, containing one row: "Language" showing the current selection, tap
+to open the same language picker used in onboarding. Changing language runs
+the same blocking download/translate flow (steps 1–3 above) inline on the
+Settings screen, then returns to a fully re-translated app (all currently
+composed screens re-render via the updated `LocalStrings` value).
+
+**Entry point:** add a small settings (gear) icon to `TrackedCruisesScreen`'s
+top bar, navigating to a new `Routes.SETTINGS` route registered in
+`CruiseWatchNavHost.kt`. `TrackedCruisesScreen` is the app's start
+destination, so this is reachable from first launch onward.
+
+### 8. AI assistant language
+
+`RefundAssistantContext.buildSystemPrompt` (in
+`app/src/main/java/com/cruisewatch/app/ai/RefundAssistantContext.kt`) gains
+one more prepended instruction line, built from the selected language's
+display name:
+
+```
+Respond ONLY in {language name}. Never respond in English unless the user writes in English.
+```
+
+No separate translation pass for assistant output — the MediaPipe LLM
+generates natively in the target language via prompt steering. This applies
+to both the proactive kickoff message and every turn in
+`AssistantViewModel.kt`.
+
+## Data flow (language switch)
+
+```
+User picks language (onboarding or Settings)
+        │
+        ▼
+TranslationManager.select(langCode)
+        │
+        ├─ cached in SharedPreferences? ──yes──► load JSON map ──► publish to LocalStrings
+        │
+        no
+        │
+        ▼
+Download ML Kit model (Wi-Fi by default) ──► translate all strings.xml keys
+        │
+        ▼
+Persist map to SharedPreferences ──► publish to LocalStrings
+        │
+        ▼
+Update KEY_LANGUAGE preference
+        │
+        ▼
+AssistantViewModel reads new language for next system-prompt build
+```
+
+## Error handling
+
+- **No network / Wi-Fi required but on cellular:** surface a dialog offering
+  "Download on Wi-Fi later" (keep current language) or "Download now anyway"
+  (retries with `allowCellular = true`).
+- **ML Kit translation failure for an individual string:** falls back to the
+  English resource value for that key only; doesn't abort the whole pass.
+- **Model download failure (storage full, ML Kit error):** inline error with
+  Retry; onboarding offers "Continue in English"; Settings simply reverts the
+  selection to the previously active language.
+
+## Testing
+
+- Unit test `TranslationManager`'s caching logic (given a pre-populated
+  `SharedPreferences` map, no ML Kit calls should occur) — ML Kit's
+  `Translator` is an interface-backed Google Play Services client that can be
+  faked/mocked for this.
+- Unit test `SupportedLanguages` — every entry's code is a valid
+  `TranslateLanguage` constant.
+- Manual verification (per `superpowers:verification-before-completion`):
+  run the app, complete onboarding in a non-English language, confirm every
+  onboarding page, the four main tabs, and the Settings screen render
+  translated text, confirm the AI assistant responds in that language, and
+  confirm relaunching the app (still same language) shows translated text
+  instantly with no re-download (airplane mode test).
+
+## Files touched (expected)
+
+- New: `i18n/SupportedLanguages.kt`, `i18n/TranslationManager.kt`,
+  `i18n/LocalStrings.kt` (or folded into `TranslationManager.kt`),
+  `ui/screens/SettingsScreen.kt`, `ui/screens/LanguagePickerScreen.kt` (or a
+  shared composable used by both onboarding and Settings).
+- Modified: `app/build.gradle.kts` (add
+  `com.google.mlkit:translate` dependency), `res/values/strings.xml`
+  (populate with ~104 keys), every screen file currently using hardcoded
+  `Text("...")` literals (swap to `tr(R.string.*)`), `OnboardingScreen.kt`
+  (new language page), `CruiseWatchNavHost.kt` (new route, settings entry
+  point, `LocalStrings` provider), `RefundAssistantContext.kt` (language
+  instruction line), `AssistantViewModel.kt` (pass selected language into
+  prompt build).
