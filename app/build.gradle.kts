@@ -134,4 +134,6 @@ dependencies {
     implementation("com.google.mediapipe:tasks-genai:0.10.24")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+    testImplementation("junit:junit:4.13.2")
 }
