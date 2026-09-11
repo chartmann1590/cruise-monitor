@@ -35,4 +35,7 @@
     <string name="claims_how_to_refund">How to get your refund</string>
     <string name="price_history_title">Price history</string>
     <string name="price_history_empty">No price checks yet — the scraper runs every few hours.</string>
+    <string name="sign_in_continue_google">Continue with Google</string>
+    <string name="sign_in_email">Email</string>
+    <string name="sign_in_password">Password</string>
 </resources>

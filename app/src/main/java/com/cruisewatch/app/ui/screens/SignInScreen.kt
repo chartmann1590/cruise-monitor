@@ -42,6 +42,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.R
 import com.cruisewatch.app.auth.AuthViewModel
+import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.ui.GlassPanel
 import com.cruisewatch.app.ui.PhotoHero
 
@@ -116,7 +117,7 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
                     modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 ) {
-                    Text("Continue with Google")
+                    Text(tr(R.string.sign_in_continue_google))
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.dp)) {
@@ -132,7 +133,7 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email") },
+                    label = { Text(tr(R.string.sign_in_email)) },
                     singleLine = true,
                     shape = MaterialTheme.shapes.medium,
                     colors = glassFieldColors(),
@@ -142,7 +143,7 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Password") },
+                    label = { Text(tr(R.string.sign_in_password)) },
                     singleLine = true,
                     shape = MaterialTheme.shapes.medium,
                     colors = glassFieldColors(),
