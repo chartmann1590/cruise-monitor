@@ -80,7 +80,11 @@ fun TrackedCruisesScreen(
                 ) {
                     Text(tr(R.string.cruises_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
                     Text(
-                        "${cruiseList.size} sailing${if (cruiseList.size == 1) "" else "s"} being watched 24/7",
+                        tr(
+                            R.string.cruises_sailing_count,
+                            cruiseList.size,
+                            if (cruiseList.size == 1) "" else "s",
+                        ),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.9f),
                     )
@@ -102,12 +106,12 @@ fun TrackedCruisesScreen(
                                 tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
                             )
                             Text(
-                                "No cruises tracked yet",
+                                tr(R.string.cruises_empty_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier.padding(top = 12.dp),
                             )
                             Text(
-                                "Tap \"Add cruise\" to start watching one you've already booked",
+                                tr(R.string.cruises_empty_subtitle),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(top = 4.dp),
@@ -158,17 +162,27 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
                 Column(modifier = Modifier.padding(start = 10.dp).weight(1f)) {
                     Text(cruise.ship, style = MaterialTheme.typography.titleMedium, color = Color.White)
                     Text(
-                        "${cruise.cabinCategory}${if (cruise.isGuarantee) " (Guarantee)" else ""} · Sailing ${cruise.sailDate}",
+                        tr(
+                            R.string.cruises_cabin_sailing,
+                            cruise.cabinCategory,
+                            if (cruise.isGuarantee) tr(R.string.cruises_guarantee_suffix) else "",
+                            cruise.sailDate,
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.9f),
                     )
                 }
                 val context = androidx.compose.ui.platform.LocalContext.current
+                val shareMessage = tr(
+                    R.string.cruises_share_message,
+                    cruise.ship,
+                    cruise.sailDate,
+                    cruise.currency,
+                    "%.2f".format(cruise.farePaid),
+                )
+                val shareSubject = tr(R.string.cruises_share_subject)
                 IconButton(onClick = {
-                    val text = "I'm watching the fare on ${cruise.ship} (sailing ${cruise.sailDate}) with CruiseWatch — " +
-                        "you paid ${cruise.currency} ${"%.2f".format(cruise.farePaid)}, and I'll let you know the moment " +
-                        "the price drops so you can claim a refund.\n\nhttps://cruisewatch-app.web.app"
-                    com.cruisewatch.app.ui.shareText(context, "I'm tracking your cruise fare", text)
+                    com.cruisewatch.app.ui.shareText(context, shareSubject, shareMessage)
                 }) {
                     Icon(Icons.Filled.Share, contentDescription = "Share this cruise", tint = Color.White)
                 }
@@ -177,7 +191,7 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
 
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                "You paid",
+                tr(R.string.cruises_you_paid_label),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -206,9 +220,9 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
                     )
                     Text(
                         if (daysLeft >= 0) {
-                            " $daysLeft day${if (daysLeft == 1) "" else "s"} left to lock in your best price — final payment due"
+                            tr(R.string.cruises_days_left_urgent, daysLeft, if (daysLeft == 1) "" else "s")
                         } else {
-                            " Final payment was due"
+                            tr(R.string.cruises_payment_due_passed)
                         },
                         style = MaterialTheme.typography.bodySmall,
                         color = if (urgent) Coral else Color(0xFFB8860B),
@@ -227,7 +241,7 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    " Final payment date: ${cruise.finalPaymentDate}",
+                    tr(R.string.cruises_final_payment_date, cruise.finalPaymentDate),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

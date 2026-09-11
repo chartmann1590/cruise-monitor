@@ -61,7 +61,7 @@ fun PriceHistoryScreen(
             }
         }
         Text(
-            "Every check we've made against the public fare.",
+            tr(R.string.price_history_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 48.dp, top = 2.dp, bottom = 8.dp),

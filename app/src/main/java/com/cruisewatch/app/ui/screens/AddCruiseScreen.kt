@@ -63,13 +63,13 @@ fun AddCruiseScreen(onSave: (TrackedCruise) -> Unit) {
             Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
                 Icon(Icons.Filled.AddCircle, contentDescription = null, tint = Color.White)
                 Text(
-                    "Add a cruise you've booked",
+                    tr(R.string.add_cruise_hero_title),
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White,
                     modifier = Modifier.padding(top = 6.dp),
                 )
                 Text(
-                    "We'll watch the public fare and tell you the moment it drops.",
+                    tr(R.string.add_cruise_hero_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.92f),
                 )
@@ -143,7 +143,7 @@ fun AddCruiseScreen(onSave: (TrackedCruise) -> Unit) {
             Column {
                 Text(tr(R.string.add_cruise_guarantee), style = MaterialTheme.typography.bodyMedium)
                 Text(
-                    "You didn't pick an exact room — check your confirmation for a code ending in \"GTY\".",
+                    tr(R.string.add_cruise_guarantee_note),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

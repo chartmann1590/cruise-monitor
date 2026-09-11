@@ -61,7 +61,7 @@ fun AssistantScreen(focusCruiseId: String? = null, viewModel: AssistantViewModel
                 Icon(Icons.Filled.SmartToy, contentDescription = null, tint = Color.White)
                 Text(tr(R.string.assistant_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
                 Text(
-                    "An on-device AI that knows your cruises and helps you claim your refund.",
+                    tr(R.string.assistant_hero_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.92f),
                 )
@@ -91,7 +91,7 @@ private fun SetupPrompt(model: com.cruisewatch.app.ai.LlmModel, ramGb: Double, o
     Column(modifier = Modifier.fillMaxSize().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         Text(tr(R.string.assistant_setup_title), style = MaterialTheme.typography.titleLarge)
         Text(
-            "Your device has about ${"%.1f".format(ramGb)} GB of RAM — we recommend:",
+            tr(R.string.assistant_ram_recommend, "%.1f".format(ramGb)),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),

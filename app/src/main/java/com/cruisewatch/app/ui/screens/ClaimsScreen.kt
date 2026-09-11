@@ -36,7 +36,7 @@ fun ClaimsScreen(policies: List<CruiseLinePolicy>) {
                 Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
                     Text(tr(R.string.claims_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
                     Text(
-                        "Every covered line's price-protection rules, in plain English.",
+                        tr(R.string.claims_subtitle),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.9f),
                     )
@@ -94,7 +94,7 @@ private fun PolicyCard(policy: CruiseLinePolicy) {
             }
 
             Text(
-                "Policy details",
+                tr(R.string.claims_policy_details),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(top = 20.dp, bottom = 4.dp),
             )
@@ -110,14 +110,14 @@ private fun PolicyCard(policy: CruiseLinePolicy) {
 
             if (policy.exclusions.isNotEmpty()) {
                 Text(
-                    "Excludes: ${policy.exclusions.joinToString(", ")}",
+                    tr(R.string.claims_excludes, policy.exclusions.joinToString(", ")),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }
 
             Text(
-                "Eligibility: ${policy.eligibility}",
+                tr(R.string.claims_eligibility, policy.eligibility),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(top = 4.dp),
             )
