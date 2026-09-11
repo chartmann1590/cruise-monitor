@@ -5,6 +5,7 @@ import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -114,6 +115,8 @@ class TranslationManager(
             prefs.setCachedTranslations(language.code, translated)
             prefs.setSelectedLanguage(language.code)
             _state.value = TranslationState.Ready(language, translated)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             _state.value = TranslationState.Failed(language, e.message ?: "Translation failed")
         } finally {
