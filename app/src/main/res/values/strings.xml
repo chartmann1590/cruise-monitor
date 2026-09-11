@@ -17,4 +17,7 @@
     <string name="add_cruise_currency">Currency (e.g. USD)</string>
     <string name="add_cruise_final_payment_date">Final payment date (YYYY-MM-DD)</string>
     <string name="add_cruise_start_tracking">Start tracking</string>
+    <string name="alerts_title">Price Alerts</string>
+    <string name="alerts_ask_assistant">Ask the assistant about this</string>
+    <string name="alerts_mark_claimed">Mark as claimed</string>
 </resources>

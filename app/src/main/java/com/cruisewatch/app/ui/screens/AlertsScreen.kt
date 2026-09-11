@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.R
+import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.data.Alert
 import com.cruisewatch.app.data.CruiseLinePolicy
 import com.cruisewatch.app.data.TrackedCruise
@@ -71,7 +72,7 @@ fun AlertsScreen(
             PhotoHero(photoRes = R.drawable.hero_celebrate, height = 190.dp) {
                 Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
                     Icon(Icons.Filled.NotificationsActive, contentDescription = null, tint = Color.White)
-                    Text("Price Alerts", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+                    Text(tr(R.string.alerts_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
                 }
             }
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -98,7 +99,7 @@ fun AlertsScreen(
         item {
             PhotoHero(photoRes = R.drawable.hero_celebrate, height = 190.dp) {
                 Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
-                    Text("Price Alerts", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+                    Text(tr(R.string.alerts_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
                     Text(
                         "${alertList.count { !it.claimed }} unclaimed drop${if (alertList.count { !it.claimed } == 1) "" else "s"} waiting for you",
                         style = MaterialTheme.typography.bodyMedium,
@@ -234,7 +235,7 @@ private fun AlertCard(
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 ) {
                     Icon(Icons.Filled.SmartToy, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Text(" Ask the assistant about this", modifier = Modifier.padding(start = 4.dp))
+                    Text(" " + tr(R.string.alerts_ask_assistant), modifier = Modifier.padding(start = 4.dp))
                 }
             }
 
@@ -247,7 +248,7 @@ private fun AlertCard(
                     )
                 } else {
                     TextButton(onClick = onMarkClaimed) {
-                        Text("Mark as claimed")
+                        Text(tr(R.string.alerts_mark_claimed))
                     }
                 }
             }
