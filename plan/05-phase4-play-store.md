@@ -13,10 +13,17 @@ Goal: ship the app publicly, with releases published automatically by CI.
       (never hardcoded); see `app/build.gradle.kts`
 - [x] Release signing config — `app/build.gradle.kts` reads `keystore.properties` (gitignored)
 - [x] CI publish workflow — `.github/workflows/release-play-store.yml`
+- [x] Play publisher service account created via `gcloud` in the `cruisewatch-app` GCP project (same project as
+      Firebase): `cruisewatch-play-publisher@cruisewatch-app.iam.gserviceaccount.com`. Android Publisher API
+      enabled on that project. Key generated and uploaded directly to the `PLAY_SERVICE_ACCOUNT_JSON` GitHub
+      secret; no copy was left on disk.
+- [x] All 8 GitHub Actions secrets are set: `RELEASE_KEYSTORE_BASE64`, `RELEASE_KEYSTORE_PASSWORD`,
+      `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`, `PLAY_SERVICE_ACCOUNT_JSON`, `ADMOB_APP_ID`,
+      `ADMOB_BANNER_AD_UNIT_ID`, `ADMOB_INTERSTITIAL_AD_UNIT_ID`.
 - [ ] Google Play developer account — you need an existing account for this ($25 one-time fee if not already paid)
 - [ ] Create the app listing in Play Console (one-time, manual — see below)
-- [ ] Create the Play Console service account for CI (one-time, manual — see below)
-- [ ] Add the GitHub Actions secrets listed below
+- [ ] **Grant the service account access in Play Console** (one-time, manual, no API exists for this step — see
+      below). This is the one remaining setup step; everything else is done.
 - [ ] First manual release to Internal testing (Play rejects the very first release of a new app via API)
 - [ ] Promote internal → closed testing → production once stable
 
@@ -42,34 +49,41 @@ Goal: ship the app publicly, with releases published automatically by CI.
 7. After that first manual release exists, every subsequent release can go through
    `.github/workflows/release-play-store.yml`.
 
-## 2. Create the Play Console service account (for CI publishing)
+## 2. Play Console service account — done, one manual step left
 
-1. In Play Console: **Setup → API access**. If this is the first time, it'll prompt you to link a Google Cloud
-   project — accept the default (or pick an existing project).
-2. Click **Create new service account** — this opens the Google Cloud Console with a pre-filled service account
-   creation page. Give it a name like `cruisewatch-play-publisher`, no roles needed at the GCP IAM level, click
-   **Done**.
-3. Back in that GCP service account's page, go to **Keys → Add key → Create new key → JSON**. This downloads a
-   `.json` file — **do not commit this file anywhere**.
-4. Back in Play Console **API access**, find the service account you just created and click **Grant access**.
-   Give it the **Release manager** permission (minimum needed to upload and publish releases) for this app, then
-   **Invite user**.
-5. It can take a few minutes for the permission to propagate.
+The service account itself is already created (via `gcloud`, in the `cruisewatch-app` GCP project — the same
+project that backs Firebase): `cruisewatch-play-publisher@cruisewatch-app.iam.gserviceaccount.com`. The Android
+Publisher API is enabled on that project, and its JSON key is already uploaded to the `PLAY_SERVICE_ACCOUNT_JSON`
+GitHub secret (no copy was left on disk).
 
-## 3. Add GitHub Actions secrets
+**What's left is Play-Console-only and has no API** — Google does not expose an endpoint to grant a service
+account access to a Play Console app, so this one click-through has to happen in the console UI:
 
-In the GitHub repo: **Settings → Secrets and variables → Actions → New repository secret**. Add all of these:
+1. Play Console → **Setup → API access**. It should detect the `cruisewatch-app` GCP project automatically
+   (link it if prompted — accept/select that project).
+2. Find `cruisewatch-play-publisher@cruisewatch-app.iam.gserviceaccount.com` in the service accounts list →
+   **Grant access**.
+3. Give it the **Release manager** permission (minimum needed to upload and publish releases) for the
+   CruiseWatch app → **Invite user**.
+4. Allow a few minutes for the permission to propagate.
 
-| Secret | Value |
+## 3. GitHub Actions secrets — already set
+
+All 8 secrets below are already in the repo (`RELEASE_KEYSTORE_BASE64` from `C:\Users\Charles\Key.jks`,
+`RELEASE_KEYSTORE_PASSWORD` / `RELEASE_KEY_ALIAS` / `RELEASE_KEY_PASSWORD` from `keystore.properties`, the three
+`ADMOB_*` values from `local.properties`, and `PLAY_SERVICE_ACCOUNT_JSON` from step 2 above) — nothing further
+to do here unless a value needs rotating:
+
+| Secret | Source |
 |---|---|
-| `RELEASE_KEYSTORE_BASE64` | `base64 -w0 Key.jks` (or on Windows: `[Convert]::ToBase64String([IO.File]::ReadAllBytes("Key.jks"))`) of your release keystore |
-| `RELEASE_KEYSTORE_PASSWORD` | Your keystore password (same as `storePassword` in local `keystore.properties`) |
-| `RELEASE_KEY_ALIAS` | `key0` (same as local `keystore.properties`) |
-| `RELEASE_KEY_PASSWORD` | Your key password (same as `keyPassword` in local `keystore.properties`) |
-| `PLAY_SERVICE_ACCOUNT_JSON` | The full contents of the service account JSON file from step 2.3 above |
-| `ADMOB_APP_ID` | Your real AdMob App ID (`ca-app-pub-...~...`) |
-| `ADMOB_BANNER_AD_UNIT_ID` | Your real AdMob banner ad unit ID |
-| `ADMOB_INTERSTITIAL_AD_UNIT_ID` | Your real AdMob interstitial ad unit ID |
+| `RELEASE_KEYSTORE_BASE64` | base64 of the release keystore |
+| `RELEASE_KEYSTORE_PASSWORD` | keystore password |
+| `RELEASE_KEY_ALIAS` | signing key alias |
+| `RELEASE_KEY_PASSWORD` | signing key password |
+| `PLAY_SERVICE_ACCOUNT_JSON` | service account key from step 2 |
+| `ADMOB_APP_ID` | AdMob App ID (`ca-app-pub-...~...`) |
+| `ADMOB_BANNER_AD_UNIT_ID` | AdMob banner ad unit ID |
+| `ADMOB_INTERSTITIAL_AD_UNIT_ID` | AdMob interstitial ad unit ID |
 
 None of these values are ever hardcoded in source — `app/build.gradle.kts` resolves the AdMob IDs from an
 environment variable (CI) or `local.properties` (local dev), falling back to Google's public test IDs if
