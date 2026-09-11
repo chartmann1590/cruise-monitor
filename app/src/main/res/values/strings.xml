@@ -20,4 +20,15 @@
     <string name="alerts_title">Price Alerts</string>
     <string name="alerts_ask_assistant">Ask the assistant about this</string>
     <string name="alerts_mark_claimed">Mark as claimed</string>
+    <string name="assistant_title">Refund Assistant</string>
+    <string name="assistant_loading_model">Loading the model…</string>
+    <string name="assistant_setup_error">Couldn\'t set up the assistant: %1$s</string>
+    <string name="assistant_setup_title">Set up your assistant</string>
+    <string name="assistant_download_size">%1$d MB one-time download, then runs fully offline on your device.</string>
+    <string name="assistant_download_button">Download and set up</string>
+    <string name="assistant_privacy_note">Everything you ask stays on this device — nothing is sent anywhere.</string>
+    <string name="assistant_downloading">Downloading %1$s…</string>
+    <string name="assistant_download_progress">%1$d MB / %2$d MB</string>
+    <string name="assistant_thinking">Thinking…</string>
+    <string name="assistant_input_placeholder">Ask how to get your refund…</string>
 </resources>
