@@ -1,5 +1,7 @@
 package com.cruisewatch.app.ui.screens
 
+import com.cruisewatch.app.R
+import com.cruisewatch.app.i18n.tr
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
@@ -53,7 +55,7 @@ fun PriceHistoryScreen(
             IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
-            Text("Price history", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
+            Text(tr(R.string.price_history_title), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
             IconButton(onClick = onAskAssistant) {
                 Icon(Icons.Filled.SmartToy, contentDescription = "Ask the assistant")
             }
@@ -67,7 +69,7 @@ fun PriceHistoryScreen(
 
         if (history.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No price checks yet — the scraper runs every few hours.")
+                Text(tr(R.string.price_history_empty))
             }
             return@Column
         }
