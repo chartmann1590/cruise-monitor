@@ -165,7 +165,7 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
                         tr(
                             R.string.cruises_cabin_sailing,
                             cruise.cabinCategory,
-                            if (cruise.isGuarantee) tr(R.string.cruises_guarantee_suffix) else "",
+                            if (cruise.isGuarantee) " " + tr(R.string.cruises_guarantee_suffix) else "",
                             cruise.sailDate,
                         ),
                         style = MaterialTheme.typography.bodySmall,
@@ -220,9 +220,9 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
                     )
                     Text(
                         if (daysLeft >= 0) {
-                            tr(R.string.cruises_days_left_urgent, daysLeft, if (daysLeft == 1) "" else "s")
+                            " " + tr(R.string.cruises_days_left_urgent, daysLeft, if (daysLeft == 1) "" else "s")
                         } else {
-                            tr(R.string.cruises_payment_due_passed)
+                            " " + tr(R.string.cruises_payment_due_passed)
                         },
                         style = MaterialTheme.typography.bodySmall,
                         color = if (urgent) Coral else Color(0xFFB8860B),
@@ -241,7 +241,7 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    tr(R.string.cruises_final_payment_date, cruise.finalPaymentDate),
+                    " " + tr(R.string.cruises_final_payment_date, cruise.finalPaymentDate),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

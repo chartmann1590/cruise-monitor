@@ -210,7 +210,7 @@ private fun AlertCard(
                         append(shipLine)
                         append(sharePriceLine)
                         append("$shareAppliesUnder\n")
-                        if (steps != null) append(shareHowToClaimTemplate.format(steps))
+                        if (steps != null) append("\n" + shareHowToClaimTemplate.format(steps))
                         append(phone)
                         append(shareFooter)
                     }

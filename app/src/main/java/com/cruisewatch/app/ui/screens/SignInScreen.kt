@@ -123,7 +123,7 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.dp)) {
                     HorizontalDivider(modifier = Modifier.weight(1f), color = Color.White.copy(alpha = 0.24f))
                     Text(
-                        tr(R.string.sign_in_divider_or),
+                        "  " + tr(R.string.sign_in_divider_or) + "  ",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.7f),
                     )
