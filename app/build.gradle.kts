@@ -124,6 +124,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-ads:23.2.0")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("com.google.android.gms:play-services-wearable:18.2.0")
+    implementation("com.google.mlkit:translate:17.0.3")
 
     implementation("androidx.glance:glance-appwidget:1.1.1")
     implementation("androidx.glance:glance-material3:1.1.1")
