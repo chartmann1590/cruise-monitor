@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.R
+import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.data.CABIN_CATEGORIES
 import com.cruisewatch.app.data.CruiseLine
 import com.cruisewatch.app.data.TrackedCruise
@@ -81,7 +82,7 @@ fun AddCruiseScreen(onSave: (TrackedCruise) -> Unit) {
                 value = line.displayName,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Cruise line") },
+                label = { Text(tr(R.string.add_cruise_line)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = lineMenuExpanded) },
                 modifier = Modifier.fillMaxWidth().menuAnchor(),
             )
@@ -101,14 +102,14 @@ fun AddCruiseScreen(onSave: (TrackedCruise) -> Unit) {
         OutlinedTextField(
             value = ship,
             onValueChange = { ship = it },
-            label = { Text("Ship name (as shown on the line's website)") },
+            label = { Text(tr(R.string.add_cruise_ship_name)) },
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
 
         OutlinedTextField(
             value = sailDate,
             onValueChange = { sailDate = it },
-            label = { Text("Sail date (YYYY-MM-DD)") },
+            label = { Text(tr(R.string.add_cruise_sail_date)) },
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
 
@@ -117,7 +118,7 @@ fun AddCruiseScreen(onSave: (TrackedCruise) -> Unit) {
                 value = cabinCategory,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Cabin category") },
+                label = { Text(tr(R.string.add_cruise_cabin_category)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = cabinMenuExpanded) },
                 modifier = Modifier.fillMaxWidth().menuAnchor().padding(top = 8.dp),
             )
@@ -140,7 +141,7 @@ fun AddCruiseScreen(onSave: (TrackedCruise) -> Unit) {
         ) {
             Checkbox(checked = isGuarantee, onCheckedChange = { isGuarantee = it })
             Column {
-                Text("This is a Guarantee (GTY) stateroom", style = MaterialTheme.typography.bodyMedium)
+                Text(tr(R.string.add_cruise_guarantee), style = MaterialTheme.typography.bodyMedium)
                 Text(
                     "You didn't pick an exact room — check your confirmation for a code ending in \"GTY\".",
                     style = MaterialTheme.typography.bodySmall,
@@ -152,7 +153,7 @@ fun AddCruiseScreen(onSave: (TrackedCruise) -> Unit) {
         OutlinedTextField(
             value = farePaid,
             onValueChange = { farePaid = it },
-            label = { Text("Fare paid (cruise fare only, no taxes/fees)") },
+            label = { Text(tr(R.string.add_cruise_fare_paid)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
@@ -160,14 +161,14 @@ fun AddCruiseScreen(onSave: (TrackedCruise) -> Unit) {
         OutlinedTextField(
             value = currency,
             onValueChange = { currency = it.uppercase() },
-            label = { Text("Currency (e.g. USD)") },
+            label = { Text(tr(R.string.add_cruise_currency)) },
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
 
         OutlinedTextField(
             value = finalPaymentDate,
             onValueChange = { finalPaymentDate = it },
-            label = { Text("Final payment date (YYYY-MM-DD)") },
+            label = { Text(tr(R.string.add_cruise_final_payment_date)) },
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
 
@@ -193,7 +194,7 @@ fun AddCruiseScreen(onSave: (TrackedCruise) -> Unit) {
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 8.dp),
         ) {
-            Text("Start tracking")
+            Text(tr(R.string.add_cruise_start_tracking))
         }
         }
     }

@@ -8,4 +8,13 @@
     <string name="nav_assistant">Assistant</string>
     <string name="cruises_title">Your Cruises</string>
     <string name="cruises_add_cruise">Add cruise</string>
+    <string name="add_cruise_line">Cruise line</string>
+    <string name="add_cruise_ship_name">Ship name (as shown on the line\'s website)</string>
+    <string name="add_cruise_sail_date">Sail date (YYYY-MM-DD)</string>
+    <string name="add_cruise_cabin_category">Cabin category</string>
+    <string name="add_cruise_guarantee">This is a Guarantee (GTY) stateroom</string>
+    <string name="add_cruise_fare_paid">Fare paid (cruise fare only, no taxes/fees)</string>
+    <string name="add_cruise_currency">Currency (e.g. USD)</string>
+    <string name="add_cruise_final_payment_date">Final payment date (YYYY-MM-DD)</string>
+    <string name="add_cruise_start_tracking">Start tracking</string>
 </resources>
