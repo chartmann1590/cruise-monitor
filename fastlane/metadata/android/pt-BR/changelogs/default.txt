@@ -1,0 +1,1 @@
+Lançamento inicial: acompanhe cruzeiros já reservados, receba um alerta push assim que a tarifa cair e veja os passos exatos para reivindicar seu reembolso. Inclui um app complementar para Wear OS e um assistente de reembolso com IA no dispositivo.

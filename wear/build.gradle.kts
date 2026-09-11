@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -6,16 +8,49 @@ plugins {
     id("com.google.firebase.firebase-perf")
 }
 
+// Same release keystore as app/build.gradle.kts — the phone and wear AABs must be
+// signed with the same certificate since they share applicationId "com.cruisewatch.app"
+// and are delivered as one Play Console app listing (Play Store install-time delivery).
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        load(keystorePropertiesFile.inputStream())
+    }
+}
+
 android {
     namespace = "com.cruisewatch.app.wear"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.cruisewatch.app.wear"
+        // Must match the phone app's applicationId — Play Store delivers the watch
+        // build to watches and the phone build to phones from the same app listing
+        // based on matching package name, not via the legacy wearApp() embedding.
+        applicationId = "com.cruisewatch.app"
         minSdk = 30
         targetSdk = 34
         versionCode = 1
         versionName = "0.1.0"
+    }
+
+    signingConfigs {
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            if (keystorePropertiesFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+        }
     }
 
     compileOptions {

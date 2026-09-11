@@ -1,0 +1,1 @@
+Lancement initial : suivez les croisières déjà réservées, recevez une alerte push dès que le tarif baisse, et consultez les étapes précises pour réclamer votre remboursement. Inclut une application compagnon Wear OS et un assistant IA de remboursement sur l'appareil.

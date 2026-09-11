@@ -1,7 +1,9 @@
 name: Release to Play Store
 
-# Builds a signed release App Bundle (phone app with the Wear OS app bundled
-# via Play Store install-time delivery) and publishes it to Google Play.
+# Builds signed release App Bundles for the phone app and the Wear OS
+# companion (published as separate AABs within the same Play Console app
+# listing — both share applicationId "com.cruisewatch.app" so Play delivers
+# each to the right form factor) and publishes them to Google Play.
 #
 # Requires these repository secrets (see plan/05-phase4-play-store.md):
 #   RELEASE_KEYSTORE_BASE64      - `base64 -w0 Key.jks` output of the release keystore
@@ -12,11 +14,6 @@ name: Release to Play Store
 #   ADMOB_APP_ID                 - AdMob application ID (ca-app-pub-...~...)
 #   ADMOB_BANNER_AD_UNIT_ID      - AdMob banner ad unit ID (ca-app-pub-.../...)
 #   ADMOB_INTERSTITIAL_AD_UNIT_ID - AdMob interstitial ad unit ID
-#
-# The app's very first release to a brand-new Play Console app listing must
-# be uploaded manually once through the Play Console — the Play Developer
-# API rejects the first-ever release of a new app. After that, this workflow
-# handles every subsequent release.
 
 on:
   push:
@@ -58,12 +55,12 @@ jobs:
           keyPassword=${{ secrets.RELEASE_KEY_PASSWORD }}
           EOF
 
-      - name: Build release App Bundle
+      - name: Build release App Bundles (phone + wear)
         env:
           ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
           ADMOB_BANNER_AD_UNIT_ID: ${{ secrets.ADMOB_BANNER_AD_UNIT_ID }}
           ADMOB_INTERSTITIAL_AD_UNIT_ID: ${{ secrets.ADMOB_INTERSTITIAL_AD_UNIT_ID }}
-        run: ./gradlew :app:bundleRelease --no-daemon
+        run: ./gradlew :app:bundleRelease :wear:bundleRelease --no-daemon
 
       - name: Clean up signing secrets from disk
         if: always()
@@ -74,6 +71,8 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.cruisewatch.app
-          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          releaseFiles: |
+            app/build/outputs/bundle/release/app-release.aab
+            wear/build/outputs/bundle/release/wear-release.aab
           track: ${{ github.event.inputs.track || 'internal' }}
           status: completed

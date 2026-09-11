@@ -1,0 +1,1 @@
+Erstveröffentlichung: Verfolgen Sie bereits gebuchte Kreuzfahrten, erhalten Sie eine Push-Benachrichtigung, sobald der Preis fällt, und sehen Sie die genauen Schritte zur Rückerstattung. Enthält eine Wear-OS-Begleit-App und einen KI-Rückerstattungsassistenten auf dem Gerät.

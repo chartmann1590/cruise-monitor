@@ -1,0 +1,1 @@
+Lanzamiento inicial: sigue cruceros que ya reservaste, recibe alertas push en cuanto baje el precio y consulta los pasos exactos para reclamar tu reembolso. Incluye una app complementaria para Wear OS y un asistente de reembolso con IA en el dispositivo.

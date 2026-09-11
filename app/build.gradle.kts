@@ -96,7 +96,11 @@ android {
 }
 
 dependencies {
-    wearApp(project(":wear"))
+    // The wear module is published as a separate AAB within the same Play Console
+    // app listing (both apps share applicationId "com.cruisewatch.app" so Play can
+    // deliver the watch build to watches at install time) rather than embedded via
+    // the legacy wearApp() micro-APK mechanism, which requires an identical package
+    // name and is meant for pre-Wear-2.0 notification bridging, not standalone apps.
 
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-auth-ktx")

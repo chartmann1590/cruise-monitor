@@ -1,0 +1,1 @@
+Rilascio iniziale: monitora le crociere già prenotate, ricevi una notifica push non appena la tariffa scende e consulta i passaggi esatti per richiedere il rimborso. Include un'app complementare per Wear OS e un assistente IA per rimborsi sul dispositivo.
