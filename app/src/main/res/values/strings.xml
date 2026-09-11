@@ -89,4 +89,15 @@
     <string name="onboarding_get_started">Get started</string>
     <string name="onboarding_next">Next</string>
     <string name="phone_call_button">Call %1$s</string>
+    <string name="language_picker_title">Choose your language</string>
+    <string name="language_picker_search">Search languages</string>
+    <string name="language_picker_downloading">Downloading language pack…</string>
+    <string name="language_picker_translating">Translating…</string>
+    <string name="language_picker_error">Something went wrong: %1$s</string>
+    <string name="language_picker_retry">Retry</string>
+    <string name="language_picker_continue_english">Continue in English</string>
+    <string name="language_picker_wifi_required_title">Wi-Fi recommended</string>
+    <string name="language_picker_wifi_required_body">This language pack is about 30 MB. Download on Wi-Fi, or continue now on your current connection.</string>
+    <string name="language_picker_wifi_wait">Wait for Wi-Fi</string>
+    <string name="language_picker_wifi_now">Download now</string>
 </resources>
