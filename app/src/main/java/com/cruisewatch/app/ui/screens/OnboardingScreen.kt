@@ -29,7 +29,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,6 +39,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.R
+import com.cruisewatch.app.i18n.ProvideTranslations
+import com.cruisewatch.app.i18n.TranslationManager
 import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.ui.GlassPanel
 import com.cruisewatch.app.ui.PhotoHero
@@ -72,7 +76,31 @@ private val pages = listOf(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnboardingScreen(onFinish: () -> Unit) {
+fun OnboardingScreen(
+    translationManager: TranslationManager,
+    currentLanguageCode: String,
+    onFinish: () -> Unit,
+) {
+    var languageChosen by remember { mutableStateOf(false) }
+
+    if (!languageChosen) {
+        LanguagePickerScreen(
+            manager = translationManager,
+            currentLanguageCode = currentLanguageCode,
+            onLanguageApplied = { languageChosen = true },
+            onCancel = { languageChosen = true },
+        )
+        return
+    }
+
+    ProvideTranslations(translationManager) {
+        OnboardingPager(onFinish)
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun OnboardingPager(onFinish: () -> Unit) {
     val pagerState = rememberPagerState(pageCount = { pages.size })
     val scope = androidx.compose.runtime.rememberCoroutineScope()
     val isLastPage by remember { derivedStateOf { pagerState.currentPage == pages.lastIndex } }
