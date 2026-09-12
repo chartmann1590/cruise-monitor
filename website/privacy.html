@@ -56,7 +56,7 @@
 <div class="wrap">
   <a class="back" href="index.html">← CruiseWatch</a>
   <h1>Privacy Policy</h1>
-  <p class="updated">Last updated: September 8, 2026</p>
+  <p class="updated">Last updated: September 12, 2026 · <a href="terms.html">Terms of Service</a></p>
 
   <div class="callout">
     <p>
@@ -106,8 +106,8 @@
 
   <h3>Advertising — AdMob</h3>
   <p>
-    The phone app shows banner ads via <strong>Google AdMob</strong> to keep CruiseWatch free. AdMob may
-    collect:
+    The phone app shows banner and interstitial ads via <strong>Google AdMob</strong> to keep CruiseWatch free.
+    AdMob may collect:
   </p>
   <ul>
     <li>Your device's advertising ID (resettable in Android Settings) and general device information.</li>
@@ -117,6 +117,18 @@
   <p>
     You can limit ad personalization at any time in <strong>Android Settings → Google → Ads</strong>. The Wear
     OS companion app does not show ads.
+  </p>
+
+  <h3>On-device app translation — Google ML Kit</h3>
+  <p>
+    You can choose your own language for the app's interface during setup or any time from Settings, from a
+    list of over 50 languages. Choosing a language other than English downloads a small language file from
+    Google's <strong>ML Kit Translate</strong> service (a one-time download per language, by default only over
+    Wi-Fi). After that download, the app's own interface text is translated <strong>entirely on your
+    device</strong> — no screen text, cruise data, or account information is sent to Google or anyone else to
+    perform this translation. The app checks your network connection type (Wi-Fi vs. cellular) only to decide
+    whether to ask before using cellular data for that one-time download; this check does not report your
+    location or browsing activity to us or to Google.
   </p>
 
   <h3>On-device AI refund assistant</h3>
@@ -142,8 +154,9 @@
     <tr><td>Database</td><td>Cloud Firestore (Google)</td><td>Stores your tracked cruises, price history, and alerts</td></tr>
     <tr><td>Push notifications</td><td>Firebase Cloud Messaging (Google)</td><td>Delivers price-drop alerts to your phone and watch</td></tr>
     <tr><td>Crash &amp; performance reporting</td><td>Firebase Crashlytics &amp; Performance Monitoring (Google)</td><td>Diagnoses crashes and slow performance</td></tr>
-    <tr><td>Advertising</td><td>Google AdMob</td><td>Serves the banner ads that keep the app free</td></tr>
+    <tr><td>Advertising</td><td>Google AdMob</td><td>Serves the banner and interstitial ads that keep the app free</td></tr>
     <tr><td>Sign-in option</td><td>Google Sign-In</td><td>Optional one-tap sign-in on phone and watch</td></tr>
+    <tr><td>App translation</td><td>Google ML Kit Translate</td><td>Downloads the language file for your chosen language; the actual translation runs on your device</td></tr>
   </table>
   <p>
     We do not sell your personal data, and we do not share your cruise or account data with any party beyond
@@ -192,6 +205,8 @@
   <p>
     Questions, data requests, or concerns: <a href="mailto:me@charleshartmann.com">me@charleshartmann.com</a>
   </p>
+
+  <p style="margin-top:40px;"><a href="terms.html">Read the Terms of Service →</a></p>
 </div>
 </body>
 </html>
