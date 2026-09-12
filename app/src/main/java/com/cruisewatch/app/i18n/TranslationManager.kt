@@ -169,6 +169,16 @@ class TranslationManager(
             return@withLock
         }
 
+        // The fingerprinted lookup above missed — either there's no cache at all, or there's a
+        // stale one from before the last content change. Only in the latter case is there
+        // something worth showing while we retranslate: seed `_activeStrings` with it so the app
+        // keeps rendering the last-known-good translation instead of flashing to English for the
+        // duration of the retranslate. `setReady` below will replace this with the fresh,
+        // fingerprint-matching map once translation succeeds.
+        prefs.getStaleCachedTranslations(language.code)?.let { stale ->
+            _activeStrings.value = stale
+        }
+
         _state.value = TranslationState.Downloading(language)
         val translator = translatorFactory(language.code)
         try {

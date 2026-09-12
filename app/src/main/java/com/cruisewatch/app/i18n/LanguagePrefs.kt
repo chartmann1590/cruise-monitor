@@ -46,6 +46,22 @@ class LanguagePrefs(context: Context) {
         return result
     }
 
+    /**
+     * Cached translations for [code] regardless of fingerprint — including a stale cache built
+     * from an older string set.
+     *
+     * Only for seeding a "last known good" UI while a fingerprint-mismatched retranslate is in
+     * flight; never use this to decide whether a retranslate is needed (use
+     * [getCachedTranslations] for that).
+     */
+    fun getStaleCachedTranslations(code: String): Map<Int, String>? {
+        val json = prefs.getString(KEY_TRANSLATIONS_PREFIX + code, null) ?: return null
+        val obj = JSONObject(json)
+        val result = mutableMapOf<Int, String>()
+        obj.keys().forEach { key -> result[key.toInt()] = obj.getString(key) }
+        return result
+    }
+
     fun setCachedTranslations(code: String, translations: Map<Int, String>, fingerprint: String) {
         val obj = JSONObject()
         translations.forEach { (id, text) -> obj.put(id.toString(), text) }

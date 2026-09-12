@@ -3,7 +3,9 @@ package com.cruisewatch.app.i18n
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.google.mlkit.nl.translate.TranslateLanguage
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -195,6 +197,82 @@ class TranslationManagerTest {
 
         assertTrue(manager.state.value is TranslationState.Failed)
         assertEquals(mapOf(1 to "ES:Hello"), manager.activeStrings.value)
+    }
+
+    @Test
+    fun `a stale cached translation is shown immediately while a fingerprint-mismatched retranslate is in progress`() = runTest {
+        val prefs = LanguagePrefs(context)
+        // Simulates a cache written before an app update edited the English copy behind key 1.
+        val staleFingerprint = fingerprintOf(mapOf(1 to "Hello"))
+        prefs.setCachedTranslations(TranslateLanguage.SPANISH, mapOf(1 to "ES-STALE:Hello"), staleFingerprint)
+
+        val gate = CompletableDeferred<Unit>()
+        val slowTranslator = object : TranslatorClient {
+            override suspend fun ensureModelDownloaded(allowCellular: Boolean) {}
+            override suspend fun translate(text: String): String {
+                gate.await()
+                return "ES-FRESH:$text"
+            }
+            override fun close() {}
+        }
+        val manager = TranslationManager(
+            context = context,
+            prefs = prefs,
+            translatorFactory = { slowTranslator },
+            // Different copy than staleFingerprint was built from, so the fingerprinted cache
+            // lookup misses and a retranslate is required.
+            catalog = FakeCatalog(mapOf(1 to "Hello there")),
+        )
+
+        val job = launch { manager.selectLanguage(TranslateLanguage.SPANISH) }
+        runCurrent() // Run the coroutine up to where it suspends inside translate() on the gate.
+
+        // While the retranslate is in flight, the app body should keep showing the stale-but-known
+        // translation rather than dropping to English.
+        assertEquals(mapOf(1 to "ES-STALE:Hello"), manager.activeStrings.value)
+        assertTrue(manager.state.value is TranslationState.Translating)
+
+        gate.complete(Unit)
+        job.join()
+
+        // Once the retranslate succeeds, the fresh, fingerprint-matching map takes over.
+        assertEquals(mapOf(1 to "ES-FRESH:Hello there"), manager.activeStrings.value)
+        val state = manager.state.value
+        assertTrue(state is TranslationState.Ready)
+        assertEquals(mapOf(1 to "ES-FRESH:Hello there"), (state as TranslationState.Ready).strings)
+    }
+
+    @Test
+    fun `a first-ever selection of a language does not fabricate a stale translation`() = runTest {
+        val prefs = LanguagePrefs(context)
+        // No cache exists for this language code at all.
+        val gate = CompletableDeferred<Unit>()
+        val slowTranslator = object : TranslatorClient {
+            override suspend fun ensureModelDownloaded(allowCellular: Boolean) {}
+            override suspend fun translate(text: String): String {
+                gate.await()
+                return "IT:$text"
+            }
+            override fun close() {}
+        }
+        val manager = TranslationManager(
+            context = context,
+            prefs = prefs,
+            translatorFactory = { slowTranslator },
+            catalog = FakeCatalog(mapOf(1 to "Hello")),
+        )
+
+        val job = launch { manager.selectLanguage(TranslateLanguage.ITALIAN) }
+        runCurrent()
+
+        // Nothing to seed from — activeStrings must stay exactly as it was before this call.
+        assertEquals(emptyMap<Int, String>(), manager.activeStrings.value)
+        assertTrue(manager.state.value is TranslationState.Translating)
+
+        gate.complete(Unit)
+        job.join()
+
+        assertEquals(mapOf(1 to "IT:Hello"), manager.activeStrings.value)
     }
 
     @Test
