@@ -139,6 +139,19 @@
     only network activity involved is the initial model file download from the public model host.
   </p>
 
+  <h3>Reporting a bad AI response (opt-in)</h3>
+  <p>
+    If you tap the flag icon on a specific AI assistant response to report it as inaccurate, unsafe, or
+    off-topic, that one exchange — <strong>only the question you asked and the assistant's response to it</strong>
+    — along with the reason you selected and your app version, is sent to a <strong>Cloudflare Worker</strong>
+    and stored in <strong>Cloudflare D1</strong>. This is the one deliberate exception to the assistant's
+    otherwise fully on-device operation described above, and it only happens when you explicitly choose to
+    report a message — nothing is sent automatically. No account information, device identifier, or other
+    cruise data is included. Reported exchanges may be copied into an issue in the developer's private GitHub
+    repository so problems can be reviewed and fixed; they are never used for advertising or shared with any
+    other party.
+  </p>
+
   <h3>Sharing an alert or cruise</h3>
   <p>
     When you tap the share icon on an alert or tracked cruise, CruiseWatch hands the message text to Android's
@@ -157,6 +170,7 @@
     <tr><td>Advertising</td><td>Google AdMob</td><td>Serves the banner and interstitial ads that keep the app free</td></tr>
     <tr><td>Sign-in option</td><td>Google Sign-In</td><td>Optional one-tap sign-in on phone and watch</td></tr>
     <tr><td>App translation</td><td>Google ML Kit Translate</td><td>Downloads the language file for your chosen language; the actual translation runs on your device</td></tr>
+    <tr><td>AI response reports (opt-in)</td><td>Cloudflare (Workers &amp; D1)</td><td>Stores only the specific AI messages you explicitly flag as bad, to help fix the assistant</td></tr>
   </table>
   <p>
     We do not sell your personal data, and we do not share your cruise or account data with any party beyond

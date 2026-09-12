@@ -3,6 +3,11 @@ scraper/node_modules/
 scraper/dist/
 scraper/*.log
 
+# Cloudflare Worker
+cloudflare/*/node_modules/
+cloudflare/*/.wrangler/
+cloudflare/*/*.log
+
 # Python (scraper/python)
 scraper/python/__pycache__/
 scraper/python/.venv/

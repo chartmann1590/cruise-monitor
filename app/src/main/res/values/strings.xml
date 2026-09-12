@@ -105,6 +105,16 @@
     <string name="settings_back">Back</string>
     <string name="alerts_share_description">Share this alert</string>
     <string name="assistant_send_description">Send</string>
+    <string name="assistant_report_description">Report this response</string>
+    <string name="assistant_report_title">Report this response</string>
+    <string name="assistant_report_reason_inaccurate">Inaccurate or wrong information</string>
+    <string name="assistant_report_reason_unsafe">Unsafe or harmful advice</string>
+    <string name="assistant_report_reason_offtopic">Off-topic or ignored my question</string>
+    <string name="assistant_report_reason_other">Other</string>
+    <string name="assistant_report_detail_placeholder">Tell us more (optional)</string>
+    <string name="assistant_report_submit">Submit report</string>
+    <string name="assistant_report_cancel">Cancel</string>
+    <string name="assistant_report_sent">Reported — thank you</string>
     <string name="price_history_back_description">Back</string>
     <string name="price_history_ask_assistant_description">Ask the assistant</string>
     <string name="cruises_share_description">Share this cruise</string>

@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cruisewatch-ai-reports",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-12",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cruisewatch-ai-reports",
+      "database_id": "1d5ae7ff-b140-443a-8822-beaaa111ee90"
+    }
+  ],
+  "triggers": {
+    "crons": ["0 9 * * 1"]
+  }
+}

@@ -40,6 +40,8 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
     private val _isThinking = MutableStateFlow(false)
     val isThinking: StateFlow<Boolean> = _isThinking.asStateFlow()
 
+    private val reportRepository = AiReportRepository()
+
     private var engine: LlmChatEngine? = null
     private var loadedModelFile: java.io.File? = null
     private var focusCruiseId: String? = null
@@ -169,6 +171,12 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
             primedLanguageCode = languageCode
             _messages.value = _messages.value + ChatMessage(fromUser = false, text = response)
             _isThinking.value = false
+        }
+    }
+
+    fun reportMessage(userMessage: String, aiMessage: String, reason: AiReportReason, detail: String?) {
+        viewModelScope.launch {
+            reportRepository.submitReport(userMessage, aiMessage, reason, detail)
         }
     }
 
