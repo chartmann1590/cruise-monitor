@@ -81,8 +81,6 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.cruisewatch.app
-          releaseFiles: |
-            app/build/outputs/bundle/release/app-release.aab
-            wear/build/outputs/bundle/release/wear-release.aab
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab,wear/build/outputs/bundle/release/wear-release.aab
           track: ${{ github.event.inputs.track || 'internal' }}
           status: ${{ github.event.inputs.status || 'completed' }}
