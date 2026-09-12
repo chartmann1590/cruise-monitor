@@ -41,7 +41,16 @@ Goal: ship the app publicly, with releases published automatically by CI.
 2. Go through **App content** (data safety form, target audience, ads declaration, content rating
    questionnaire) if not already complete — this is a compliance step Google requires a human to attest to,
    not something that should be automated.
-3. Review the draft release, then click **Review release → Start rollout to Production** (or promote through
+3. **App content → App access**: the app requires sign-in to see any real functionality, so Play Store review
+   needs working login credentials. A dedicated reviewer account exists — email/password created directly via
+   the Firebase Auth REST API (the same `accounts:signUp` endpoint the app's own sign-up flow calls) and
+   verified end-to-end on a physical device (fresh install → language picker → sign-in → lands on the
+   Cruises tab with no errors). Enter its email/password into Play Console's **App access** form under
+   "All or some functionality is restricted" (credentials given to the developer directly, not stored in this
+   repo). It has no tracked cruises or alerts, which is expected — a reviewer signing in sees the app's
+   empty state, which is real, working functionality (add-cruise flow, tab navigation, settings, assistant tab
+   all reachable).
+4. Review the draft release, then click **Review release → Start rollout to Production** (or promote through
    internal/closed testing first if you'd rather soak-test before a public release — the draft is on the
    `production` track already, but nothing goes live until you explicitly start the rollout).
 
