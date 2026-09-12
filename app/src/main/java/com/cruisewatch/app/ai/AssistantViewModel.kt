@@ -29,6 +29,7 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
     private val repository = CruiseRepository()
     private val policyRepository by lazy { PolicyRepository(getApplication()) }
     private val prefs by lazy { getApplication<Application>().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE) }
+    private val languagePrefs by lazy { com.cruisewatch.app.i18n.LanguagePrefs(getApplication()) }
 
     private val _state = MutableStateFlow<AssistantState>(AssistantState.CheckingModel)
     val state: StateFlow<AssistantState> = _state.asStateFlow()
@@ -103,7 +104,7 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
             val cruises = runCatching { repository.trackedCruises().first() }.getOrDefault(emptyList())
             val alerts = runCatching { repository.alerts().first() }.getOrDefault(emptyList())
             val systemPrompt = RefundAssistantContext.buildSystemPrompt(
-                cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, cruiseId,
+                cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, cruiseId, languageCode = languagePrefs.getSelectedLanguage(),
             )
             val kickoff = "Greet me and immediately explain, step by step, exactly what I need to do right now " +
                 "to get my refund for this cruise."
@@ -129,7 +130,7 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
                 val cruises = runCatching { repository.trackedCruises().first() }.getOrDefault(emptyList())
                 val alerts = runCatching { repository.alerts().first() }.getOrDefault(emptyList())
                 RefundAssistantContext.buildSystemPrompt(
-                    cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, focusCruiseId,
+                    cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, focusCruiseId, languageCode = languagePrefs.getSelectedLanguage(),
                 )
             } else {
                 null

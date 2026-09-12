@@ -15,8 +15,13 @@ object RefundAssistantContext {
         alerts: List<Alert>,
         policyFor: (String) -> CruiseLinePolicy?,
         focusCruiseId: String? = null,
+        languageCode: String = com.google.mlkit.nl.translate.TranslateLanguage.ENGLISH,
     ): String {
         val sb = StringBuilder()
+        val language = com.cruisewatch.app.i18n.SupportedLanguages.byCode(languageCode)
+        if (language != null && language.code != com.cruisewatch.app.i18n.SupportedLanguages.ENGLISH.code) {
+            sb.append("Respond ONLY in ${language.nativeName}. Never respond in English unless the user writes in English.\n\n")
+        }
         sb.append(
             "You are the CruiseWatch Refund Assistant, built into a cruise fare price-drop tracking app. " +
                 "Your ONLY job is helping this specific user get money back (refund, onboard credit, or upgrade) " +
