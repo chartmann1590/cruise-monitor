@@ -78,7 +78,6 @@ private val pages = listOf(
 @Composable
 fun OnboardingScreen(
     translationManager: TranslationManager,
-    currentLanguageCode: String,
     onFinish: () -> Unit,
 ) {
     var languageChosen by remember { mutableStateOf(false) }
@@ -86,7 +85,6 @@ fun OnboardingScreen(
     if (!languageChosen) {
         LanguagePickerScreen(
             manager = translationManager,
-            currentLanguageCode = currentLanguageCode,
             onLanguageApplied = { languageChosen = true },
             onCancel = { languageChosen = true },
         )

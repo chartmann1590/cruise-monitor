@@ -100,11 +100,8 @@ fun CruiseWatchNavHost(
     }
 
     if (!hasOnboarded) {
-        val translationState by translationManager.state.collectAsState()
-        val currentLanguageCode = (translationState as? com.cruisewatch.app.i18n.TranslationState.Ready)?.language?.code ?: "en"
         OnboardingScreen(
             translationManager = translationManager,
-            currentLanguageCode = currentLanguageCode,
             onFinish = {
                 prefs.edit().putBoolean(KEY_ONBOARDED, true).apply()
                 hasOnboarded = true

@@ -38,7 +38,6 @@ fun SettingsScreen(translationManager: TranslationManager, onBack: () -> Unit) {
     if (showLanguagePicker) {
         LanguagePickerScreen(
             manager = translationManager,
-            currentLanguageCode = currentCode,
             onLanguageApplied = { showLanguagePicker = false },
             onCancel = { showLanguagePicker = false },
         )

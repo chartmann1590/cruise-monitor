@@ -101,11 +101,7 @@ fun AlertsScreen(
                 Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
                     Text(tr(R.string.alerts_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
                     Text(
-                        tr(
-                            R.string.alerts_unclaimed_count,
-                            alertList.count { !it.claimed },
-                            if (alertList.count { !it.claimed } == 1) "" else "s",
-                        ),
+                        tr(R.string.alerts_unclaimed_count, alertList.count { !it.claimed }),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.92f),
                     )
@@ -216,7 +212,7 @@ private fun AlertCard(
                     }
                     shareText(context, shareSubject, text)
                 }) {
-                    Icon(Icons.Filled.Share, contentDescription = "Share this alert")
+                    Icon(Icons.Filled.Share, contentDescription = tr(R.string.alerts_share_description))
                 }
             }
             Text(

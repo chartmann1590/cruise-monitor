@@ -171,7 +171,7 @@ private fun ChatView(viewModel: AssistantViewModel) {
                 input = ""
                 scope.launch { viewModel.sendMessage(text) }
             }) {
-                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = Teal)
+                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = tr(R.string.assistant_send_description), tint = Teal)
             }
         }
     }

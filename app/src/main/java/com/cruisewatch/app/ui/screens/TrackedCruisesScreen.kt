@@ -83,11 +83,7 @@ fun TrackedCruisesScreen(
                     ) {
                         Text(tr(R.string.cruises_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
                         Text(
-                            tr(
-                                R.string.cruises_sailing_count,
-                                cruiseList.size,
-                                if (cruiseList.size == 1) "" else "s",
-                            ),
+                            tr(R.string.cruises_sailing_count, cruiseList.size),
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.White.copy(alpha = 0.9f),
                         )
@@ -191,7 +187,7 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
                 IconButton(onClick = {
                     com.cruisewatch.app.ui.shareText(context, shareSubject, shareMessage)
                 }) {
-                    Icon(Icons.Filled.Share, contentDescription = "Share this cruise", tint = Color.White)
+                    Icon(Icons.Filled.Share, contentDescription = tr(R.string.cruises_share_description), tint = Color.White)
                 }
             }
         }
@@ -227,7 +223,7 @@ private fun TrackedCruiseCard(cruise: TrackedCruise, onClick: () -> Unit) {
                     )
                     Text(
                         if (daysLeft >= 0) {
-                            " " + tr(R.string.cruises_days_left_urgent, daysLeft, if (daysLeft == 1) "" else "s")
+                            " " + tr(R.string.cruises_days_left_urgent, daysLeft)
                         } else {
                             " " + tr(R.string.cruises_payment_due_passed)
                         },

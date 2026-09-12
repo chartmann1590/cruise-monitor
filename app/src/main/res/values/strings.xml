@@ -25,7 +25,7 @@
     <string name="alerts_mark_claimed">Mark as claimed</string>
     <string name="alerts_empty_title">No price drops found yet</string>
     <string name="alerts_empty_subtitle">We\'re watching your fares 24/7 — you\'ll get a push notification the moment one drops.</string>
-    <string name="alerts_unclaimed_count">%1$d unclaimed drop%2$s waiting for you</string>
+    <string name="alerts_unclaimed_count">Unclaimed drops waiting for you: %1$d</string>
     <string name="alerts_dropped_amount">Dropped $%1$s</string>
     <string name="alerts_new_fare_summary">New fare $%1$s · you paid $%2$s</string>
     <string name="alerts_applies_under">Applies under: %1$s</string>
@@ -51,7 +51,7 @@
     <string name="assistant_ram_recommend">Your device has about %1$s GB of RAM — we recommend:</string>
     <string name="claims_title">Policies</string>
     <string name="claims_how_to_refund">How to get your refund</string>
-    <string name="claims_subtitle">Every covered line\'s price-protection rules, in plain English.</string>
+    <string name="claims_subtitle">Every covered line\'s price-protection rules, in plain language.</string>
     <string name="claims_policy_details">Policy details</string>
     <string name="claims_excludes">Excludes: %1$s</string>
     <string name="claims_eligibility">Eligibility: %1$s</string>
@@ -68,7 +68,7 @@
     <string name="sign_in_signin_button">Sign in</string>
     <string name="sign_in_toggle_to_signin">Already have an account? Sign in</string>
     <string name="sign_in_toggle_to_signup">New here? Create an account</string>
-    <string name="cruises_sailing_count">%1$d sailing%2$s being watched 24/7</string>
+    <string name="cruises_sailing_count">Sailings being watched 24/7: %1$d</string>
     <string name="cruises_cabin_sailing">%1$s%2$s · Sailing %3$s</string>
     <string name="cruises_guarantee_suffix">(Guarantee)</string>
     <string name="cruises_empty_title">No cruises tracked yet</string>
@@ -76,7 +76,7 @@
     <string name="cruises_share_message">I\'m watching the fare on %1$s (sailing %2$s) with CruiseWatch — you paid %3$s %4$s, and I\'ll let you know the moment the price drops so you can claim a refund.\n\nhttps://cruisewatch-app.web.app</string>
     <string name="cruises_share_subject">I\'m tracking your cruise fare</string>
     <string name="cruises_you_paid_label">You paid</string>
-    <string name="cruises_days_left_urgent">%1$d day%2$s left to lock in your best price — final payment due</string>
+    <string name="cruises_days_left_urgent">Days left before final payment: %1$d</string>
     <string name="cruises_payment_due_passed">Final payment was due</string>
     <string name="cruises_final_payment_date">Final payment date: %1$s</string>
     <string name="onboarding_page1_title">Add the cruise you already booked</string>
@@ -103,4 +103,9 @@
     <string name="settings_title">Settings</string>
     <string name="settings_language_row">Language</string>
     <string name="settings_back">Back</string>
+    <string name="alerts_share_description">Share this alert</string>
+    <string name="assistant_send_description">Send</string>
+    <string name="price_history_back_description">Back</string>
+    <string name="price_history_ask_assistant_description">Ask the assistant</string>
+    <string name="cruises_share_description">Share this cruise</string>
 </resources>

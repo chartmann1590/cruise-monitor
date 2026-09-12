@@ -53,11 +53,11 @@ fun PriceHistoryScreen(
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr(R.string.price_history_back_description))
             }
             Text(tr(R.string.price_history_title), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
             IconButton(onClick = onAskAssistant) {
-                Icon(Icons.Filled.SmartToy, contentDescription = "Ask the assistant")
+                Icon(Icons.Filled.SmartToy, contentDescription = tr(R.string.price_history_ask_assistant_description))
             }
         }
         Text(

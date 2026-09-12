@@ -37,7 +37,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun LanguagePickerScreen(
     manager: TranslationManager,
-    currentLanguageCode: String,
     onLanguageApplied: (String) -> Unit,
     onCancel: () -> Unit,
 ) {
