@@ -41,8 +41,10 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
     val isThinking: StateFlow<Boolean> = _isThinking.asStateFlow()
 
     private var engine: LlmChatEngine? = null
+    private var loadedModelFile: java.io.File? = null
     private var focusCruiseId: String? = null
     private var systemPrimed = false
+    private var primedLanguageCode: String? = null
 
     val recommendedTier = DeviceCapability.recommend(application)
     val deviceRamGb = DeviceCapability.totalRamGb(application)
@@ -72,7 +74,9 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
     private fun loadEngine(file: java.io.File) {
         viewModelScope.launch {
             _state.value = AssistantState.Loading
+            loadedModelFile = file
             systemPrimed = false
+            primedLanguageCode = null
             runCatching {
                 val newEngine = LlmChatEngine(getApplication(), file)
                 newEngine.load()
@@ -101,10 +105,12 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
         val activeEngine = engine ?: return
         _isThinking.value = true
         viewModelScope.launch {
+            val languageCode = languagePrefs.getSelectedLanguage() ?: com.cruisewatch.app.i18n.SupportedLanguages.ENGLISH.code
             val cruises = runCatching { repository.trackedCruises().first() }.getOrDefault(emptyList())
             val alerts = runCatching { repository.alerts().first() }.getOrDefault(emptyList())
             val systemPrompt = RefundAssistantContext.buildSystemPrompt(
-                cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, cruiseId, languageCode = languagePrefs.getSelectedLanguage() ?: com.cruisewatch.app.i18n.SupportedLanguages.ENGLISH.code,
+                cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, cruiseId,
+                languageCode = languageCode, isAutomatedKickoff = true,
             )
             val kickoff = "Greet me and immediately explain, step by step, exactly what I need to do right now " +
                 "to get my refund for this cruise."
@@ -113,24 +119,46 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
                     "Hi! I can see this cruise's price drop — let me know if you'd like the steps to claim it."
                 }
             systemPrimed = true
+            primedLanguageCode = languageCode
             _messages.value = listOf(ChatMessage(fromUser = false, text = response))
             _isThinking.value = false
         }
     }
 
+    /**
+     * MediaPipe's session can only take the system prompt on its FIRST turn — re-sending it later
+     * floods the small context window and degrades quality (see [LlmChatEngine.send]). So if the
+     * user changes language mid-conversation via Settings, the only way to honor the new language
+     * is a fresh session: reload the model, which naturally resets [systemPrimed] so the next turn
+     * sends a system prompt again, this time built with the new language.
+     */
+    private fun recreateEngineForLanguageChange() {
+        val file = loadedModelFile ?: return
+        engine?.close()
+        val newEngine = LlmChatEngine(getApplication(), file)
+        newEngine.load()
+        engine = newEngine
+        systemPrimed = false
+    }
+
     fun sendMessage(text: String) {
         if (text.isBlank()) return
-        val activeEngine = engine ?: return
+        if (engine == null) return
         _messages.value = _messages.value + ChatMessage(fromUser = true, text = text)
         _isThinking.value = true
         viewModelScope.launch {
-            // The system prompt is only sent once, on the first turn of the session — the model's
-            // own session state carries the conversation from there. See LlmChatEngine.send().
+            val languageCode = languagePrefs.getSelectedLanguage() ?: com.cruisewatch.app.i18n.SupportedLanguages.ENGLISH.code
+            if (systemPrimed && primedLanguageCode != null && primedLanguageCode != languageCode) {
+                recreateEngineForLanguageChange()
+            }
+            val activeEngine = engine ?: return@launch
+            // The system prompt is only sent once, on the first turn of the (possibly just-reset)
+            // session — the model's own session state carries the conversation from there.
             val systemPrompt = if (!systemPrimed) {
                 val cruises = runCatching { repository.trackedCruises().first() }.getOrDefault(emptyList())
                 val alerts = runCatching { repository.alerts().first() }.getOrDefault(emptyList())
                 RefundAssistantContext.buildSystemPrompt(
-                    cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, focusCruiseId, languageCode = languagePrefs.getSelectedLanguage() ?: com.cruisewatch.app.i18n.SupportedLanguages.ENGLISH.code,
+                    cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, focusCruiseId, languageCode = languageCode,
                 )
             } else {
                 null
@@ -138,6 +166,7 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
             val response = runCatching { activeEngine.send(text, systemPrompt) }
                 .getOrElse { "Sorry, something went wrong answering that: ${it.message}" }
             systemPrimed = true
+            primedLanguageCode = languageCode
             _messages.value = _messages.value + ChatMessage(fromUser = false, text = response)
             _isThinking.value = false
         }

@@ -137,6 +137,18 @@ class TranslationManager(
     private val mutex = Mutex()
 
     /**
+     * Whether selecting [code] right now would apply instantly with no ML Kit call — English
+     * always qualifies; any other language needs a fingerprint-matching cache. Used by the picker
+     * to decide whether a Wi-Fi-required download is actually about to happen before prompting for
+     * cellular permission.
+     */
+    fun hasValidCache(code: String): Boolean {
+        if (code == SupportedLanguages.ENGLISH.code) return true
+        val fingerprint = fingerprintOf(catalog.allEntries())
+        return prefs.getCachedTranslations(code, fingerprint) != null
+    }
+
+    /**
      * Applies the user's previously chosen language, if any.
      *
      * If they never chose one, resolve straight to English WITHOUT touching ML Kit — auto-applying
@@ -170,13 +182,17 @@ class TranslationManager(
         }
 
         // The fingerprinted lookup above missed — either there's no cache at all, or there's a
-        // stale one from before the last content change. Only in the latter case is there
-        // something worth showing while we retranslate: seed `_activeStrings` with it so the app
-        // keeps rendering the last-known-good translation instead of flashing to English for the
-        // duration of the retranslate. `setReady` below will replace this with the fresh,
-        // fingerprint-matching map once translation succeeds.
-        prefs.getStaleCachedTranslations(language.code)?.let { stale ->
-            _activeStrings.value = stale
+        // stale one from before the last content change. Only seed `_activeStrings` from it when
+        // nothing is currently active (a cold launch, where the alternative is flashing English
+        // for the retranslate's duration) — never when the user already has a WORKING language on
+        // screen and is switching to a different one, since that stale blob belongs to the NEW
+        // language and would replace a good UI with stale/wrong content if this switch then fails.
+        // `setReady` below replaces this with the fresh, fingerprint-matching map on success; on
+        // failure `_activeStrings` is simply left as whatever it already was.
+        if (_activeStrings.value.isEmpty()) {
+            prefs.getStaleCachedTranslations(language.code)?.let { stale ->
+                _activeStrings.value = stale
+            }
         }
 
         _state.value = TranslationState.Downloading(language)
@@ -184,9 +200,18 @@ class TranslationManager(
         try {
             translator.ensureModelDownloaded(allowCellular)
             _state.value = TranslationState.Translating(language)
+            // Each entry falls back to English independently on its own translate failure, the
+            // same as an unsafe translation does below — one bad/failing string must not abort
+            // every other label in the language.
             val translated = entries.mapValues { (_, english) ->
-                val result = translator.translate(english)
-                if (isSafeTranslation(english, result)) result else english
+                val result = try {
+                    translator.translate(english)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    null
+                }
+                if (result != null && isSafeTranslation(english, result)) result else english
             }
             prefs.setCachedTranslations(language.code, translated, fingerprint)
             prefs.setSelectedLanguage(language.code)

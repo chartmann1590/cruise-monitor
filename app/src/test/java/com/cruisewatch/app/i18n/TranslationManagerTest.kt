@@ -276,6 +276,96 @@ class TranslationManagerTest {
     }
 
     @Test
+    fun `switching from a working language does not show a different language's stale cache mid-flight`() = runTest {
+        val prefs = LanguagePrefs(context)
+        // French has a stale cached blob left over from before an app update — its fingerprint
+        // won't match the current catalog.
+        val staleFrenchFingerprint = fingerprintOf(mapOf(1 to "Old copy"))
+        prefs.setCachedTranslations(TranslateLanguage.FRENCH, mapOf(1 to "FR-STALE:Old"), staleFrenchFingerprint)
+
+        val gate = CompletableDeferred<Unit>()
+        val manager = TranslationManager(
+            context = context,
+            prefs = prefs,
+            translatorFactory = { code ->
+                if (code == TranslateLanguage.SPANISH) {
+                    FakeTranslator("ES")
+                } else {
+                    object : TranslatorClient {
+                        override suspend fun ensureModelDownloaded(allowCellular: Boolean) {}
+                        override suspend fun translate(text: String): String {
+                            gate.await()
+                            return "FR-FRESH:$text"
+                        }
+                        override fun close() {}
+                    }
+                }
+            },
+            catalog = FakeCatalog(mapOf(1 to "Hello")),
+        )
+
+        // The user already has a working, active language.
+        manager.selectLanguage(TranslateLanguage.SPANISH)
+        assertEquals(mapOf(1 to "ES:Hello"), manager.activeStrings.value)
+
+        // Now they switch to French, whose cache is stale and must be retranslated.
+        val job = launch { manager.selectLanguage(TranslateLanguage.FRENCH) }
+        runCurrent()
+
+        // While French is downloading/translating, the app body must keep showing the WORKING
+        // Spanish translation — never French's stale (and possibly wrong-content) cache.
+        assertEquals(mapOf(1 to "ES:Hello"), manager.activeStrings.value)
+
+        gate.complete(Unit)
+        job.join()
+
+        // Once French succeeds, it takes over normally.
+        assertEquals(mapOf(1 to "FR-FRESH:Hello"), manager.activeStrings.value)
+    }
+
+    @Test
+    fun `a single entry's translate failure falls back to english without aborting the rest`() = runTest {
+        val prefs = LanguagePrefs(context)
+        val translator = object : TranslatorClient {
+            override suspend fun ensureModelDownloaded(allowCellular: Boolean) {}
+            override suspend fun translate(text: String): String {
+                if (text == "Boom") throw IllegalStateException("ML Kit hiccup")
+                return "ES:$text"
+            }
+            override fun close() {}
+        }
+        val manager = TranslationManager(
+            context = context,
+            prefs = prefs,
+            translatorFactory = { translator },
+            catalog = FakeCatalog(mapOf(1 to "Hello", 2 to "Boom", 3 to "Bye")),
+        )
+
+        manager.selectLanguage(TranslateLanguage.SPANISH)
+
+        val state = manager.state.value as TranslationState.Ready
+        assertEquals(mapOf(1 to "ES:Hello", 2 to "Boom", 3 to "ES:Bye"), state.strings)
+    }
+
+    @Test
+    fun `hasValidCache is true for english and a fingerprint-matching cache, false otherwise`() = runTest {
+        val prefs = LanguagePrefs(context)
+        val manager = TranslationManager(
+            context = context,
+            prefs = prefs,
+            translatorFactory = { FakeTranslator("ES") },
+            catalog = FakeCatalog(mapOf(1 to "Hello")),
+        )
+
+        assertTrue(manager.hasValidCache(TranslateLanguage.ENGLISH))
+        assertFalse(manager.hasValidCache(TranslateLanguage.SPANISH))
+
+        manager.selectLanguage(TranslateLanguage.SPANISH)
+
+        assertTrue(manager.hasValidCache(TranslateLanguage.SPANISH))
+    }
+
+    @Test
     fun `overlapping language selections are serialized`() = runTest {
         val prefs = LanguagePrefs(context)
         val manager = TranslationManager(

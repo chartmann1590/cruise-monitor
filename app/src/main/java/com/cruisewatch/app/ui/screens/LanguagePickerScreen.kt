@@ -1,5 +1,8 @@
 package com.cruisewatch.app.ui.screens
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.R
 import com.cruisewatch.app.i18n.SupportedLanguage
@@ -34,6 +38,13 @@ import com.cruisewatch.app.i18n.TranslationState
 import com.cruisewatch.app.i18n.tr
 import kotlinx.coroutines.launch
 
+private fun isWifiConnected(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return false
+    val network = connectivityManager.activeNetwork ?: return false
+    val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+    return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+}
+
 @Composable
 fun LanguagePickerScreen(
     manager: TranslationManager,
@@ -42,13 +53,29 @@ fun LanguagePickerScreen(
 ) {
     val state by manager.state.collectAsState()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     var query by remember { mutableStateOf("") }
     var pendingCellularLanguage by remember { mutableStateOf<SupportedLanguage?>(null) }
 
-    fun select(language: SupportedLanguage, allowCellular: Boolean = false) {
+    fun proceed(language: SupportedLanguage, allowCellular: Boolean) {
         scope.launch {
             manager.selectLanguage(language.code, allowCellular)
-            onLanguageApplied(language.code)
+            // Only advance past the picker on a confirmed success for the requested language —
+            // selectLanguage() catches its own failures into TranslationState.Failed and returns
+            // normally, so this must be checked explicitly rather than assumed. On failure the
+            // `when` below renders ErrorState instead, letting the user retry or continue in English.
+            val result = manager.state.value
+            if (result is TranslationState.Ready && result.language.code == language.code) {
+                onLanguageApplied(language.code)
+            }
+        }
+    }
+
+    fun select(language: SupportedLanguage) {
+        if (!manager.hasValidCache(language.code) && !isWifiConnected(context)) {
+            pendingCellularLanguage = language
+        } else {
+            proceed(language, allowCellular = false)
         }
     }
 
@@ -71,7 +98,7 @@ fun LanguagePickerScreen(
             text = { Text(tr(R.string.language_picker_wifi_required_body)) },
             confirmButton = {
                 TextButton(onClick = {
-                    select(language, allowCellular = true)
+                    proceed(language, allowCellular = true)
                     pendingCellularLanguage = null
                 }) { Text(tr(R.string.language_picker_wifi_now)) }
             },
