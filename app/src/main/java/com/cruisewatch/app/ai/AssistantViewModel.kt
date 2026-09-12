@@ -104,7 +104,7 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
             val cruises = runCatching { repository.trackedCruises().first() }.getOrDefault(emptyList())
             val alerts = runCatching { repository.alerts().first() }.getOrDefault(emptyList())
             val systemPrompt = RefundAssistantContext.buildSystemPrompt(
-                cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, cruiseId, languageCode = languagePrefs.getSelectedLanguage(),
+                cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, cruiseId, languageCode = languagePrefs.getSelectedLanguage() ?: com.cruisewatch.app.i18n.SupportedLanguages.ENGLISH.code,
             )
             val kickoff = "Greet me and immediately explain, step by step, exactly what I need to do right now " +
                 "to get my refund for this cruise."
@@ -130,7 +130,7 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
                 val cruises = runCatching { repository.trackedCruises().first() }.getOrDefault(emptyList())
                 val alerts = runCatching { repository.alerts().first() }.getOrDefault(emptyList())
                 RefundAssistantContext.buildSystemPrompt(
-                    cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, focusCruiseId, languageCode = languagePrefs.getSelectedLanguage(),
+                    cruises, alerts, { lineId -> policyRepository.forLine(lineId) }, focusCruiseId, languageCode = languagePrefs.getSelectedLanguage() ?: com.cruisewatch.app.i18n.SupportedLanguages.ENGLISH.code,
                 )
             } else {
                 null

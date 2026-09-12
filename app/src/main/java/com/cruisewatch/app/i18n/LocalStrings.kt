@@ -26,13 +26,20 @@ fun tr(@StringRes id: Int): String {
 fun tr(@StringRes id: Int, vararg args: Any): String {
     val context = LocalContext.current
     val template = LocalStrings.current[id] ?: context.getString(id)
-    return String.format(template, *args)
+    // A machine translation can smuggle in a stray `%` that survives isSafeTranslation's placeholder
+    // check and makes String.format throw inside composition. Degrade this one label to English
+    // rather than taking the whole screen down.
+    return runCatching { String.format(template, *args) }
+        .getOrElse { context.getString(id, *args) }
 }
 
-/** Provides [LocalStrings] from the given [manager]'s current state; screens below this render in whatever language is active. */
+/**
+ * Provides [LocalStrings] from the given [manager]; screens below this render in whatever language
+ * was last successfully applied — a download that is still running, or one that failed, leaves the
+ * existing language in place instead of snapping the whole app back to English.
+ */
 @Composable
 fun ProvideTranslations(manager: TranslationManager, content: @Composable () -> Unit) {
-    val state by manager.state.collectAsState()
-    val strings = (state as? TranslationState.Ready)?.strings ?: emptyMap()
+    val strings by manager.activeStrings.collectAsState()
     CompositionLocalProvider(LocalStrings provides strings, content = content)
 }
