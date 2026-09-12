@@ -47,17 +47,16 @@ fun LanguagePickerScreen(
     var pendingCellularLanguage by remember { mutableStateOf<SupportedLanguage?>(null) }
 
     fun select(language: SupportedLanguage, allowCellular: Boolean = false) {
-        scope.launch { manager.selectLanguage(language.code, allowCellular) }
+        scope.launch {
+            manager.selectLanguage(language.code, allowCellular)
+            onLanguageApplied(language.code)
+        }
     }
 
     when (val s = state) {
         is TranslationState.Downloading -> BlockingProgress(tr(R.string.language_picker_downloading))
         is TranslationState.Translating -> BlockingProgress(tr(R.string.language_picker_translating))
-        is TranslationState.Ready -> if (s.language.code != currentLanguageCode) {
-            onLanguageApplied(s.language.code)
-        } else {
-            LanguageList(query, { query = it }, ::select, onCancel)
-        }
+        is TranslationState.Ready -> LanguageList(query, { query = it }, ::select, onCancel)
         is TranslationState.Failed -> ErrorState(
             message = s.message,
             onRetry = { select(s.language) },
