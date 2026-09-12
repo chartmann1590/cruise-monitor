@@ -31,6 +31,16 @@ on:
           - alpha
           - beta
           - production
+      status:
+        description: "Release status — 'draft' saves it unpublished in Play Console for manual review before rollout"
+        required: true
+        default: "completed"
+        type: choice
+        options:
+          - completed
+          - draft
+          - halted
+          - inProgress
 
 jobs:
   release:
@@ -75,4 +85,4 @@ jobs:
             app/build/outputs/bundle/release/app-release.aab
             wear/build/outputs/bundle/release/wear-release.aab
           track: ${{ github.event.inputs.track || 'internal' }}
-          status: completed
+          status: ${{ github.event.inputs.status || 'completed' }}
