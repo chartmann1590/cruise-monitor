@@ -114,7 +114,9 @@ fun CruiseWatchNavHost(
     }
 
     if (!isSignedIn) {
-        SignInScreen(authViewModel, onGoogleSignInClick = onGoogleSignInClick)
+        ProvideTranslations(translationManager) {
+            SignInScreen(authViewModel, onGoogleSignInClick = onGoogleSignInClick)
+        }
         return
     }
 
