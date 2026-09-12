@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.R
+import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.data.Alert
 import com.cruisewatch.app.data.CruiseLinePolicy
 import com.cruisewatch.app.data.TrackedCruise
@@ -71,19 +72,19 @@ fun AlertsScreen(
             PhotoHero(photoRes = R.drawable.hero_celebrate, height = 190.dp) {
                 Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
                     Icon(Icons.Filled.NotificationsActive, contentDescription = null, tint = Color.White)
-                    Text("Price Alerts", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+                    Text(tr(R.string.alerts_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
                 }
             }
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
                     Text("🔭", style = MaterialTheme.typography.headlineLarge)
                     Text(
-                        "No price drops found yet",
+                        tr(R.string.alerts_empty_title),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(top = 12.dp),
                     )
                     Text(
-                        "We're watching your fares 24/7 — you'll get a push notification the moment one drops.",
+                        tr(R.string.alerts_empty_subtitle),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 4.dp),
@@ -98,9 +99,9 @@ fun AlertsScreen(
         item {
             PhotoHero(photoRes = R.drawable.hero_celebrate, height = 190.dp) {
                 Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
-                    Text("Price Alerts", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+                    Text(tr(R.string.alerts_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
                     Text(
-                        "${alertList.count { !it.claimed }} unclaimed drop${if (alertList.count { !it.claimed } == 1) "" else "s"} waiting for you",
+                        tr(R.string.alerts_unclaimed_count, alertList.count { !it.claimed }),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.92f),
                     )
@@ -128,6 +129,18 @@ private fun AlertCard(
     onAskAssistant: () -> Unit,
 ) {
     val context = LocalContext.current
+    val shareIntro = tr(R.string.alerts_share_intro)
+    val sharePriceLine = tr(
+        R.string.alerts_share_price_line,
+        "%.2f".format(alert.dropAmount),
+        "%.2f".format(alert.currentFare),
+        "%.2f".format(alert.farePaid),
+    )
+    val shareAppliesUnder = tr(R.string.alerts_applies_under, alert.policyId)
+    val shareHowToClaimTemplate = tr(R.string.alerts_share_how_to_claim)
+    val shareCallTemplate = tr(R.string.alerts_share_call)
+    val shareFooter = tr(R.string.alerts_share_footer)
+    val shareSubject = tr(R.string.alerts_share_subject)
     val pop by animateFloatAsState(
         targetValue = 1f,
         animationSpec = tween(500, easing = EaseOutBack),
@@ -167,13 +180,17 @@ private fun AlertCard(
                             modifier = Modifier.size(20.dp),
                         )
                         Text(
-                            " Dropped $${"%.2f".format(alert.dropAmount)}",
+                            " " + tr(R.string.alerts_dropped_amount, "%.2f".format(alert.dropAmount)),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.secondary,
                         )
                     }
                     Text(
-                        "New fare $${"%.2f".format(alert.currentFare)} · you paid $${"%.2f".format(alert.farePaid)}",
+                        tr(
+                            R.string.alerts_new_fare_summary,
+                            "%.2f".format(alert.currentFare),
+                            "%.2f".format(alert.farePaid),
+                        ),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -183,23 +200,23 @@ private fun AlertCard(
                         ?.mapIndexed { i, step -> "${i + 1}. $step" }
                         ?.joinToString("\n")
                         ?.takeIf { it.isNotBlank() }
-                    val phone = policy?.phone?.takeIf { it.isNotBlank() }?.let { "\nCall: $it" } ?: ""
+                    val phone = policy?.phone?.takeIf { it.isNotBlank() }?.let { shareCallTemplate.format(it) } ?: ""
                     val text = buildString {
-                        append("I'm watching this cruise's fare with CruiseWatch — good news!\n\n")
+                        append(shareIntro)
                         append(shipLine)
-                        append("Price dropped $${"%.2f".format(alert.dropAmount)} — new fare $${"%.2f".format(alert.currentFare)} (paid $${"%.2f".format(alert.farePaid)}).\n")
-                        append("Applies under: ${alert.policyId}\n")
-                        if (steps != null) append("\nHow to claim it:\n$steps\n")
+                        append(sharePriceLine)
+                        append("$shareAppliesUnder\n")
+                        if (steps != null) append("\n" + shareHowToClaimTemplate.format(steps))
                         append(phone)
-                        append("\n\nTracked with CruiseWatch: https://cruisewatch-app.web.app")
+                        append(shareFooter)
                     }
-                    shareText(context, "Your cruise fare dropped!", text)
+                    shareText(context, shareSubject, text)
                 }) {
-                    Icon(Icons.Filled.Share, contentDescription = "Share this alert")
+                    Icon(Icons.Filled.Share, contentDescription = tr(R.string.alerts_share_description))
                 }
             }
             Text(
-                "Applies under: ${alert.policyId}",
+                shareAppliesUnder,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp, start = 60.dp),
@@ -207,7 +224,7 @@ private fun AlertCard(
 
             if (!alert.claimed && policy != null && policy.howToClaim.isNotEmpty()) {
                 Text(
-                    "How to get your refund",
+                    tr(R.string.claims_how_to_refund),
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
                 )
@@ -234,20 +251,20 @@ private fun AlertCard(
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 ) {
                     Icon(Icons.Filled.SmartToy, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Text(" Ask the assistant about this", modifier = Modifier.padding(start = 4.dp))
+                    Text(" " + tr(R.string.alerts_ask_assistant), modifier = Modifier.padding(start = 4.dp))
                 }
             }
 
             Row(modifier = Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.End) {
                 if (alert.claimed) {
                     Text(
-                        "Claimed",
+                        tr(R.string.alerts_claimed_label),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 } else {
                     TextButton(onClick = onMarkClaimed) {
-                        Text("Mark as claimed")
+                        Text(tr(R.string.alerts_mark_claimed))
                     }
                 }
             }

@@ -37,15 +37,20 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.cruisewatch.app.R
 import com.cruisewatch.app.auth.AuthViewModel
 import com.cruisewatch.app.data.CruiseRepository
 import com.cruisewatch.app.data.PolicyRepository
+import com.cruisewatch.app.i18n.ProvideTranslations
+import com.cruisewatch.app.i18n.TranslationManager
+import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.ui.screens.AddCruiseScreen
 import com.cruisewatch.app.ui.screens.AlertsScreen
 import com.cruisewatch.app.ui.screens.AssistantScreen
 import com.cruisewatch.app.ui.screens.ClaimsScreen
 import com.cruisewatch.app.ui.screens.OnboardingScreen
 import com.cruisewatch.app.ui.screens.PriceHistoryScreen
+import com.cruisewatch.app.ui.screens.SettingsScreen
 import com.cruisewatch.app.ui.screens.SignInScreen
 import com.cruisewatch.app.ui.screens.TrackedCruisesScreen
 import com.cruisewatch.app.ui.theme.Teal
@@ -62,6 +67,7 @@ private object Routes {
     const val ALERTS = "alerts"
     const val CLAIMS = "claims"
     const val ASSISTANT = "assistant?cruiseId={cruiseId}"
+    const val SETTINGS = "settings"
 
     fun priceHistory(cruiseId: String) = "price_history/$cruiseId"
     fun assistant(cruiseId: String? = null) = if (cruiseId != null) "assistant?cruiseId=$cruiseId" else "assistant"
@@ -79,6 +85,8 @@ fun CruiseWatchNavHost(
     val navController = rememberNavController()
     val isSignedIn by authViewModel.isSignedIn.collectAsState()
     val context = LocalContext.current
+    val translationManager = remember { TranslationManager(context) }
+    androidx.compose.runtime.LaunchedEffect(Unit) { translationManager.restoreSavedLanguage() }
     val policyRepository = remember { PolicyRepository(context) }
     val scope = rememberCoroutineScope()
     val prefs = remember { context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE) }
@@ -92,105 +100,116 @@ fun CruiseWatchNavHost(
     }
 
     if (!hasOnboarded) {
-        OnboardingScreen(onFinish = {
-            prefs.edit().putBoolean(KEY_ONBOARDED, true).apply()
-            hasOnboarded = true
-        })
+        OnboardingScreen(
+            translationManager = translationManager,
+            onFinish = {
+                prefs.edit().putBoolean(KEY_ONBOARDED, true).apply()
+                hasOnboarded = true
+            },
+        )
         return
     }
 
     if (!isSignedIn) {
-        SignInScreen(authViewModel, onGoogleSignInClick = onGoogleSignInClick)
+        ProvideTranslations(translationManager) {
+            SignInScreen(authViewModel, onGoogleSignInClick = onGoogleSignInClick)
+        }
         return
     }
 
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route
+    ProvideTranslations(translationManager) {
+        val backStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = backStackEntry?.destination?.route
 
-    Scaffold(
-        bottomBar = {
-            NavigationBar(tonalElevation = 8.dp) {
-                NavigationBarItem(
-                    selected = currentRoute == Routes.CRUISES,
-                    onClick = { navController.navigateTopLevel(Routes.CRUISES) },
-                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
-                    label = { Text("Cruises") },
-                    colors = navColors(),
-                )
-                NavigationBarItem(
-                    selected = currentRoute == Routes.ALERTS,
-                    onClick = { navController.navigateTopLevel(Routes.ALERTS) },
-                    icon = { Icon(Icons.Filled.Notifications, contentDescription = null) },
-                    label = { Text("Alerts") },
-                    colors = navColors(),
-                )
-                NavigationBarItem(
-                    selected = currentRoute == Routes.CLAIMS,
-                    onClick = { navController.navigateTopLevel(Routes.CLAIMS) },
-                    icon = { Icon(Icons.Filled.Policy, contentDescription = null) },
-                    label = { Text("Policies") },
-                    colors = navColors(),
-                )
-                NavigationBarItem(
-                    selected = currentRoute == Routes.ASSISTANT,
-                    onClick = { navController.navigateTopLevel(Routes.assistant()) },
-                    icon = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
-                    label = { Text("Assistant") },
-                    colors = navColors(),
-                )
-            }
-        },
-    ) { padding ->
-        NavHost(
-            navController = navController,
-            startDestination = Routes.CRUISES,
-            modifier = Modifier.padding(padding),
-            enterTransition = { crossFadeOrSlideIn() },
-            exitTransition = { crossFadeOrSlideOut() },
-            popEnterTransition = { crossFadeOrSlideIn() },
-            popExitTransition = { crossFadeOrSlideOut() },
-        ) {
-            composable(Routes.CRUISES) {
-                TrackedCruisesScreen(
-                    cruises = repository.trackedCruises(),
-                    onAddCruise = { navController.navigate(Routes.ADD_CRUISE) },
-                    onOpenCruise = { cruiseId -> navController.navigate(Routes.priceHistory(cruiseId)) },
-                )
-            }
-            composable(Routes.ADD_CRUISE) {
-                AddCruiseScreen(onSave = { cruise ->
-                    scope.launch {
-                        repository.addTrackedCruise(cruise)
-                        navController.popBackStack()
-                        onCruiseAdded()
-                    }
-                })
-            }
-            composable(Routes.PRICE_HISTORY) { entry ->
-                val cruiseId = entry.arguments?.getString("cruiseId") ?: return@composable
-                PriceHistoryScreen(
-                    snapshots = repository.priceHistory(cruiseId),
-                    onBack = { navController.popBackStack() },
-                    onAskAssistant = { navController.navigate(Routes.assistant(cruiseId)) },
-                )
-            }
-            composable(Routes.ALERTS) {
-                AlertsScreen(
-                    alerts = repository.alerts(),
-                    cruises = repository.trackedCruises(),
-                    policyFor = { lineId -> policyRepository.forLine(lineId) },
-                    onMarkClaimed = { alertId -> scope.launch { repository.markAlertClaimed(alertId) } },
-                    onAskAssistant = { cruiseId -> navController.navigate(Routes.assistant(cruiseId)) },
-                )
-            }
-            composable(Routes.CLAIMS) {
-                ClaimsScreen(policies = policyRepository.all())
-            }
-            composable(
-                route = Routes.ASSISTANT,
-                arguments = listOf(navArgument("cruiseId") { type = NavType.StringType; nullable = true; defaultValue = null }),
-            ) { entry ->
-                AssistantScreen(focusCruiseId = entry.arguments?.getString("cruiseId"))
+        Scaffold(
+            bottomBar = {
+                NavigationBar(tonalElevation = 8.dp) {
+                    NavigationBarItem(
+                        selected = currentRoute == Routes.CRUISES,
+                        onClick = { navController.navigateTopLevel(Routes.CRUISES) },
+                        icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
+                        label = { Text(tr(R.string.nav_cruises)) },
+                        colors = navColors(),
+                    )
+                    NavigationBarItem(
+                        selected = currentRoute == Routes.ALERTS,
+                        onClick = { navController.navigateTopLevel(Routes.ALERTS) },
+                        icon = { Icon(Icons.Filled.Notifications, contentDescription = null) },
+                        label = { Text(tr(R.string.nav_alerts)) },
+                        colors = navColors(),
+                    )
+                    NavigationBarItem(
+                        selected = currentRoute == Routes.CLAIMS,
+                        onClick = { navController.navigateTopLevel(Routes.CLAIMS) },
+                        icon = { Icon(Icons.Filled.Policy, contentDescription = null) },
+                        label = { Text(tr(R.string.nav_policies)) },
+                        colors = navColors(),
+                    )
+                    NavigationBarItem(
+                        selected = currentRoute == Routes.ASSISTANT,
+                        onClick = { navController.navigateTopLevel(Routes.assistant()) },
+                        icon = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
+                        label = { Text(tr(R.string.nav_assistant)) },
+                        colors = navColors(),
+                    )
+                }
+            },
+        ) { padding ->
+            NavHost(
+                navController = navController,
+                startDestination = Routes.CRUISES,
+                modifier = Modifier.padding(padding),
+                enterTransition = { crossFadeOrSlideIn() },
+                exitTransition = { crossFadeOrSlideOut() },
+                popEnterTransition = { crossFadeOrSlideIn() },
+                popExitTransition = { crossFadeOrSlideOut() },
+            ) {
+                composable(Routes.CRUISES) {
+                    TrackedCruisesScreen(
+                        cruises = repository.trackedCruises(),
+                        onAddCruise = { navController.navigate(Routes.ADD_CRUISE) },
+                        onOpenCruise = { cruiseId -> navController.navigate(Routes.priceHistory(cruiseId)) },
+                        onOpenSettings = { navController.navigate(Routes.SETTINGS) },
+                    )
+                }
+                composable(Routes.SETTINGS) {
+                    SettingsScreen(translationManager = translationManager, onBack = { navController.popBackStack() })
+                }
+                composable(Routes.ADD_CRUISE) {
+                    AddCruiseScreen(onSave = { cruise ->
+                        scope.launch {
+                            repository.addTrackedCruise(cruise)
+                            navController.popBackStack()
+                            onCruiseAdded()
+                        }
+                    })
+                }
+                composable(Routes.PRICE_HISTORY) { entry ->
+                    val cruiseId = entry.arguments?.getString("cruiseId") ?: return@composable
+                    PriceHistoryScreen(
+                        snapshots = repository.priceHistory(cruiseId),
+                        onBack = { navController.popBackStack() },
+                        onAskAssistant = { navController.navigate(Routes.assistant(cruiseId)) },
+                    )
+                }
+                composable(Routes.ALERTS) {
+                    AlertsScreen(
+                        alerts = repository.alerts(),
+                        cruises = repository.trackedCruises(),
+                        policyFor = { lineId -> policyRepository.forLine(lineId) },
+                        onMarkClaimed = { alertId -> scope.launch { repository.markAlertClaimed(alertId) } },
+                        onAskAssistant = { cruiseId -> navController.navigate(Routes.assistant(cruiseId)) },
+                    )
+                }
+                composable(Routes.CLAIMS) {
+                    ClaimsScreen(policies = policyRepository.all())
+                }
+                composable(
+                    route = Routes.ASSISTANT,
+                    arguments = listOf(navArgument("cruiseId") { type = NavType.StringType; nullable = true; defaultValue = null }),
+                ) { entry ->
+                    AssistantScreen(focusCruiseId = entry.arguments?.getString("cruiseId"))
+                }
             }
         }
     }

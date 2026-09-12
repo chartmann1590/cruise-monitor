@@ -42,6 +42,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.R
 import com.cruisewatch.app.auth.AuthViewModel
+import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.ui.GlassPanel
 import com.cruisewatch.app.ui.PhotoHero
 
@@ -81,7 +82,7 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                     )
                 }
                 Text(
-                    "Track your fare. Get alerted the moment it drops.",
+                    tr(R.string.sign_in_tagline),
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White.copy(alpha = 0.92f),
                     modifier = Modifier.padding(top = 8.dp, end = 24.dp),
@@ -103,7 +104,7 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                     .alpha(entrance),
             ) {
                 Text(
-                    "Welcome aboard",
+                    tr(R.string.sign_in_welcome),
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White,
                     modifier = Modifier.padding(bottom = 16.dp),
@@ -116,13 +117,13 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
                     modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 ) {
-                    Text("Continue with Google")
+                    Text(tr(R.string.sign_in_continue_google))
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.dp)) {
                     HorizontalDivider(modifier = Modifier.weight(1f), color = Color.White.copy(alpha = 0.24f))
                     Text(
-                        "  or  ",
+                        "  " + tr(R.string.sign_in_divider_or) + "  ",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.7f),
                     )
@@ -132,7 +133,7 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email") },
+                    label = { Text(tr(R.string.sign_in_email)) },
                     singleLine = true,
                     shape = MaterialTheme.shapes.medium,
                     colors = glassFieldColors(),
@@ -142,7 +143,7 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Password") },
+                    label = { Text(tr(R.string.sign_in_password)) },
                     singleLine = true,
                     shape = MaterialTheme.shapes.medium,
                     colors = glassFieldColors(),
@@ -169,7 +170,7 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                     if (isLoading) {
                         CircularProgressIndicator(modifier = Modifier.size(22.dp), color = Color.White)
                     } else {
-                        Text(if (isSignUp) "Create account" else "Sign in")
+                        Text(if (isSignUp) tr(R.string.sign_in_create_account) else tr(R.string.sign_in_signin_button))
                     }
                 }
 
@@ -181,7 +182,7 @@ fun SignInScreen(viewModel: AuthViewModel, onGoogleSignInClick: () -> Unit = {})
                     modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                 ) {
                     Text(
-                        if (isSignUp) "Already have an account? Sign in" else "New here? Create an account",
+                        if (isSignUp) tr(R.string.sign_in_toggle_to_signin) else tr(R.string.sign_in_toggle_to_signup),
                         color = Color.White.copy(alpha = 0.85f),
                     )
                 }

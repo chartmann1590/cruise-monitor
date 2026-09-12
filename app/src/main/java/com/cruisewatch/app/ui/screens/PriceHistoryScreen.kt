@@ -1,5 +1,7 @@
 package com.cruisewatch.app.ui.screens
 
+import com.cruisewatch.app.R
+import com.cruisewatch.app.i18n.tr
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
@@ -51,15 +53,15 @@ fun PriceHistoryScreen(
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr(R.string.price_history_back_description))
             }
-            Text("Price history", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
+            Text(tr(R.string.price_history_title), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
             IconButton(onClick = onAskAssistant) {
-                Icon(Icons.Filled.SmartToy, contentDescription = "Ask the assistant")
+                Icon(Icons.Filled.SmartToy, contentDescription = tr(R.string.price_history_ask_assistant_description))
             }
         }
         Text(
-            "Every check we've made against the public fare.",
+            tr(R.string.price_history_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 48.dp, top = 2.dp, bottom = 8.dp),
@@ -67,7 +69,7 @@ fun PriceHistoryScreen(
 
         if (history.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No price checks yet — the scraper runs every few hours.")
+                Text(tr(R.string.price_history_empty))
             }
             return@Column
         }

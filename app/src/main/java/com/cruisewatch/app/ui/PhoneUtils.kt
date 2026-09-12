@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.cruisewatch.app.R
+import com.cruisewatch.app.i18n.tr
 
 /** A "Call {phone}" button that opens the phone dialer pre-filled with the number. */
 @Composable
@@ -25,6 +27,6 @@ fun CallButton(phone: String, modifier: Modifier = Modifier) {
         modifier = modifier,
     ) {
         Icon(Icons.Filled.Call, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
-        Text("Call $phone")
+        Text(tr(R.string.phone_call_button, phone))
     }
 }

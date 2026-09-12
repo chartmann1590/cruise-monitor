@@ -43,6 +43,7 @@ import com.cruisewatch.app.ai.ChatMessage
 import com.cruisewatch.app.ai.LlmModelCatalog
 import com.cruisewatch.app.ui.PhotoHero
 import com.cruisewatch.app.R
+import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.ui.theme.Coral
 import com.cruisewatch.app.ui.theme.OceanDeep
 import com.cruisewatch.app.ui.theme.Teal
@@ -58,9 +59,9 @@ fun AssistantScreen(focusCruiseId: String? = null, viewModel: AssistantViewModel
         PhotoHero(photoRes = R.drawable.hero_policies, height = 150.dp) {
             Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Bottom) {
                 Icon(Icons.Filled.SmartToy, contentDescription = null, tint = Color.White)
-                Text("Refund Assistant", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+                Text(tr(R.string.assistant_title), style = MaterialTheme.typography.headlineMedium, color = Color.White)
                 Text(
-                    "An on-device AI that knows your cruises and helps you claim your refund.",
+                    tr(R.string.assistant_hero_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White.copy(alpha = 0.92f),
                 )
@@ -74,11 +75,11 @@ fun AssistantScreen(focusCruiseId: String? = null, viewModel: AssistantViewModel
             is AssistantState.Loading -> Box(Modifier.fillMaxSize(), Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     CircularProgressIndicator()
-                    Text("Loading the model…", modifier = Modifier.padding(top = 12.dp))
+                    Text(tr(R.string.assistant_loading_model), modifier = Modifier.padding(top = 12.dp))
                 }
             }
             is AssistantState.Error -> Box(Modifier.fillMaxSize().padding(24.dp), Alignment.Center) {
-                Text("Couldn't set up the assistant: ${s.message}", color = MaterialTheme.colorScheme.error)
+                Text(tr(R.string.assistant_setup_error, s.message ?: ""), color = MaterialTheme.colorScheme.error)
             }
             is AssistantState.Ready -> ChatView(viewModel)
         }
@@ -88,9 +89,9 @@ fun AssistantScreen(focusCruiseId: String? = null, viewModel: AssistantViewModel
 @Composable
 private fun SetupPrompt(model: com.cruisewatch.app.ai.LlmModel, ramGb: Double, onStart: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        Text("Set up your assistant", style = MaterialTheme.typography.titleLarge)
+        Text(tr(R.string.assistant_setup_title), style = MaterialTheme.typography.titleLarge)
         Text(
-            "Your device has about ${"%.1f".format(ramGb)} GB of RAM — we recommend:",
+            tr(R.string.assistant_ram_recommend, "%.1f".format(ramGb)),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
@@ -99,7 +100,7 @@ private fun SetupPrompt(model: com.cruisewatch.app.ai.LlmModel, ramGb: Double, o
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(model.displayName, style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "${model.approxSizeMb} MB one-time download, then runs fully offline on your device.",
+                    tr(R.string.assistant_download_size, model.approxSizeMb),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp),
@@ -112,10 +113,10 @@ private fun SetupPrompt(model: com.cruisewatch.app.ai.LlmModel, ramGb: Double, o
             colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Coral),
             modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
         ) {
-            Text("Download and set up")
+            Text(tr(R.string.assistant_download_button))
         }
         Text(
-            "Everything you ask stays on this device — nothing is sent anywhere.",
+            tr(R.string.assistant_privacy_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 12.dp),
@@ -126,10 +127,10 @@ private fun SetupPrompt(model: com.cruisewatch.app.ai.LlmModel, ramGb: Double, o
 @Composable
 private fun DownloadingView(modelName: String, downloadedMb: Int, totalMb: Int) {
     Column(modifier = Modifier.fillMaxSize().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        Text("Downloading $modelName…", style = MaterialTheme.typography.titleMedium)
+        Text(tr(R.string.assistant_downloading, modelName), style = MaterialTheme.typography.titleMedium)
         val progress = if (totalMb > 0) downloadedMb.toFloat() / totalMb else 0f
         LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth().padding(top = 16.dp))
-        Text("$downloadedMb MB / $totalMb MB", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 8.dp))
+        Text(tr(R.string.assistant_download_progress, downloadedMb, totalMb), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 8.dp))
     }
 }
 
@@ -152,7 +153,7 @@ private fun ChatView(viewModel: AssistantViewModel) {
                 item {
                     Row(modifier = Modifier.padding(vertical = 6.dp)) {
                         CircularProgressIndicator(modifier = Modifier.padding(end = 8.dp).size(16.dp), strokeWidth = 2.dp)
-                        Text("Thinking…", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(tr(R.string.assistant_thinking), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
@@ -161,7 +162,7 @@ private fun ChatView(viewModel: AssistantViewModel) {
             OutlinedTextField(
                 value = input,
                 onValueChange = { input = it },
-                placeholder = { Text("Ask how to get your refund…") },
+                placeholder = { Text(tr(R.string.assistant_input_placeholder)) },
                 shape = MaterialTheme.shapes.large,
                 modifier = Modifier.weight(1f),
             )
@@ -170,7 +171,7 @@ private fun ChatView(viewModel: AssistantViewModel) {
                 input = ""
                 scope.launch { viewModel.sendMessage(text) }
             }) {
-                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = Teal)
+                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = tr(R.string.assistant_send_description), tint = Teal)
             }
         }
     }

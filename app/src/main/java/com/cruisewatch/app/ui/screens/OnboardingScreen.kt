@@ -29,7 +29,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,6 +39,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.R
+import com.cruisewatch.app.i18n.ProvideTranslations
+import com.cruisewatch.app.i18n.TranslationManager
+import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.ui.GlassPanel
 import com.cruisewatch.app.ui.PhotoHero
 import kotlinx.coroutines.launch
@@ -44,34 +49,56 @@ import kotlinx.coroutines.launch
 private data class OnboardingPage(
     @DrawableRes val photoRes: Int,
     val icon: ImageVector,
-    val title: String,
-    val body: String,
+    val titleRes: Int,
+    val bodyRes: Int,
 )
 
 private val pages = listOf(
     OnboardingPage(
         photoRes = R.drawable.hero_cruises,
         icon = Icons.Filled.Sailing,
-        title = "Add the cruise you already booked",
-        body = "Tell us the ship, sail date, cabin, and what you paid. Takes under a minute — you don't need to book anything through us.",
+        titleRes = R.string.onboarding_page1_title,
+        bodyRes = R.string.onboarding_page1_body,
     ),
     OnboardingPage(
         photoRes = R.drawable.hero_celebrate,
         icon = Icons.Filled.NotificationsActive,
-        title = "We watch the price for you, 24/7",
-        body = "Our scraper checks the public fare for your exact ship, sail date, and cabin category every few hours. The moment it drops below what you paid, you get a push notification.",
+        titleRes = R.string.onboarding_page2_title,
+        bodyRes = R.string.onboarding_page2_body,
     ),
     OnboardingPage(
         photoRes = R.drawable.hero_policies,
         icon = Icons.Filled.CardGiftcard,
-        title = "We'll walk you through claiming it",
-        body = "Every cruise line has a price-drop policy — a refund, onboard credit, or free upgrade. When your price drops, we show you exactly what to say and who to call.",
+        titleRes = R.string.onboarding_page3_title,
+        bodyRes = R.string.onboarding_page3_body,
     ),
 )
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnboardingScreen(onFinish: () -> Unit) {
+fun OnboardingScreen(
+    translationManager: TranslationManager,
+    onFinish: () -> Unit,
+) {
+    var languageChosen by remember { mutableStateOf(false) }
+
+    if (!languageChosen) {
+        LanguagePickerScreen(
+            manager = translationManager,
+            onLanguageApplied = { languageChosen = true },
+            onCancel = { languageChosen = true },
+        )
+        return
+    }
+
+    ProvideTranslations(translationManager) {
+        OnboardingPager(onFinish)
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun OnboardingPager(onFinish: () -> Unit) {
     val pagerState = rememberPagerState(pageCount = { pages.size })
     val scope = androidx.compose.runtime.rememberCoroutineScope()
     val isLastPage by remember { derivedStateOf { pagerState.currentPage == pages.lastIndex } }
@@ -95,12 +122,12 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
-                            page.title,
+                            tr(page.titleRes),
                             style = MaterialTheme.typography.headlineMedium,
                             textAlign = TextAlign.Center,
                         )
                         Text(
-                            page.body,
+                            tr(page.bodyRes),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
@@ -117,7 +144,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
         ) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = onFinish) {
-                    Text("Skip", color = Color.White)
+                    Text(tr(R.string.onboarding_skip), color = Color.White)
                 }
             }
 
@@ -148,7 +175,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                 ) {
-                    Text(if (isLastPage) "Get started" else "Next")
+                    Text(if (isLastPage) tr(R.string.onboarding_get_started) else tr(R.string.onboarding_next))
                 }
                 Spacer(modifier = Modifier.height(4.dp))
             }
