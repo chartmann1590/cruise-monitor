@@ -29,7 +29,11 @@ android {
         applicationId = "com.cruisewatch.app"
         minSdk = 30
         targetSdk = 35
-        versionCode = 5
+        // Google Play requires versionCodes to be unique across the whole app, not
+        // just per track/form-factor — a +1000 offset from the phone app's versionCode
+        // (app/build.gradle.kts) guarantees the wear and phone artifacts never collide,
+        // without having to hand-coordinate two counters on every release.
+        versionCode = 1005
         versionName = "0.3.2"
     }
 
