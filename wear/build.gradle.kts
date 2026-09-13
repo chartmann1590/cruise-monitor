@@ -20,7 +20,7 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.cruisewatch.app.wear"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         // Must match the phone app's applicationId — Play Store delivers the watch
@@ -28,7 +28,7 @@ android {
         // based on matching package name, not via the legacy wearApp() embedding.
         applicationId = "com.cruisewatch.app"
         minSdk = 30
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 3
         versionName = "0.3.0"
     }

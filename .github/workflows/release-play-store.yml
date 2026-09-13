@@ -76,11 +76,33 @@ jobs:
         if: always()
         run: rm -f release.jks keystore.properties
 
-      - name: Upload to Play Store
+      - name: Resolve Wear OS dedicated track name
+        id: wear_track
+        run: |
+          case "${{ github.event.inputs.track || 'internal' }}" in
+            production) echo "name=wear:production" >> "$GITHUB_OUTPUT" ;;
+            beta) echo "name=wear:beta" >> "$GITHUB_OUTPUT" ;;
+            *) echo "name=wear:qa" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      # Since August 2023, Play Console requires Wear OS releases on a dedicated
+      # "wear:*" form-factor track, separate from the phone app's mobile track —
+      # a single upload can no longer carry both AABs. See:
+      # https://support.google.com/googleplay/android-developer/answer/13295490
+      - name: Upload phone bundle to Play Store
         uses: r0adkll/upload-google-play@v1.1.3
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.cruisewatch.app
-          releaseFiles: app/build/outputs/bundle/release/app-release.aab,wear/build/outputs/bundle/release/wear-release.aab
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: ${{ github.event.inputs.track || 'internal' }}
+          status: ${{ github.event.inputs.status || 'completed' }}
+
+      - name: Upload Wear OS bundle to Play Store
+        uses: r0adkll/upload-google-play@v1.1.3
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.cruisewatch.app
+          releaseFiles: wear/build/outputs/bundle/release/wear-release.aab
+          track: ${{ steps.wear_track.outputs.name }}
           status: ${{ github.event.inputs.status || 'completed' }}
