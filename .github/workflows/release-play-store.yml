@@ -82,7 +82,7 @@ jobs:
           case "${{ github.event.inputs.track || 'internal' }}" in
             production) echo "name=wear:production" >> "$GITHUB_OUTPUT" ;;
             beta) echo "name=wear:beta" >> "$GITHUB_OUTPUT" ;;
-            *) echo "name=wear:qa" >> "$GITHUB_OUTPUT" ;;
+            *) echo "name=wear:internal" >> "$GITHUB_OUTPUT" ;;
           esac
 
       # Since August 2023, Play Console requires Wear OS releases on a dedicated
