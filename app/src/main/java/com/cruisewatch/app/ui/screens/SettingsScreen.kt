@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +29,7 @@ import com.cruisewatch.app.i18n.SupportedLanguages
 import com.cruisewatch.app.i18n.TranslationManager
 import com.cruisewatch.app.i18n.TranslationState
 import com.cruisewatch.app.i18n.tr
+import com.cruisewatch.app.ui.feedback.SupportFeedbackSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,13 +59,14 @@ fun SettingsScreen(translationManager: TranslationManager, onBack: () -> Unit) {
             )
         },
     ) { padding ->
-        Column(modifier = Modifier.fillMaxWidth().padding(padding)) {
+        Column(modifier = Modifier.fillMaxWidth().padding(padding).verticalScroll(rememberScrollState())) {
             val currentName = SupportedLanguages.byCode(currentCode)?.nativeName ?: currentCode
             ListItem(
                 headlineContent = { Text(tr(R.string.settings_language_row)) },
                 supportingContent = { Text(currentName) },
                 modifier = Modifier.fillMaxWidth().clickable { showLanguagePicker = true },
             )
+            SupportFeedbackSection()
         }
     }
 }

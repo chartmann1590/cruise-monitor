@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cruisewatch-feedback-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-12",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "GITHUB_REPO_OWNER": "chartmann1590",
+    "GITHUB_REPO_NAME": "cruise-monitor",
+    "FEEDBACK_ASSETS_DIR": "feedback-assets"
+  }
+}

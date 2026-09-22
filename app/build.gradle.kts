@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
@@ -35,6 +36,14 @@ val admobAppId = secret("ADMOB_APP_ID", "ca-app-pub-3940256099942544~3347511713"
 val admobBannerAdUnitId = secret("ADMOB_BANNER_AD_UNIT_ID", "ca-app-pub-3940256099942544/6300978111")
 val admobInterstitialAdUnitId = secret("ADMOB_INTERSTITIAL_AD_UNIT_ID", "ca-app-pub-3940256099942544/1033173712")
 
+// In-app feedback reporter: URL of the Cloudflare Worker proxy (not a secret).
+// Resolved from (in order): FEEDBACK_WORKER_URL env var (CI) > local.properties
+// `feedback.worker.url` or Gradle property > deployed default below.
+val feedbackWorkerUrl = System.getenv("FEEDBACK_WORKER_URL")
+    ?: project.findProperty("feedback.worker.url") as? String
+    ?: localProperties.getProperty("feedback.worker.url")
+    ?: "https://cruisewatch-feedback-api.charles-h-hartmann1.workers.dev"
+
 android {
     namespace = "com.cruisewatch.app"
     compileSdk = 36
@@ -49,6 +58,7 @@ android {
         manifestPlaceholders["admobAppId"] = admobAppId
         buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", "\"$admobBannerAdUnitId\"")
         buildConfigField("String", "ADMOB_INTERSTITIAL_AD_UNIT_ID", "\"$admobInterstitialAdUnitId\"")
+        buildConfigField("String", "FEEDBACK_WORKER_URL", "\"$feedbackWorkerUrl\"")
     }
 
     signingConfigs {
@@ -124,6 +134,12 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // In-app GitHub-backed feedback reporter (via Cloudflare Worker proxy).
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     implementation("com.google.android.gms:play-services-ads:23.2.0")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
