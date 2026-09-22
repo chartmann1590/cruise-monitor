@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
@@ -32,7 +34,12 @@ class BugReportRepo(private val context: Context) {
             }
         }
 
-    suspend fun getBugReportsList(): List<BugReport> = bugReports.first()
+    suspend fun getBugReportsList(): List<BugReport> =
+        try {
+            withTimeout(5_000) { bugReports.first() }
+        } catch (e: TimeoutCancellationException) {
+            emptyList()
+        }
 
     suspend fun saveBugReport(report: BugReport) {
         val current = getBugReportsList()
