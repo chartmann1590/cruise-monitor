@@ -3,16 +3,18 @@ name: Release to Play Store
 # Builds signed release App Bundles for the phone app and the Wear OS
 # companion (published as separate AABs within the same Play Console app
 # listing — both share applicationId "com.cruisewatch.app" so Play delivers
-# each to the right form factor) and publishes them to Google Play.
+# each to the right form factor), runs EVERYTHING's tests first, publishes
+# them to Google Play, and also creates a GitHub Release with the AABs
+# attached so the build "gets on GitHub too".
 #
-# Requires these repository secrets (see plan/05-phase4-play-store.md):
-#   RELEASE_KEYSTORE_BASE64      - `base64 -w0 Key.jks` output of the release keystore
-#   RELEASE_KEYSTORE_PASSWORD    - keystore password
-#   RELEASE_KEY_ALIAS            - signing key alias
-#   RELEASE_KEY_PASSWORD         - signing key password
-#   PLAY_SERVICE_ACCOUNT_JSON    - full JSON key for the Play Console service account
-#   ADMOB_APP_ID                 - AdMob application ID (ca-app-pub-...~...)
-#   ADMOB_BANNER_AD_UNIT_ID      - AdMob banner ad unit ID (ca-app-pub-.../...)
+# Requires these repository secrets (Settings > Secrets and variables > Actions):
+#   RELEASE_KEYSTORE_BASE64       - `base64 -w0 Key.jks` output of the release keystore
+#   RELEASE_KEYSTORE_PASSWORD     - keystore password
+#   RELEASE_KEY_ALIAS             - signing key alias (e.g. key0)
+#   RELEASE_KEY_PASSWORD          - signing key password
+#   PLAY_SERVICE_ACCOUNT_JSON     - full JSON key for the Play Console service account
+#   ADMOB_APP_ID                  - AdMob application ID (ca-app-pub-...~...)
+#   ADMOB_BANNER_AD_UNIT_ID       - AdMob banner ad unit ID (ca-app-pub-.../...)
 #   ADMOB_INTERSTITIAL_AD_UNIT_ID - AdMob interstitial ad unit ID
 
 on:
@@ -42,8 +44,14 @@ on:
           - halted
           - inProgress
 
+# Needed so the github-release step can create a GitHub Release.
+permissions:
+  contents: write
+
 jobs:
-  release:
+  # Runs every test suite in the repo. The `release` job below
+  # `needs: test`, so a broken build can never ship to Play or GitHub.
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,6 +60,57 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v3
+
+      - name: Run Android unit tests (phone + wear)
+        run: ./gradlew :app:testDebugUnitTest :wear:testDebugUnitTest --no-daemon --stacktrace
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Scraper typecheck
+        working-directory: scraper
+        run: |
+          npm ci
+          npm run lint
+
+      - name: AI reports worker tests + typecheck
+        working-directory: cloudflare/ai-reports-worker
+        run: |
+          npm ci
+          npm test
+          npx tsc --noEmit
+
+      - name: Feedback worker typecheck
+        working-directory: cloudflare/feedback-worker
+        run: |
+          npm ci
+          npx tsc --noEmit
+
+      - name: Upload Android test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-test-reports
+          path: |
+            app/build/reports/tests/
+            wear/build/reports/tests/
+          if-no-files-found: ignore
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v3
 
       - name: Decode release keystore
         run: echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 --decode > "${{ github.workspace }}/release.jks"
@@ -70,11 +129,20 @@ jobs:
           ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
           ADMOB_BANNER_AD_UNIT_ID: ${{ secrets.ADMOB_BANNER_AD_UNIT_ID }}
           ADMOB_INTERSTITIAL_AD_UNIT_ID: ${{ secrets.ADMOB_INTERSTITIAL_AD_UNIT_ID }}
-        run: ./gradlew :app:bundleRelease :wear:bundleRelease --no-daemon
+        run: ./gradlew :app:bundleRelease :wear:bundleRelease --no-daemon --stacktrace
 
       - name: Clean up signing secrets from disk
         if: always()
         run: rm -f release.jks keystore.properties
+
+      - name: Upload AABs as workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-aabs-${{ github.ref_name }}
+          path: |
+            app/build/outputs/bundle/release/app-release.aab
+            wear/build/outputs/bundle/release/wear-release.aab
+          if-no-files-found: error
 
       - name: Resolve Wear OS dedicated track name
         id: wear_track
@@ -106,3 +174,17 @@ jobs:
           releaseFiles: wear/build/outputs/bundle/release/wear-release.aab
           track: ${{ steps.wear_track.outputs.name }}
           status: ${{ github.event.inputs.status || 'completed' }}
+
+      # This is the "gets on GitHub too" step: on a version tag push
+      # (v*.*.*) the signed AABs are attached to a GitHub Release so they
+      # are visible/downloadable from the repo's Releases page. Skipped on
+      # manual workflow_dispatch runs that aren't on a tag.
+      - name: Create GitHub Release with AABs
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app/build/outputs/bundle/release/app-release.aab
+            wear/build/outputs/bundle/release/wear-release.aab
+          generate_release_notes: true
+          draft: false
