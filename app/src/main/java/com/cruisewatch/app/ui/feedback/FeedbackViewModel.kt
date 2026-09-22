@@ -52,6 +52,8 @@ class FeedbackViewModel(application: Application) : AndroidViewModel(application
     private val _details = MutableStateFlow(IssueDetailsState())
     val details: StateFlow<IssueDetailsState> = _details.asStateFlow()
 
+    private var pendingDetailsNumber: Int? = null
+
     fun resetSubmitState() {
         _submitState.value = SubmitState.Idle
     }
@@ -123,41 +125,51 @@ class FeedbackViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun openDetails(report: BugReport) {
+        pendingDetailsNumber = report.number
         _details.value = IssueDetailsState(loading = true)
         viewModelScope.launch {
             try {
                 val issue = api.getIssue(report.number)
                 val comments = api.getComments(report.number).sortedBy { it.createdAt }
-                _details.value = IssueDetailsState(loading = false, issue = issue, comments = comments)
-                if (!issue.state.equals(report.status, ignoreCase = true)) {
-                    repo.saveBugReport(report.copy(status = issue.state))
+                if (pendingDetailsNumber == report.number) {
+                    _details.value = IssueDetailsState(loading = false, issue = issue, comments = comments)
+                    if (!issue.state.equals(report.status, ignoreCase = true)) {
+                        repo.saveBugReport(report.copy(status = issue.state))
+                    }
                 }
             } catch (e: Exception) {
-                _details.value = IssueDetailsState(
-                    loading = false,
-                    error = e.message ?: "Unable to refresh this report.",
-                )
+                if (pendingDetailsNumber == report.number) {
+                    _details.value = IssueDetailsState(
+                        loading = false,
+                        error = e.message ?: "Unable to refresh this report.",
+                    )
+                }
             }
         }
     }
 
     fun refreshDetails(number: Int) {
+        pendingDetailsNumber = number
         val current = _details.value
         _details.value = current.copy(loading = true, error = null)
         viewModelScope.launch {
             try {
                 val issue = api.getIssue(number)
                 val comments = api.getComments(number).sortedBy { it.createdAt }
-                _details.value = _details.value.copy(loading = false, issue = issue, comments = comments, error = null)
-                val cached = reports.value.firstOrNull { it.number == number }
-                if (cached != null && !issue.state.equals(cached.status, ignoreCase = true)) {
-                    repo.saveBugReport(cached.copy(status = issue.state))
+                if (pendingDetailsNumber == number) {
+                    _details.value = _details.value.copy(loading = false, issue = issue, comments = comments, error = null)
+                    val cached = reports.value.firstOrNull { it.number == number }
+                    if (cached != null && !issue.state.equals(cached.status, ignoreCase = true)) {
+                        repo.saveBugReport(cached.copy(status = issue.state))
+                    }
                 }
             } catch (e: Exception) {
-                _details.value = _details.value.copy(
-                    loading = false,
-                    error = e.message ?: "Unable to refresh this report.",
-                )
+                if (pendingDetailsNumber == number) {
+                    _details.value = _details.value.copy(
+                        loading = false,
+                        error = e.message ?: "Unable to refresh this report.",
+                    )
+                }
             }
         }
     }
