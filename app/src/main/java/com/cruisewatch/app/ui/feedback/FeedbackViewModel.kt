@@ -226,6 +226,7 @@ class FeedbackViewModel(application: Application) : AndroidViewModel(application
                 api.postComment(number, body)
                 _details.value = _details.value.copy(replyState = SubmitState.Posted)
                 refreshDetails(number)
+                clearReplyState()
             } catch (e: Exception) {
                 val message = if (e is FeedbackApiException) {
                     e.message
