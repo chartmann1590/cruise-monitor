@@ -48,7 +48,7 @@ function makeRequest(body: unknown, ip = '1.2.3.4'): Request {
 describe('POST /report', () => {
 	it('rejects an invalid payload with 400', async () => {
 		const ctx = createExecutionContext();
-		const response = await worker.fetch(makeRequest({ userMessage: '' }), env, ctx);
+		const response = await worker.fetch(makeRequest({ userMessage: '' }), env);
 		await waitOnExecutionContext(ctx);
 		expect(response.status).toBe(400);
 	});
@@ -58,7 +58,6 @@ describe('POST /report', () => {
 		const response = await worker.fetch(
 			makeRequest({ userMessage: 'hi', aiMessage: 'hello', reasonCategory: 'not-a-real-reason' }),
 			env,
-			ctx,
 		);
 		await waitOnExecutionContext(ctx);
 		expect(response.status).toBe(400);
@@ -69,7 +68,6 @@ describe('POST /report', () => {
 		const response = await worker.fetch(
 			makeRequest({ userMessage: 'What do I do?', aiMessage: 'Call the cruise line.', reasonCategory: 'inaccurate' }),
 			env,
-			ctx,
 		);
 		await waitOnExecutionContext(ctx);
 		expect(response.status).toBe(201);
@@ -83,13 +81,13 @@ describe('POST /report', () => {
 		const payload = { userMessage: 'q', aiMessage: 'a', reasonCategory: 'other' };
 		for (let i = 0; i < 5; i++) {
 			const ctx = createExecutionContext();
-			const response = await worker.fetch(makeRequest(payload, '9.9.9.9'), env, ctx);
+			const response = await worker.fetch(makeRequest(payload, '9.9.9.9'), env);
 			await waitOnExecutionContext(ctx);
 			expect(response.status).toBe(201);
 		}
 
 		const ctx = createExecutionContext();
-		const response = await worker.fetch(makeRequest(payload, '9.9.9.9'), env, ctx);
+		const response = await worker.fetch(makeRequest(payload, '9.9.9.9'), env);
 		await waitOnExecutionContext(ctx);
 		expect(response.status).toBe(429);
 	});
@@ -98,12 +96,12 @@ describe('POST /report', () => {
 		const payload = { userMessage: 'q', aiMessage: 'a', reasonCategory: 'other' };
 		for (let i = 0; i < 5; i++) {
 			const ctx = createExecutionContext();
-			await worker.fetch(makeRequest(payload, '9.9.9.9'), env, ctx);
+			await worker.fetch(makeRequest(payload, '9.9.9.9'), env);
 			await waitOnExecutionContext(ctx);
 		}
 
 		const ctx = createExecutionContext();
-		const response = await worker.fetch(makeRequest(payload, '8.8.8.8'), env, ctx);
+		const response = await worker.fetch(makeRequest(payload, '8.8.8.8'), env);
 		await waitOnExecutionContext(ctx);
 		expect(response.status).toBe(201);
 	});

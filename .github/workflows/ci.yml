@@ -1,0 +1,70 @@
+name: CI
+
+# PR / push gate — runs EVERYTHING's tests plus a debug build so broken
+# code can never merge. Same suites as the `test` job in
+# release-play-store.yml (keep them in sync).
+#
+# No secrets needed: debug builds use the default debug keystore and the
+# app's Google TEST AdMob IDs fallback.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "feature/**"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v3
+
+      - name: Run Android unit tests (phone + wear)
+        run: ./gradlew :app:testDebugUnitTest :wear:testDebugUnitTest --no-daemon --stacktrace
+
+      - name: Assemble debug builds (phone + wear)
+        run: ./gradlew :app:assembleDebug :wear:assembleDebug --no-daemon --stacktrace
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Scraper typecheck
+        working-directory: scraper
+        run: |
+          npm ci
+          npm run lint
+
+      - name: AI reports worker tests + typecheck
+        working-directory: cloudflare/ai-reports-worker
+        run: |
+          npm ci
+          npm test
+          npx tsc --noEmit
+
+      - name: Feedback worker typecheck
+        working-directory: cloudflare/feedback-worker
+        run: |
+          npm ci
+          npx tsc --noEmit
+
+      - name: Upload Android test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-test-reports
+          path: |
+            app/build/reports/tests/
+            wear/build/reports/tests/
+          if-no-files-found: ignore
