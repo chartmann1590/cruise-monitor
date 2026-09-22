@@ -23,6 +23,7 @@ sealed interface SubmitState {
     data object Idle : SubmitState
     data class UploadingImage(val step: String) : SubmitState
     data object Submitting : SubmitState
+    data object Posted : SubmitState
     data class Success(val issueNumber: Int, val htmlUrl: String) : SubmitState
     data class Error(val message: String) : SubmitState
 }
@@ -207,7 +208,7 @@ class FeedbackViewModel(application: Application) : AndroidViewModel(application
                 _details.value = _details.value.copy(replyState = SubmitState.Submitting)
                 val body = buildCommentBody(replyText.trim(), attachmentUrl)
                 api.postComment(number, body)
-                _details.value = _details.value.copy(replyState = SubmitState.Idle)
+                _details.value = _details.value.copy(replyState = SubmitState.Posted)
                 refreshDetails(number)
             } catch (e: Exception) {
                 _details.value = _details.value.copy(

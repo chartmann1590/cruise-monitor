@@ -443,7 +443,7 @@ private fun IssueDetailsDialog(viewModel: FeedbackViewModel, report: BugReport, 
                     Text(replyState.step, style = MaterialTheme.typography.bodySmall)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                val busy = replyState is SubmitState.Submitting || replyState is SubmitState.UploadingImage
+                val busy = replyState is SubmitState.Submitting || replyState is SubmitState.UploadingImage || replyState is SubmitState.Posted
                 Button(
                     onClick = {
                         viewModel.postReply(report.number, replyText, replyImageUri)
