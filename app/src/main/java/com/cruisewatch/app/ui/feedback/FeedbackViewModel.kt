@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.cruisewatch.app.data.feedback.BugReport
 import com.cruisewatch.app.data.feedback.BugReportRepo
 import com.cruisewatch.app.data.feedback.DiagnosticsHelper
+import com.cruisewatch.app.data.feedback.FeedbackApiException
 import com.cruisewatch.app.data.feedback.FeedbackComment
 import com.cruisewatch.app.data.feedback.FeedbackIssue
 import com.cruisewatch.app.data.feedback.FeedbackWorkerApi
@@ -120,7 +121,12 @@ class FeedbackViewModel(application: Application) : AndroidViewModel(application
                 )
                 _submitState.value = SubmitState.Success(issue.number, issue.htmlUrl)
             } catch (e: Exception) {
-                _submitState.value = SubmitState.Error(e.message ?: "Submission failed. Please try again.")
+                val message = if (e is FeedbackApiException) {
+                    e.message
+                } else {
+                    "Submission failed. Please try again."
+                }
+                _submitState.value = SubmitState.Error(message ?: "Submission failed. Please try again.")
             }
         }
     }
@@ -140,9 +146,14 @@ class FeedbackViewModel(application: Application) : AndroidViewModel(application
                 }
             } catch (e: Exception) {
                 if (pendingDetailsNumber == report.number) {
+                    val message = if (e is FeedbackApiException) {
+                        e.message
+                    } else {
+                        "Unable to refresh this report."
+                    }
                     _details.value = IssueDetailsState(
                         loading = false,
-                        error = e.message ?: "Unable to refresh this report.",
+                        error = message ?: "Unable to refresh this report.",
                     )
                 }
             }
@@ -166,9 +177,14 @@ class FeedbackViewModel(application: Application) : AndroidViewModel(application
                 }
             } catch (e: Exception) {
                 if (pendingDetailsNumber == number) {
+                    val message = if (e is FeedbackApiException) {
+                        e.message
+                    } else {
+                        "Unable to refresh this report."
+                    }
                     _details.value = _details.value.copy(
                         loading = false,
-                        error = e.message ?: "Unable to refresh this report.",
+                        error = message ?: "Unable to refresh this report.",
                     )
                 }
             }
@@ -211,8 +227,13 @@ class FeedbackViewModel(application: Application) : AndroidViewModel(application
                 _details.value = _details.value.copy(replyState = SubmitState.Posted)
                 refreshDetails(number)
             } catch (e: Exception) {
+                val message = if (e is FeedbackApiException) {
+                    e.message
+                } else {
+                    "Unable to post your reply."
+                }
                 _details.value = _details.value.copy(
-                    replyState = SubmitState.Error(e.message ?: "Unable to post your reply."),
+                    replyState = SubmitState.Error(message ?: "Unable to post your reply."),
                 )
             }
         }
