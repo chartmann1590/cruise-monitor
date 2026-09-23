@@ -3,6 +3,11 @@ import type { CatalogApp, PromoApp, RecommendationResponse, GlobalConfig, AppCon
 import { loadGlobalConfig, loadAppConfig } from './config';
 import { CATALOG_CACHE_KEY, RECS_CACHE_PREFIX } from './types';
 
+/** Compute an ISO timestamp `hours` from now. */
+export function expiresAt(hours: number): string {
+	return new Date(Date.now() + hours * 3600 * 1000).toISOString();
+}
+
 export interface SelectionContext {
 	sourcePackage: string;
 	placement?: string;
@@ -191,7 +196,6 @@ export async function generateRecommendations(
 	);
 
 	const now = new Date();
-	const expiresAt = new Date(now.getTime() + 6 * 60 * 60 * 1000).toISOString(); // 6 hours
 	const generatedAt = now.toISOString();
 
 	const selected: PromoApp[] = [];
@@ -257,7 +261,7 @@ export async function generateRecommendations(
 		version: 1,
 		requestId: ctx.requestId,
 		generatedAt,
-		expiresAt,
+		expiresAt: expiresAt(6),
 		apps: selected,
 	};
 }
@@ -282,7 +286,7 @@ function emptyResponse(requestId: string): RecommendationResponse {
 		version: 1,
 		requestId,
 		generatedAt: now.toISOString(),
-		expiresAt: new Date(now.getTime() + 6 * 60 * 60 * 1000).toISOString(),
+		expiresAt: expiresAt(6),
 		apps: [],
 	};
 }
