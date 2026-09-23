@@ -113,15 +113,19 @@ async function handleRecommendations(request: Request, env: Env): Promise<Respon
 		const config = await loadGlobalConfig(env);
 		const appCfg = sourcePackage ? await loadAppConfig(env, sourcePackage) : null;
 		limit = appCfg?.maxCards ?? config.defaultLimit;
+		limit = Math.min(limit, config.maxLimit);
+	} else {
+		limit = Math.min(limit, await getMaxLimit(env));
 	}
-	limit = Math.min(limit, await getMaxLimit(env));
 
 	const excludeParam = url.searchParams.get('exclude');
+	const MAX_EXCLUDE = 50;
 	const exclude = excludeParam
 		? excludeParam
 				.split(',')
 				.map((s) => s.trim())
 				.filter((s) => s.length > 0 && isValidPackageName(s))
+				.slice(0, MAX_EXCLUDE)
 		: undefined;
 
 	const sessionId = url.searchParams.get('sessionId');
