@@ -103,22 +103,38 @@ export async function handleEvents(request: Request, env: Env): Promise<Response
 	}
 
 	// Validate all events against the catalog — reject events for unknown packages
-	const allPackages = new Set<string>();
-	const pkgRows = await env.DB.prepare('SELECT package_name FROM catalog_apps').all<{ package_name: string }>();
-	for (const row of pkgRows.results ?? []) {
-		allPackages.add(row.package_name);
-	}
-
-	const events: AnalyticsEvent[] = [];
+	// Use a single parameterized existence check instead of loading the full table
 	let rejected = 0;
+	const parsedEvents: { event: AnalyticsEvent; raw: Record<string, unknown> }[] = [];
+	const neededPackages = new Set<string>();
 	for (const raw of rawEvents) {
 		const parsed = parseEvent(raw);
 		if (!parsed) {
 			rejected++;
 			continue;
 		}
+		neededPackages.add(parsed.targetPackage);
+		neededPackages.add(parsed.sourcePackage);
+		parsedEvents.push({ event: parsed, raw });
+	}
+
+	// Check which packages exist in a single query
+	const knownPackages = new Set<string>();
+	if (neededPackages.size > 0) {
+		const pkgs = Array.from(neededPackages);
+		const placeholders = pkgs.map(() => '?').join(', ');
+		const pkgRows = await env.DB.prepare(
+			`SELECT package_name FROM catalog_apps WHERE package_name IN (${placeholders})`,
+		).bind(...pkgs).all<{ package_name: string }>();
+		for (const row of pkgRows.results ?? []) {
+			knownPackages.add(row.package_name);
+		}
+	}
+
+	const events: AnalyticsEvent[] = [];
+	for (const { event: parsed } of parsedEvents) {
 		// Bot/spam protection: both source and target must be known Hartmann Studios packages
-		if (!allPackages.has(parsed.targetPackage) || !allPackages.has(parsed.sourcePackage)) {
+		if (!knownPackages.has(parsed.targetPackage) || !knownPackages.has(parsed.sourcePackage)) {
 			rejected++;
 			continue;
 		}
