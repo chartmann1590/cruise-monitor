@@ -67,7 +67,8 @@ export async function readCatalog(env: Env): Promise<CatalogApp[]> {
 
 	// Warm the KV cache
 	if (apps.length > 0) {
-		await writeCatalogCache(env, apps, 'd1-fallback', new Date().toISOString());
+		const startedAt = new Date().toISOString();
+		await writeCatalogCache(env, apps, 'd1-fallback', startedAt, new Date().toISOString());
 	}
 
 	return apps;
@@ -75,7 +76,8 @@ export async function readCatalog(env: Env): Promise<CatalogApp[]> {
 
 /** Write the catalog to KV cache and D1. */
 export async function writeCatalog(env: Env, apps: CatalogApp[]): Promise<void> {
-	await writeCatalogCache(env, apps, 'discovery', new Date().toISOString());
+	const startedAt = new Date().toISOString();
+	await writeCatalogCache(env, apps, 'discovery', startedAt, new Date().toISOString());
 
 	// Upsert into D1 in a transaction
 	const now = new Date().toISOString();
@@ -136,12 +138,13 @@ async function writeCatalogCache(
 	env: Env,
 	apps: CatalogApp[],
 	source: string,
+	startedAt: string,
 	completedAt: string,
 ): Promise<void> {
 	const entry: CatalogCacheEntry = {
 		apps,
 		source,
-		refreshStartedAt: completedAt,
+		refreshStartedAt: startedAt,
 		refreshCompletedAt: completedAt,
 	};
 	await env.CROSS_PROMO_KV.put(CATALOG_CACHE_KEY, JSON.stringify(entry), {
@@ -162,10 +165,11 @@ export async function readLastKnownGood(env: Env): Promise<CatalogApp[] | null> 
 
 /** Store the last-known-good catalog. */
 export async function writeLastKnownGood(env: Env, apps: CatalogApp[]): Promise<void> {
+	const startedAt = new Date().toISOString();
 	const entry: CatalogCacheEntry = {
 		apps,
 		source: 'last-known-good',
-		refreshStartedAt: new Date().toISOString(),
+		refreshStartedAt: startedAt,
 		refreshCompletedAt: new Date().toISOString(),
 	};
 	await env.CROSS_PROMO_KV.put(LAST_KNOWN_GOOD_KEY, JSON.stringify(entry), {
