@@ -189,16 +189,25 @@ async function updateStats(env: Env, events: AnalyticsEvent[]): Promise<void> {
 		groups.set(key, g);
 	}
 
+	const stmts = [];
 	for (const [key, g] of groups) {
 		const [targetPackage, sourcePackage, placement, selectionType] = key.split('|');
-		await env.DB.prepare(
-			`INSERT INTO promo_stats (target_package, source_package, placement, selection_type, impressions, clicks)
-			 VALUES (?, ?, ?, ?, ?, ?)
-			 ON CONFLICT(target_package, source_package, placement, selection_type)
-			 DO UPDATE SET impressions = impressions + excluded.impressions, clicks = clicks + excluded.clicks`,
-		)
-			.bind(targetPackage, sourcePackage, placement, selectionType, g.impressions, g.clicks)
-			.run();
+		stmts.push(
+			env.DB.prepare(
+				`INSERT INTO promo_stats (target_package, source_package, placement, selection_type, impressions, clicks)
+				 VALUES (?, ?, ?, ?, ?, ?)
+				 ON CONFLICT(target_package, source_package, placement, selection_type)
+				 DO UPDATE SET impressions = impressions + excluded.impressions, clicks = clicks + excluded.clicks`,
+			).bind(targetPackage, sourcePackage, placement, selectionType, g.impressions, g.clicks),
+		);
+	}
+
+	if (stmts.length > 0) {
+		const BATCH_SIZE = 50;
+		for (let i = 0; i < stmts.length; i += BATCH_SIZE) {
+			const chunk = stmts.slice(i, i + BATCH_SIZE);
+			await env.DB.batch(chunk);
+		}
 	}
 }
 
