@@ -57,7 +57,7 @@ android {
         applicationId = "com.cruisewatch.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 9
+        versionCode = 10
         versionName = "0.4.0"
 
         manifestPlaceholders["admobAppId"] = admobAppId
