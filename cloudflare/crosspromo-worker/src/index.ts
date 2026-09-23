@@ -137,7 +137,7 @@ async function handleRecommendations(request: Request, env: Env): Promise<Respon
 	const requestId = uuidv4();
 
 	// Read catalog
-	const catalog = await readCatalog(env);
+	let catalog = await readCatalog(env);
 	if (catalog.length === 0) {
 		// Try last-known-good
 		const lkg = await readLastKnownGood(env);
@@ -151,6 +151,7 @@ async function handleRecommendations(request: Request, env: Env): Promise<Respon
 				apps: [],
 			} as RecommendationResponse, 200);
 		}
+		catalog = lkg;
 	}
 
 	// Load aggregate stats for CTR
