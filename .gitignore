@@ -7,6 +7,7 @@ scraper/*.log
 cloudflare/*/node_modules/
 cloudflare/*/.wrangler/
 cloudflare/*/*.log
+cloudflare/*/.dev.vars
 
 # Python (scraper/python)
 scraper/python/__pycache__/
@@ -40,3 +41,7 @@ Thumbs.db
 
 # Claude Code session state (not project content)
 .claude/
+.serena/
+
+# Local planning notes (may contain secrets, never commit)
+plan/

@@ -44,6 +44,11 @@ val feedbackWorkerUrl = System.getenv("FEEDBACK_WORKER_URL")
     ?: localProperties.getProperty("feedback.worker.url")
     ?: "https://cruisewatch-feedback-api.charles-h-hartmann1.workers.dev"
 
+val crossPromoBaseUrl = System.getenv("CROSS_PROMO_BASE_URL")
+    ?: project.findProperty("crosspromo.base.url") as? String
+    ?: localProperties.getProperty("crosspromo.base.url")
+    ?: "https://cruisewatch-crosspromo.charles-h-hartmann1.workers.dev"
+
 android {
     namespace = "com.cruisewatch.app"
     compileSdk = 36
@@ -59,6 +64,7 @@ android {
         buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", "\"$admobBannerAdUnitId\"")
         buildConfigField("String", "ADMOB_INTERSTITIAL_AD_UNIT_ID", "\"$admobInterstitialAdUnitId\"")
         buildConfigField("String", "FEEDBACK_WORKER_URL", "\"$feedbackWorkerUrl\"")
+        buildConfigField("String", "CROSS_PROMO_BASE_URL", "\"$crossPromoBaseUrl\"")
     }
 
     signingConfigs {
@@ -140,6 +146,10 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    // Cross-promotion SDK (reusable library module). Icon loading (Coil) is an
+    // implementation detail of the crosspromo module itself; the app doesn't need it directly.
+    implementation(project(":crosspromo"))
 
     implementation("com.google.android.gms:play-services-ads:23.2.0")
     implementation("com.google.android.gms:play-services-auth:21.2.0")

@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "CruiseWatch"
 include(":app")
 include(":wear")
+include(":crosspromo")

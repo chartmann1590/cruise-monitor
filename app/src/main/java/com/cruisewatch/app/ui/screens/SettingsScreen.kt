@@ -24,19 +24,43 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cruisewatch.app.BuildConfig
 import com.cruisewatch.app.R
 import com.cruisewatch.app.i18n.SupportedLanguages
 import com.cruisewatch.app.i18n.TranslationManager
 import com.cruisewatch.app.i18n.TranslationState
 import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.ui.feedback.SupportFeedbackSection
+import com.cruisewatch.crosspromo.CrossPromoSection
+import com.cruisewatch.crosspromo.CrosspromoViewModel
+import com.cruisewatch.crosspromo.CrosspromoViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(translationManager: TranslationManager, onBack: () -> Unit) {
+fun SettingsScreen(
+    translationManager: TranslationManager,
+    onBack: () -> Unit,
+    sourcePackage: String = "com.cruisewatch.app",
+) {
     var showLanguagePicker by remember { mutableStateOf(false) }
     val state by translationManager.state.collectAsState()
     val currentCode = (state as? TranslationState.Ready)?.language?.code ?: SupportedLanguages.ENGLISH.code
+
+    val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
+
+    val crosspromoViewModel: CrosspromoViewModel = viewModel(
+        factory = CrosspromoViewModelFactory(
+            application = context.applicationContext as android.app.Application,
+            sourcePackage = sourcePackage,
+            placement = "settings",
+            baseUrl = BuildConfig.CROSS_PROMO_BASE_URL,
+        ),
+    )
 
     if (showLanguagePicker) {
         LanguagePickerScreen(
@@ -67,6 +91,15 @@ fun SettingsScreen(translationManager: TranslationManager, onBack: () -> Unit) {
                 modifier = Modifier.fillMaxWidth().clickable { showLanguagePicker = true },
             )
             SupportFeedbackSection()
+
+            CrossPromoSection(
+                viewModel = crosspromoViewModel,
+                modifier = Modifier.padding(vertical = 8.dp),
+                onAppOpened = { app ->
+                    val url = app.storeUrl ?: "https://play.google.com/store/apps/details?id=${app.packageName}"
+                    uriHandler.openUri(url)
+                },
+            )
         }
     }
 }
