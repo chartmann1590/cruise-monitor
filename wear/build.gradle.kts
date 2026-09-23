@@ -33,7 +33,7 @@ android {
         // just per track/form-factor — a +1000 offset from the phone app's versionCode
         // (app/build.gradle.kts) guarantees the wear and phone artifacts never collide,
         // without having to hand-coordinate two counters on every release.
-        versionCode = 1008
+        versionCode = 1009
         versionName = "0.4.0"
     }
 
