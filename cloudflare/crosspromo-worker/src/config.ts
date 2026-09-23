@@ -77,11 +77,21 @@ export async function loadAppConfig(env: Env, sourcePackage: string): Promise<Ap
 		return null;
 	}
 
+	let placements: string[] = [];
+	if (row.placements) {
+		try {
+			placements = JSON.parse(row.placements);
+			if (!Array.isArray(placements)) placements = [];
+		} catch {
+			placements = [];
+		}
+	}
+
 	const config: AppConfig = {
 		sourcePackage,
 		enabled: row.enabled === 1,
 		maxCards: row.max_cards ?? DEFAULT_CONFIG.defaultLimit,
-		placements: row.placements ? JSON.parse(row.placements) : [],
+		placements,
 	};
 	await env.CROSS_PROMO_KV.put(key, JSON.stringify(config), { expirationTtl: CONFIG_TTL_SECONDS });
 	return config;
