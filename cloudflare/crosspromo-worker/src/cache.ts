@@ -101,7 +101,7 @@ export async function writeCatalog(env: Env, apps: CatalogApp[]): Promise<void> 
 			last_seen_at = excluded.last_seen_at`,
 	);
 
-	const batch = apps.map((app) =>
+	const statements = apps.map((app) =>
 		upsertStmt.bind(
 			app.packageName,
 			app.name,
@@ -122,7 +122,13 @@ export async function writeCatalog(env: Env, apps: CatalogApp[]): Promise<void> 
 			app.promotionMultiplier,
 		),
 	);
-	await env.DB.batch(batch);
+
+	// Chunk the batch to respect D1 statement-count limits
+	const CHUNK_SIZE = 50;
+	for (let i = 0; i < statements.length; i += CHUNK_SIZE) {
+		const chunk = statements.slice(i, i + CHUNK_SIZE);
+		await env.DB.batch(chunk);
+	}
 }
 
 /** Write only the KV cache layer (for quick writes without D1). */
