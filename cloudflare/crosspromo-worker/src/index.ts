@@ -12,7 +12,7 @@ export interface Env {
 }
 
 import { readCatalog, readLastKnownGood } from './cache';
-import { generateRecommendations } from './recommendations';
+import { generateRecommendations, expiresAt } from './recommendations';
 import { handleEvents, loadStats } from './events';
 import { handleHealth } from './health';
 import { runCatalogRefresh } from './refresh';
@@ -151,7 +151,7 @@ async function handleRecommendations(request: Request, env: Env): Promise<Respon
 				version: 1,
 				requestId,
 				generatedAt: now.toISOString(),
-				expiresAt: new Date(now.getTime() + 6 * 3600 * 1000).toISOString(),
+				expiresAt: expiresAt(6),
 				apps: [],
 			} as RecommendationResponse, 200);
 		}
