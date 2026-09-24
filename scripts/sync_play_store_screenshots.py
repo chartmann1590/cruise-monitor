@@ -7,9 +7,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
+
 
 PACKAGE_NAME = "com.cruisewatch.app"
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -17,6 +15,8 @@ WEAR_SCREENSHOTS_DIR = REPO_ROOT / "fastlane" / "metadata" / "android" / "en-US"
 
 
 def get_credentials():
+    from google.oauth2 import service_account
+
     service_account_json = os.environ.get("PLAY_SERVICE_ACCOUNT_JSON")
     if not service_account_json and len(sys.argv) > 1:
         key_file = Path(sys.argv[1])
@@ -55,6 +55,9 @@ def sync_wear_screenshots(dry_run: bool = False):
     if dry_run:
         print("Dry run requested; skipping API calls.")
         return
+
+    from googleapiclient.discovery import build
+    from googleapiclient.http import MediaFileUpload
 
     credentials = get_credentials()
     service = build("androidpublisher", "v3", credentials=credentials)
