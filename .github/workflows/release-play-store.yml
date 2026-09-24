@@ -89,6 +89,9 @@ jobs:
           npm ci
           npx tsc --noEmit
 
+      - name: Verify Play Store screenshot sync script
+        run: python3 scripts/sync_play_store_screenshots.py --dry-run
+
       - name: Upload Android test reports on failure
         if: failure()
         uses: actions/upload-artifact@v4
@@ -174,6 +177,13 @@ jobs:
           releaseFiles: wear/build/outputs/bundle/release/wear-release.aab
           track: ${{ steps.wear_track.outputs.name }}
           status: ${{ github.event.inputs.status || 'completed' }}
+
+      - name: Sync Wear OS screenshots to Play Store
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python3 -m pip install google-api-python-client google-auth
+          python3 scripts/sync_play_store_screenshots.py
 
       # This is the "gets on GitHub too" step: on a version tag push
       # (v*.*.*) the signed AABs are attached to a GitHub Release so they
