@@ -135,7 +135,7 @@ def sync_wear_screenshots(dry_run: bool = False):
         service.edits().commit(
             packageName=PACKAGE_NAME,
             editId=edit_id,
-            changesNotSentForReview=False,
+            changesNotSentForReview=True,
         ).execute()
         print("Successfully updated Wear OS screenshots on Google Play!")
     except Exception as e:
