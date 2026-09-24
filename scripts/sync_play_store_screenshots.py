@@ -5,13 +5,48 @@ Sync Wear OS screenshots (and other listing assets) to Google Play via the Andro
 
 import json
 import os
+import re
+import struct
 import sys
 from pathlib import Path
-
 
 PACKAGE_NAME = "com.cruisewatch.app"
 REPO_ROOT = Path(__file__).resolve().parent.parent
 WEAR_SCREENSHOTS_DIR = REPO_ROOT / "fastlane" / "metadata" / "android" / "en-US" / "images" / "wearScreenshots"
+
+# Google Play Wear OS preview asset constraints
+MIN_DIMENSION = 384
+MAX_DIMENSION = 3840
+
+
+def natural_sort_key(path: Path):
+    """Sort filenames with natural numeric ordering (e.g. 1, 2, ... 10)."""
+    return [int(text) if text.isdigit() else text.lower() for text in re.split(r"(\d+)", path.name)]
+
+
+def validate_screenshot(path: Path) -> tuple[int, int]:
+    """Validate screenshot meets Play Store Wear OS requirements: valid PNG, 1:1, 384-3840px."""
+    if not path.is_file() or path.stat().st_size == 0:
+        raise ValueError(f"Screenshot file {path.name} is missing or empty")
+
+    with path.open("rb") as f:
+        header = f.read(24)
+        if len(header) < 24 or header[:8] != b"\x89PNG\r\n\x1a\n":
+            raise ValueError(f"{path.name} is not a valid PNG image")
+        width, height = struct.unpack(">II", header[16:24])
+
+    if width != height:
+        raise ValueError(f"{path.name} violates 1:1 aspect ratio constraint: got {width}x{height}")
+    if width < MIN_DIMENSION or height < MIN_DIMENSION:
+        raise ValueError(
+            f"{path.name} dimensions ({width}x{height}) below minimum required {MIN_DIMENSION}x{MIN_DIMENSION}"
+        )
+    if width > MAX_DIMENSION or height > MAX_DIMENSION:
+        raise ValueError(
+            f"{path.name} dimensions ({width}x{height}) exceed maximum allowed {MAX_DIMENSION}x{MAX_DIMENSION}"
+        )
+
+    return width, height
 
 
 def get_credentials():
@@ -28,32 +63,38 @@ def get_credentials():
             "Service account JSON not provided. Set PLAY_SERVICE_ACCOUNT_JSON env var or pass key file path as argv[1]."
         )
 
-    # Could be JSON string or filepath in env var
-    if service_account_json.strip().startswith("{"):
-        info = json.loads(service_account_json)
+    raw_value = service_account_json.strip()
+    if os.path.isfile(raw_value):
+        return service_account.Credentials.from_service_account_file(
+            raw_value,
+            scopes=["https://www.googleapis.com/auth/androidpublisher"],
+        )
+
+    try:
+        info = json.loads(raw_value)
         return service_account.Credentials.from_service_account_info(
             info,
             scopes=["https://www.googleapis.com/auth/androidpublisher"],
         )
-    else:
-        return service_account.Credentials.from_service_account_file(
-            service_account_json.strip(),
-            scopes=["https://www.googleapis.com/auth/androidpublisher"],
-        )
+    except json.JSONDecodeError as err:
+        raise ValueError(
+            f"Provided service account value is neither an existing file path nor valid JSON: {err}"
+        ) from err
 
 
 def sync_wear_screenshots(dry_run: bool = False):
-    screenshots = sorted(WEAR_SCREENSHOTS_DIR.glob("*.png"))
+    screenshots = sorted(WEAR_SCREENSHOTS_DIR.glob("*.png"), key=natural_sort_key)
     if not screenshots:
         print(f"No screenshots found in {WEAR_SCREENSHOTS_DIR}")
         return
 
     print(f"Found {len(screenshots)} Wear OS screenshots to upload:")
     for s in screenshots:
-        print(f"  - {s.name} ({s.stat().st_size} bytes)")
+        w, h = validate_screenshot(s)
+        print(f"  - {s.name} ({w}x{h} px, {s.stat().st_size} bytes) [VALID]")
 
     if dry_run:
-        print("Dry run requested; skipping API calls.")
+        print("Dry run requested; validation passed, skipping API calls.")
         return
 
     from googleapiclient.discovery import build

@@ -178,11 +178,17 @@ jobs:
           track: ${{ steps.wear_track.outputs.name }}
           status: ${{ github.event.inputs.status || 'completed' }}
 
+      - name: Set up Python with pip cache
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
       - name: Sync Wear OS screenshots to Play Store
         env:
           PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
         run: |
-          python3 -m pip install google-api-python-client google-auth
+          pip install google-api-python-client google-auth
           python3 scripts/sync_play_store_screenshots.py
 
       # This is the "gets on GitHub too" step: on a version tag push
