@@ -57,8 +57,8 @@ android {
         applicationId = "com.cruisewatch.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 13
-        versionName = "0.4.3"
+        versionCode = 14
+        versionName = "0.4.4"
 
         manifestPlaceholders["admobAppId"] = admobAppId
         buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", "\"$admobBannerAdUnitId\"")

@@ -1,85 +1,101 @@
-# CruiseWatch
+# 🚢 CruiseWatch — Get Money Back When Your Cruise Fare Drops
 
-A free, Android-only, CruiseSignal-style cruise fare price-drop tracker with a Wear OS companion and an
-on-device AI refund assistant. See [`plan/00-overview.md`](plan/00-overview.md) for the full plan,
-architecture, and phase breakdown.
+**You already booked your cruise. But what happens when the price drops a week later?**  
+Unless someone tells you, you might miss out on hundreds of dollars in refunds or onboard credits. 
 
-**Website:** https://cruisewatch-app.web.app
-**Demo video:** [website/assets/video/cruisewatch-promo.mp4](website/assets/video/cruisewatch-promo.mp4) (also embedded on the website)
+**CruiseWatch** monitors the public fares on cruises you've already booked and sends you an instant push alert the moment the price drops below what you paid. Even better, it gives you exact, step-by-step instructions on who to call, what to say, and how to claim your refund before the window closes.
 
-## What it does
+🌐 **Website:** [cruisewatch-app.web.app](https://cruisewatch-app.web.app)  
+🎥 **Watch the Promo Video:** [Click here to view the video](website/assets/video/cruisewatch-promo.mp4) (also streaming live on our [website](https://cruisewatch-app.web.app))  
+🍺 **Support Developer:** [Buy Me a Beer / Coffee](https://www.buymeacoffee.com/charleshartmann)
 
-CruiseWatch watches a cruise you've already booked (same ship, sail date, cabin category) and tells you the
-moment the public fare drops below what you paid — then shows you exactly which of your cruise line's
-price-protection policies applies and how to claim the refund, onboard credit, or upgrade.
+---
 
-| | |
-|---|---|
-| ![Tracked cruises](website/assets/screenshots/phone-cruises.png) | ![Price alert with claim steps](website/assets/screenshots/phone-alerts.png) |
-| ![Policy reference](website/assets/screenshots/phone-policies.png) | ![AI refund assistant opened from an alert](website/assets/screenshots/phone-assistant-contextual.png) |
+## 📸 App Screenshots
 
-- **Automatic price checks** against each cruise line's own public pricing — Royal Caribbean, Celebrity,
-  Carnival, Princess, and Norwegian, all live-verified.
-- **Push alerts** the moment a fare drop falls inside that line's claim window.
-- **Exact claim steps** per alert — the real phone number, what to say, and the deadline — sourced from a
-  reference policy dataset per cruise line.
-- **On-device AI refund assistant** (see below) that already knows your cruises and what to do.
-- **Wear OS companion app** (see below) with the same alerts and a full alert-history view, right on your wrist.
-- Free — no subscription, no paywalled alerts.
+### 📱 Android Phone App
 
-## On-device AI refund assistant
+| Your Tracked Cruises | Price Drop Alerts & Claim Steps |
+|:---:|:---:|
+| ![Tracked Cruises](website/assets/screenshots/phone-cruises.png) | ![Price Drop Alert](website/assets/screenshots/phone-alerts.png) |
 
-A chat assistant, scoped strictly to helping you get your money back, that runs entirely on-device using
-MediaPipe's LLM Inference API with a locally downloaded LiteRT Qwen2.5 model (0.5B or 1.5B, auto-selected from
-your device's RAM). Nothing you ask it — or any of your cruise data — ever leaves your phone.
+| Cruise Line Policy Reference | On-Device AI Refund Assistant |
+|:---:|:---:|
+| ![Policy Reference](website/assets/screenshots/phone-policies.png) | ![AI Refund Assistant](website/assets/screenshots/phone-assistant-contextual.png) |
 
-Open it from the bottom nav for general questions, or tap **"Ask the assistant about this"** directly from a
-price alert — it opens already knowing the ship, sail date, drop amount, and applicable policy, and leads with
-concrete next steps instead of asking what you mean.
+---
 
-| | |
-|---|---|
-| ![Assistant opened from a price alert](website/assets/screenshots/phone-assistant-contextual.png) | ![General assistant chat](website/assets/screenshots/phone-assistant-chat.png) |
+### ⌚ Wear OS Smartwatch Companion
+Get your price drops and sailing status delivered straight to your wrist!
 
-## Wear OS companion
+| Price Drops on Wrist | Claim & Alert History | One-Tap Sign In |
+|:---:|:---:|:---:|
+| <img src="website/assets/screenshots/watch-price-drops.png" width="220" alt="Watch Price Drops"/> | <img src="website/assets/screenshots/watch-alert-history.png" width="220" alt="Watch Alert History"/> | <img src="website/assets/screenshots/watch-signin.png" width="220" alt="Watch Sign In"/> |
 
-Installed automatically alongside the phone app (bundled via Play Store install-time delivery — no separate
-download or setup step). Sign in with the same account or with Google in one tap.
+---
 
-- Live price-drop sync directly over the internet, with a Bluetooth Data Layer fallback for watches that
-  aren't independently online.
-- Same push notifications as the phone app.
-- Tap any tracked cruise to see its full alert history.
+## ✨ How It Works (In 3 Simple Steps)
 
-| | | |
-|---|---|---|
-| <img src="website/assets/screenshots/watch-price-drops.png" width="220"/> | <img src="website/assets/screenshots/watch-alert-history.png" width="220"/> | <img src="website/assets/screenshots/watch-signin.png" width="220"/> |
+1. **Add Your Booked Cruise:**  
+   Select your cruise line, ship name, sailing date, and cabin category. Enter the fare you paid—no booking confirmation numbers or sensitive account details required.
+2. **We Watch Public Fares 24/7:**  
+   Our automated system checks public rates several times a day across major cruise lines:
+   * **Royal Caribbean**
+   * **Celebrity Cruises**
+   * **Carnival Cruise Line**
+   * **Princess Cruises**
+   * **Norwegian Cruise Line (NCL)**
+3. **Get Alerted & Claim Your Refund:**  
+   The instant a lower price appears for your room category, you receive a notification. Open the alert to see the exact phone number to call, a ready-to-read script, and your cruise line's official price protection deadline.
 
-## Layout
+---
 
-```
-app/       Android Kotlin project — phone app, incl. ai/ (on-device LLM assistant)
-wear/      Wear OS companion app (Kotlin, Wear Compose)
-scraper/   Node/TypeScript scraper + GitHub Actions workflow (Phase 1/3)
-website/   Marketing site, deployed via Firebase Hosting (firebase deploy --only hosting)
-docs/      Firestore schema, cruise-line policy reference data
-plan/      Plan, one file per phase
-```
+## 🤖 Built-In AI Refund Assistant (100% Private & Offline)
 
-## Status
+Have questions about your booking or how price adjustments work?  
+CruiseWatch features an intelligent on-device refund assistant:
+* **Zero Tracking:** The AI assistant runs entirely on your phone. None of your questions, cruise details, or personal information ever leave your device.
+* **Instant Context:** Tap *"Ask the assistant about this"* directly from any price alert, and it automatically provides guidance tailored to your specific ship, sailing date, and cruise line policy.
 
-- Phase 0 (skeleton & data model): done — see [`plan/01-phase0-skeleton.md`](plan/01-phase0-skeleton.md)
-- Phase 1 (Royal Caribbean + Celebrity scraping): done, both lines live-verified — see [`plan/02-phase1-rc-celebrity-scraping.md`](plan/02-phase1-rc-celebrity-scraping.md)
-- Phase 2 (Android app MVP): done, builds successfully, Firebase infra live, CI verified green — see [`plan/03-phase2-android-app.md`](plan/03-phase2-android-app.md)
-- Phase 3 (Carnival, Princess, Norwegian scraping): done, all 3 lines live-verified — see [`plan/04-phase3-remaining-lines.md`](plan/04-phase3-remaining-lines.md)
-- Wear OS companion app, home screen widget, and on-device AI refund assistant: done, live-verified on
-  emulator and real hardware (Pixel 8 Pro).
+---
 
-**All 5 cruise lines are now fully implemented and live-verified.** Next up: Phase 4 (Play Store readiness).
+## 🔒 Privacy First
 
-## Live infrastructure
+CruiseWatch is built with your privacy at the center:
+* **No Travel Agent Needed:** You don't need to transfer your booking or give us your reservation credentials.
+* **No Hidden Fees:** 100% free to use, supported by standard unobtrusive ads.
+* **Full Data Control:** Easily delete your tracked cruises, history, or your entire account at any time directly in Settings or via our [Account Deletion Page](https://cruisewatch-app.web.app/delete-account.html).
+* Read our full [Privacy Policy](https://cruisewatch-app.web.app/privacy.html) and [Terms of Service](https://cruisewatch-app.web.app/terms.html).
 
-- GitHub: [chartmann1590/cruise-monitor](https://github.com/chartmann1590/cruise-monitor) (private)
-- Firebase project: `cruisewatch-app`
-- Website: https://cruisewatch-app.web.app (Firebase Hosting)
-- Android app ID: `com.cruisewatch.app` · Wear app ID: `com.cruisewatch.app.wear`
+---
+
+## 🍺 Support the Developer
+
+CruiseWatch is independently built and maintained with ❤️. If CruiseWatch helped you save money or get onboard credit for your next vacation, consider supporting future development:
+
+👉 **[Buy Me a Beer / Coffee on BuyMeACoffee](https://www.buymeacoffee.com/charleshartmann)** 🍻
+
+Every contribution helps keep the servers running and new cruise lines coming!
+
+---
+
+## 🐛 Need Help or Found a Bug?
+
+We'd love to hear from you! If you run into an issue, notice pricing that doesn't look right, or want to request a new cruise line:
+* **Open an Issue:** Please [open an issue on GitHub](https://github.com/chartmann1590/cruise-monitor/issues/new) with details.
+* **Email Support:** Reach out directly at [me@charleshartmann.com](mailto:me@charleshartmann.com).
+
+---
+
+## 🌟 Check Out Our Other Apps!
+
+Enjoying CruiseWatch? Take a look at these other handy apps from **Hartmann Studios**:
+
+* **🍻 [TipsyBuddy](https://github.com/chartmann1590/TipsyBuddy)** — Your smart night-out wingman & drink tracker. Monitor estimated BAC, stay hydrated, check in to bars, and share your live location so friends know you're safe. ([Live Web Tracker](https://tipsybuddy.web.app))
+* **📰 [Porchlight Press](https://github.com/chartmann1590/porchlight-press)** — A clean, privacy-first personalized local newspaper for Android with real-time weather forecasts, source-attributed briefs, and read-aloud features.
+* **🎨 PixelDream** — Fast, completely private on-device AI art generator for Android.
+* **💚 WarmWord** — A calm, on-device AI companion for mental health reflection and mood journaling that stays strictly on your phone.
+
+---
+
+*Disclaimer: CruiseWatch is an independent price monitoring utility and is not affiliated with, endorsed by, or sponsored by Royal Caribbean, Celebrity Cruises, Carnival, Princess, Norwegian Cruise Line, or any other cruise line. All cruise line names and trademarks belong to their respective owners.*
