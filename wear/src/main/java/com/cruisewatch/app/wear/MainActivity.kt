@@ -38,12 +38,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
+import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
+import androidx.wear.compose.material.PositionIndicator
+import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -94,6 +99,7 @@ class MainActivity : ComponentActivity() {
     ) { /* no-op: FCM still delivers silently on denial */ }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
 
@@ -228,74 +234,86 @@ private fun CruiseListScreen(
         return
     }
 
-    ScalingLazyColumn(modifier = Modifier.fillMaxSize()) {
-        item {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(bottom = 4.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Filled.Sailing, contentDescription = null, tint = Teal, modifier = Modifier.size(16.dp))
-                    Text(
-                        " CruiseWatch",
-                        style = MaterialTheme.typography.title3,
-                        modifier = Modifier.padding(start = 2.dp),
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
-                    Icon(
-                        if (synced) Icons.Filled.CloudDone else Icons.Filled.CloudQueue,
-                        contentDescription = null,
-                        tint = if (synced) Teal else Gold,
-                        modifier = Modifier.size(10.dp),
-                    )
-                    Text(
-                        if (synced) " Live" else " Synced via phone",
-                        style = MaterialTheme.typography.caption3,
-                        color = if (synced) Teal else Gold,
-                        modifier = Modifier.padding(start = 2.dp),
-                    )
-                }
-            }
-        }
-        if (alerts.isNotEmpty()) {
+    val listState = rememberScalingLazyListState()
+
+    Scaffold(
+        positionIndicator = {
+            PositionIndicator(scalingLazyListState = listState)
+        },
+    ) {
+        ScalingLazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
+            autoCentering = AutoCenteringParams(itemIndex = 0),
+        ) {
             item {
-                Text(
-                    "Price drops",
-                    style = MaterialTheme.typography.caption2,
-                    modifier = Modifier.padding(top = 4.dp, bottom = 2.dp),
-                )
-            }
-            items(alerts) { alert ->
-                Chip(
-                    onClick = { onCruiseClick(alert.cruiseId) },
-                    label = { Text("🎉 $${"%.0f".format(alert.dropAmount)} off") },
-                    secondaryLabel = { Text("New fare $${"%.0f".format(alert.currentFare)}") },
-                    icon = { Icon(Icons.Filled.CardGiftcard, contentDescription = null) },
-                    colors = ChipDefaults.chipColors(backgroundColor = Coral.copy(alpha = 0.28f)),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-        }
-        if (cruises.isNotEmpty()) {
-            item {
-                Text(
-                    "Tracked cruises",
-                    style = MaterialTheme.typography.caption2,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 2.dp),
-                )
-            }
-            items(cruises) { cruise ->
-                Chip(
-                    onClick = { onCruiseClick(cruise.id) },
-                    label = { Text(cruise.ship) },
-                    secondaryLabel = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(bottom = 4.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Sailing, contentDescription = null, tint = Teal, modifier = Modifier.size(16.dp))
                         Text(
-                            "${cruise.currency} ${"%.0f".format(cruise.farePaid)}" +
-                                (cruise.daysLeft?.let { " · ${it}d left" } ?: ""),
+                            " CruiseWatch",
+                            style = MaterialTheme.typography.title3,
+                            modifier = Modifier.padding(start = 2.dp),
                         )
-                    },
-                    icon = { Icon(Icons.Filled.Sailing, contentDescription = null) },
-                    colors = ChipDefaults.chipColors(backgroundColor = OceanDeep.copy(alpha = 0.6f)),
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
+                        Icon(
+                            if (synced) Icons.Filled.CloudDone else Icons.Filled.CloudQueue,
+                            contentDescription = null,
+                            tint = if (synced) Teal else Gold,
+                            modifier = Modifier.size(10.dp),
+                        )
+                        Text(
+                            if (synced) " Live" else " Synced via phone",
+                            style = MaterialTheme.typography.caption3,
+                            color = if (synced) Teal else Gold,
+                            modifier = Modifier.padding(start = 2.dp),
+                        )
+                    }
+                }
+            }
+            if (alerts.isNotEmpty()) {
+                item {
+                    Text(
+                        "Price drops",
+                        style = MaterialTheme.typography.caption2,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 2.dp),
+                    )
+                }
+                items(alerts) { alert ->
+                    Chip(
+                        onClick = { onCruiseClick(alert.cruiseId) },
+                        label = { Text("🎉 $${"%.0f".format(alert.dropAmount)} off") },
+                        secondaryLabel = { Text("New fare $${"%.0f".format(alert.currentFare)}") },
+                        icon = { Icon(Icons.Filled.CardGiftcard, contentDescription = null) },
+                        colors = ChipDefaults.chipColors(backgroundColor = Coral.copy(alpha = 0.28f)),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
+            if (cruises.isNotEmpty()) {
+                item {
+                    Text(
+                        "Tracked cruises",
+                        style = MaterialTheme.typography.caption2,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 2.dp),
+                    )
+                }
+                items(cruises) { cruise ->
+                    Chip(
+                        onClick = { onCruiseClick(cruise.id) },
+                        label = { Text(cruise.ship) },
+                        secondaryLabel = {
+                            Text(
+                                "${cruise.currency} ${"%.0f".format(cruise.farePaid)}" +
+                                    (cruise.daysLeft?.let { " · ${it}d left" } ?: ""),
+                            )
+                        },
+                        icon = { Icon(Icons.Filled.Sailing, contentDescription = null) },
+                        colors = ChipDefaults.chipColors(backgroundColor = OceanDeep.copy(alpha = 0.6f)),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
         }
     }
@@ -322,7 +340,18 @@ private fun CruiseDetailScreen(
         dataLayerSummary?.cruises?.firstOrNull { it.id == cruiseId }?.ship
     } ?: "Alert history"
 
-    ScalingLazyColumn(modifier = Modifier.fillMaxSize()) {
+    val listState = rememberScalingLazyListState()
+
+    Scaffold(
+        positionIndicator = {
+            PositionIndicator(scalingLazyListState = listState)
+        },
+    ) {
+        ScalingLazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
+            autoCentering = AutoCenteringParams(itemIndex = 0),
+        ) {
         item {
             Chip(
                 onClick = onBack,
@@ -363,6 +392,7 @@ private fun CruiseDetailScreen(
             }
         }
     }
+}
 }
 
 @Composable

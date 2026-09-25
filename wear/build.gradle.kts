@@ -28,13 +28,13 @@ android {
         // based on matching package name, not via the legacy wearApp() embedding.
         applicationId = "com.cruisewatch.app"
         minSdk = 30
-        targetSdk = 35
+        targetSdk = 34
         // Google Play requires versionCodes to be unique across the whole app, not
         // just per track/form-factor — a +1000 offset from the phone app's versionCode
         // (app/build.gradle.kts) guarantees the wear and phone artifacts never collide,
         // without having to hand-coordinate two counters on every release.
-        versionCode = 1012
-        versionName = "0.4.2"
+        versionCode = 1013
+        versionName = "0.4.3"
     }
 
     signingConfigs {
@@ -97,6 +97,8 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
 
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.wear:wear-input:1.2.0")
     implementation("androidx.wear.compose:compose-material:1.3.1")
     implementation("androidx.wear.compose:compose-foundation:1.3.1")
     implementation("androidx.wear:wear-tooling-preview:1.0.0")
