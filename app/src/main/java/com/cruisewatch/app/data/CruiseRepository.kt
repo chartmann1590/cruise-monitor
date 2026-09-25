@@ -111,4 +111,29 @@ class CruiseRepository(
             .set(mapOf("fcmTokens" to com.google.firebase.firestore.FieldValue.arrayUnion(token)), com.google.firebase.firestore.SetOptions.merge())
             .await()
     }
+
+    suspend fun deleteAllUserData() {
+        val userId = requireUserId()
+        runCatching {
+            db.collection("users").document(userId).delete().await()
+        }
+        runCatching {
+            val cruises = db.collection("trackedCruises")
+                .whereEqualTo("userId", userId)
+                .get()
+                .await()
+            for (doc in cruises.documents) {
+                doc.reference.delete().await()
+            }
+        }
+        runCatching {
+            val alerts = db.collection("alerts")
+                .whereEqualTo("userId", userId)
+                .get()
+                .await()
+            for (doc in alerts.documents) {
+                doc.reference.delete().await()
+            }
+        }
+    }
 }

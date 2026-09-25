@@ -173,7 +173,11 @@ fun CruiseWatchNavHost(
                     )
                 }
                 composable(Routes.SETTINGS) {
-                    SettingsScreen(translationManager = translationManager, onBack = { navController.popBackStack() })
+                    SettingsScreen(
+                        translationManager = translationManager,
+                        authViewModel = authViewModel,
+                        onBack = { navController.popBackStack() },
+                    )
                 }
                 composable(Routes.ADD_CRUISE) {
                     AddCruiseScreen(onSave = { cruise ->

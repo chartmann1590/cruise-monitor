@@ -61,9 +61,33 @@ class AuthViewModel(
         _error.value = null
     }
 
+    val currentUserEmail: String?
+        get() = auth.currentUser?.email
+
     fun signOut() {
         auth.signOut()
         _isSignedIn.value = false
+    }
+
+    fun deleteAccount(onResult: (Result<Unit>) -> Unit) {
+        val user = auth.currentUser
+        if (user == null) {
+            onResult(Result.failure(IllegalStateException("Not signed in")))
+            return
+        }
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                repository.deleteAllUserData()
+                user.delete().await()
+                _isSignedIn.value = false
+                onResult(Result.success(Unit))
+            } catch (e: Exception) {
+                onResult(Result.failure(e))
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 
     /**

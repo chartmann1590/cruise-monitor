@@ -135,6 +135,10 @@ class MainActivity : ComponentActivity() {
                     repository = repository,
                     isSignedIn = isSignedIn,
                     onSignedIn = { isSignedIn = true },
+                    onSignOut = {
+                        auth.signOut()
+                        isSignedIn = false
+                    },
                     onGoogleSignInClick = { googleSignInLauncher.launch(googleSignInClient.signInIntent) },
                     googleSignInError = googleError,
                 )
@@ -148,6 +152,7 @@ fun CruiseWatchWearApp(
     repository: WearRepository,
     isSignedIn: Boolean,
     onSignedIn: () -> Unit,
+    onSignOut: () -> Unit = {},
     onGoogleSignInClick: () -> Unit = {},
     googleSignInError: String? = null,
 ) {
@@ -192,6 +197,7 @@ fun CruiseWatchWearApp(
                         alerts = alerts.map { it.toDisplayAlert() },
                         synced = true,
                         onCruiseClick = { selectedCruiseId = it },
+                        onSignOut = onSignOut,
                     )
                 }
             }
@@ -228,12 +234,8 @@ private fun CruiseListScreen(
     alerts: List<DisplayAlert>,
     synced: Boolean,
     onCruiseClick: (String) -> Unit,
+    onSignOut: (() -> Unit)? = null,
 ) {
-    if (cruises.isEmpty() && alerts.isEmpty()) {
-        CenteredMessage("No cruises tracked yet")
-        return
-    }
-
     val listState = rememberScalingLazyListState()
 
     Scaffold(
@@ -270,6 +272,18 @@ private fun CruiseListScreen(
                             modifier = Modifier.padding(start = 2.dp),
                         )
                     }
+                }
+            }
+            if (cruises.isEmpty() && alerts.isEmpty()) {
+                item {
+                    Text(
+                        "No cruises tracked yet",
+                        style = MaterialTheme.typography.body2,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 12.dp),
+                    )
                 }
             }
             if (alerts.isNotEmpty()) {
@@ -312,6 +326,18 @@ private fun CruiseListScreen(
                         icon = { Icon(Icons.Filled.Sailing, contentDescription = null) },
                         colors = ChipDefaults.chipColors(backgroundColor = OceanDeep.copy(alpha = 0.6f)),
                         modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
+            if (synced && onSignOut != null) {
+                item {
+                    Chip(
+                        onClick = onSignOut,
+                        label = { Text("Sign out") },
+                        colors = ChipDefaults.chipColors(backgroundColor = Color.White.copy(alpha = 0.12f)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
                     )
                 }
             }
