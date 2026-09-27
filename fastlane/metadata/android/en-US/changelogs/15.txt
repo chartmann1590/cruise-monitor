@@ -1,0 +1,2 @@
+• Added optional monthly ad-free subscription to remove all banner and interstitial ads.
+• Updated Google Play Billing integration and performance improvements.

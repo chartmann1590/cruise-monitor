@@ -17,7 +17,7 @@ Install the CruiseWatch app on your Android phone and the Wear OS companion come
 WHY IT MATTERS
 Most cruise lines will refund the difference or give you onboard credit if the fare drops before your final payment date — but only if you notice in time and ask. CruiseWatch does the watching for you.
 
-• Free to use
+• Free to use with optional monthly ad-free subscription
 • Works with cruises already booked on Royal Caribbean, Celebrity, Carnival, Princess, and Norwegian
 • Push notifications the moment a tracked fare drops
 • Exact claim steps and deadlines per cruise line
@@ -25,4 +25,4 @@ Most cruise lines will refund the difference or give you onboard credit if the f
 • Wear OS companion app included
 • Home screen widget for at-a-glance status
 
-CruiseWatch is an independent tool and is not affiliated with, endorsed by, or sponsored by any cruise line. Pricing and policy information is provided for reference; always confirm current terms directly with your cruise line before requesting a refund. This app is supported by ads.
+CruiseWatch is an independent tool and is not affiliated with, endorsed by, or sponsored by any cruise line. Pricing and policy information is provided for reference; always confirm current terms directly with your cruise line before requesting a refund. CruiseWatch is free to use with ads, with an optional ad-free monthly subscription available.
