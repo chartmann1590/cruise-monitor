@@ -16,6 +16,8 @@ scraper/python/.venv/
 
 # Firebase / secrets — never commit a service account key
 **/firebase-service-account*.json
+**/*service-account*.json
+fastlane/play-service-account.json
 **/*.env
 .env*
 .firebase/

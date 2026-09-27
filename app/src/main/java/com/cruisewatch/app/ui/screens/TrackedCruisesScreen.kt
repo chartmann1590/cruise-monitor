@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Sailing
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -33,11 +35,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.cruisewatch.app.billing.BillingManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.R
@@ -62,6 +68,9 @@ fun TrackedCruisesScreen(
     onOpenSettings: () -> Unit,
 ) {
     val cruiseList by cruises.collectAsState(initial = emptyList())
+    val context = LocalContext.current
+    val billingManager = remember { BillingManager.getInstance(context) }
+    val isSubscribed by billingManager.isSubscribed.collectAsState()
 
     Scaffold(
         floatingActionButton = {
@@ -135,6 +144,30 @@ fun TrackedCruisesScreen(
                         ) {
                             TrackedCruiseCard(cruise, onClick = { onOpenCruise(cruise.id) })
                         }
+                    }
+                }
+            }
+
+            if (!isSubscribed) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 2.dp),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    TextButton(
+                        onClick = onOpenSettings,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                    ) {
+                        Icon(
+                            Icons.Filled.Star,
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp).padding(end = 4.dp),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                        Text(
+                            tr(R.string.subscription_remove_ads_action),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
                     }
                 }
             }

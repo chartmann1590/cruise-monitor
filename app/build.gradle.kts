@@ -57,8 +57,8 @@ android {
         applicationId = "com.cruisewatch.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 14
-        versionName = "0.4.4"
+        versionCode = 15
+        versionName = "0.5.0"
 
         manifestPlaceholders["admobAppId"] = admobAppId
         buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", "\"$admobBannerAdUnitId\"")
@@ -150,6 +150,9 @@ dependencies {
     // Cross-promotion SDK (reusable library module). Icon loading (Coil) is an
     // implementation detail of the crosspromo module itself; the app doesn't need it directly.
     implementation(project(":crosspromo"))
+
+    // Google Play Billing for in-app subscriptions
+    implementation("com.android.billingclient:billing:8.0.0")
 
     implementation("com.google.android.gms:play-services-ads:23.2.0")
     implementation("com.google.android.gms:play-services-auth:21.2.0")

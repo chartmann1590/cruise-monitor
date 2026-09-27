@@ -48,6 +48,7 @@ import com.cruisewatch.app.i18n.TranslationManager
 import com.cruisewatch.app.i18n.TranslationState
 import com.cruisewatch.app.i18n.tr
 import com.cruisewatch.app.ui.feedback.SupportFeedbackSection
+import com.cruisewatch.app.ui.subscription.SubscriptionSection
 import com.cruisewatch.crosspromo.CrossPromoSection
 import com.cruisewatch.crosspromo.CrosspromoViewModel
 import com.cruisewatch.crosspromo.CrosspromoViewModelFactory
@@ -147,6 +148,9 @@ fun SettingsScreen(
                 supportingContent = { Text(currentName) },
                 modifier = Modifier.fillMaxWidth().clickable { showLanguagePicker = true },
             )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            SubscriptionSection()
 
             if (authViewModel != null) {
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))

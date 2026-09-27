@@ -132,4 +132,23 @@
     <string name="settings_terms_of_service">Terms of Service</string>
     <string name="settings_delete_account_web">Account &amp; Data Deletion Page</string>
     <string name="settings_app_version">CruiseWatch v%1$s (%2$d)</string>
+
+    <!-- Subscriptions / Ad-Free -->
+    <string name="subscription_title">Ad-Free Subscription</string>
+    <string name="subscription_ad_free_monthly">CruiseWatch Ad-Free (Monthly)</string>
+    <string name="subscription_ad_free_desc">Remove all banner and interstitial ads, and support ongoing cruise tracking development.</string>
+    <string name="subscription_subscribe_button">Subscribe for %1$s / month</string>
+    <string name="subscription_subscribe_fallback">Subscribe ($1.99 / month)</string>
+    <string name="subscription_subscribed_badge">Active Subscription</string>
+    <string name="subscription_subscribed_desc">Thank you for supporting CruiseWatch! You are enjoying an ad-free experience.</string>
+    <string name="subscription_manage_button">Manage in Google Play</string>
+    <string name="subscription_restore_button">Restore Purchases</string>
+    <string name="subscription_restoring">Checking purchases…</string>
+    <string name="subscription_restore_success">Subscription restored successfully!</string>
+    <string name="subscription_restore_none">No active subscription found.</string>
+    <string name="subscription_benefit_no_banners">No banner ads anywhere in the app</string>
+    <string name="subscription_benefit_no_interstitials">No interstitial ads when adding cruises</string>
+    <string name="subscription_benefit_support">Support ongoing scraper &amp; feature updates</string>
+    <string name="subscription_benefit_cancel">Cancel anytime in Google Play Store</string>
+    <string name="subscription_remove_ads_action">Remove Ads</string>
 </resources>
