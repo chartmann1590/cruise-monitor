@@ -3,6 +3,7 @@ package com.cruisewatch.app.ads
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import com.cruisewatch.app.billing.BillingManager
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -15,14 +16,18 @@ private const val TAG = "InterstitialAdManager"
 /**
  * Loads one interstitial ahead of time and shows it on request (e.g. after
  * a user finishes adding a tracked cruise — a natural break point, not
- * mid-task). Silently no-ops if the ad hasn't finished loading yet, since
- * an interstitial should never block or delay the action that triggered it.
+ * mid-task). Silently no-ops if the user has an active ad-free subscription
+ * or if the ad hasn't finished loading yet.
  */
 class InterstitialAdManager(private val context: Context) {
     private var interstitialAd: InterstitialAd? = null
     private var isLoading = false
 
     fun preload() {
+        if (BillingManager.getInstance(context).isSubscribed.value) {
+            interstitialAd = null
+            return
+        }
         if (interstitialAd != null || isLoading) return
         isLoading = true
         InterstitialAd.load(
@@ -45,6 +50,10 @@ class InterstitialAdManager(private val context: Context) {
     }
 
     fun showIfReady(activity: Activity) {
+        if (BillingManager.getInstance(context).isSubscribed.value) {
+            interstitialAd = null
+            return
+        }
         val ad = interstitialAd
         if (ad == null) {
             preload() // wasn't ready this time; have one ready for next time
