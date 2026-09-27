@@ -17,7 +17,7 @@ Installieren Sie CruiseWatch auf Ihrem Android-Telefon, und die Wear-OS-App wird
 WARUM DAS WICHTIG IST
 Die meisten Reedereien erstatten die Differenz oder gewähren Bordguthaben, wenn der Preis vor Ihrem Restzahlungstermin sinkt — aber nur, wenn Sie es rechtzeitig bemerken und danach fragen. CruiseWatch übernimmt das Beobachten für Sie.
 
-• Kostenlos
+• Kostenlos mit optionalem werbefreien Monatsabonnement
 • Funktioniert mit bereits gebuchten Kreuzfahrten bei Royal Caribbean, Celebrity, Carnival, Princess und Norwegian
 • Push-Benachrichtigungen, sobald ein verfolgter Preis fällt
 • Genaue Reklamationsschritte und Fristen je Reederei
@@ -25,4 +25,4 @@ Die meisten Reedereien erstatten die Differenz oder gewähren Bordguthaben, wenn
 • Wear-OS-Begleit-App enthalten
 • Homescreen-Widget für den Status auf einen Blick
 
-CruiseWatch ist ein unabhängiges Tool und steht in keiner Verbindung zu, wird nicht unterstützt von und ist nicht gesponsert von einer Reederei. Preis- und Richtlinieninformationen dienen nur zur Orientierung; bestätigen Sie aktuelle Bedingungen stets direkt bei Ihrer Reederei, bevor Sie eine Rückerstattung beantragen. Diese App wird durch Werbung finanziert.
+CruiseWatch ist ein unabhängiges Tool und steht in keiner Verbindung zu, wird nicht unterstützt von und ist nicht gesponsert von einer Reederei. Preis- und Richtlinieninformationen dienen nur zur Orientierung; bestätigen Sie aktuelle Bedingungen stets direkt bei Ihrer Reederei, bevor Sie eine Rückerstattung beantragen. CruiseWatch ist kostenlos mit Werbung nutzbar, mit einem optionalen werbefreien Monatsabonnement verfügbar.

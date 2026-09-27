@@ -17,7 +17,7 @@ Installez CruiseWatch sur votre téléphone Android et l'application Wear OS s'i
 POURQUOI C'EST IMPORTANT
 La plupart des compagnies remboursent la différence ou offrent un crédit à bord si le tarif baisse avant votre date de paiement final — mais seulement si vous le remarquez à temps et si vous le demandez. CruiseWatch surveille à votre place.
 
-• Gratuit
+• Gratuit avec option d'abonnement mensuel sans publicité
 • Compatible avec les croisières déjà réservées chez Royal Caribbean, Celebrity, Carnival, Princess et Norwegian
 • Notifications push dès qu'un tarif suivi baisse
 • Étapes de réclamation et délais précis par compagnie
@@ -25,4 +25,4 @@ La plupart des compagnies remboursent la différence ou offrent un crédit à bo
 • Application Wear OS incluse
 • Widget d'écran d'accueil pour un aperçu rapide
 
-CruiseWatch est un outil indépendant et n'est affilié, approuvé ni parrainé par aucune compagnie de croisière. Les informations tarifaires et de politique sont fournies à titre indicatif ; confirmez toujours les conditions actuelles directement auprès de votre compagnie avant de demander un remboursement. Cette application est financée par la publicité.
+CruiseWatch est un outil indépendant et n'est affilié, approuvé ni parrainé par aucune compagnie de croisière. Les informations tarifaires et de politique sont fournies à titre indicatif ; confirmez toujours les conditions actuelles directement auprès de votre compagnie avant de demander un remboursement. CruiseWatch est gratuit avec des publicités, avec un abonnement mensuel sans publicité en option disponible.

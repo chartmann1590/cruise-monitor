@@ -1,0 +1,2 @@
+• Nueva suscripción mensual opcional sin anuncios para eliminar todos los banners y anuncios.
+• Integración actualizada con Google Play Billing y mejoras de rendimiento.
