@@ -211,9 +211,12 @@ def publish_to_production(dry_run: bool = False):
         ).execute()
         print("Wear OS 'wear:production' track updated.")
 
-        # 7. Commit edit (or delete if dry run)
+        # 7. Commit edit (or validate and delete if dry run)
         if dry_run:
-            print("\n[DRY RUN] Validated all edits successfully. Deleting edit without committing...")
+            print("\n[DRY RUN] Validating edit with Google Play API...")
+            val_res = service.edits().validate(packageName=PACKAGE_NAME, editId=edit_id).execute()
+            print(f"[DRY RUN] Edit validated successfully: {val_res}")
+            print("[DRY RUN] Deleting edit without committing...")
             service.edits().delete(packageName=PACKAGE_NAME, editId=edit_id).execute()
             print("[DRY RUN] Edit deleted cleanly.")
         else:
