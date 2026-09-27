@@ -56,4 +56,20 @@ class BillingManagerTest {
         // Should return early and not attempt AdMob network load
         interstitialManager.preload()
     }
+
+    @Test
+    fun `restorePurchases completes and does not remain loading when billingClient cannot connect`() {
+        val manager = BillingManager.getInstance(context)
+        manager.restorePurchases { }
+        assertFalse(manager.isLoading.value)
+    }
+
+    @Test
+    fun `launchBillingFlow safely returns false and does not load when details are not loaded`() {
+        val manager = BillingManager.getInstance(context)
+        val activityController = org.robolectric.Robolectric.buildActivity(android.app.Activity::class.java).setup()
+        val started = manager.launchBillingFlow(activityController.get())
+        assertFalse(started)
+        assertFalse(manager.isLoading.value)
+    }
 }

@@ -187,7 +187,8 @@ def setup_subscription():
                 )
                 print(f"Base plan activated: {activated.get('state')}")
             except Exception as e:
-                print(f"Failed to activate base plan: {e}")
+                print(f"Failed to activate base plan: {e}", file=sys.stderr)
+                raise
 
     # Fetch and display final subscription status
     final_sub = (
@@ -203,6 +204,16 @@ def setup_subscription():
     for bp in final_sub.get("basePlans", []):
         print(f"Base plan: {bp.get('basePlanId')} (State: {bp.get('state')})")
     print("----------------------------------\n")
+
+    # Verify target base plan is active
+    active_plans = [
+        bp for bp in final_sub.get("basePlans", [])
+        if bp.get("basePlanId") == BASE_PLAN_ID and bp.get("state") == "ACTIVE"
+    ]
+    if not active_plans:
+        raise RuntimeError(
+            f"Base plan '{BASE_PLAN_ID}' is not ACTIVE after setup! Current base plans: {final_sub.get('basePlans')}"
+        )
 
 
 if __name__ == "__main__":

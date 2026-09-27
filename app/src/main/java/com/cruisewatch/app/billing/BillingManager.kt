@@ -74,35 +74,100 @@ class BillingManager(private val context: Context) : PurchasesUpdatedListener {
         )
         .build()
 
+    private var isConnecting = false
+    private val pendingConnectionCallbacks = mutableListOf<Pair<() -> Unit, () -> Unit>>()
+
     init {
         startConnection()
     }
 
-    fun startConnection(onConnected: (() -> Unit)? = null) {
+    @Synchronized
+    fun startConnection(
+        onConnected: (() -> Unit)? = null,
+        onFailed: (() -> Unit)? = null,
+    ) {
         if (billingClient.isReady) {
             onConnected?.invoke()
             return
         }
 
+        if (onConnected != null || onFailed != null) {
+            pendingConnectionCallbacks.add(
+                Pair(
+                    onConnected ?: {},
+                    onFailed ?: {}
+                )
+            )
+        }
+
+        if (isConnecting) {
+            Log.d(TAG, "Billing client connection already in progress, queued callback")
+            return
+        }
+
+        isConnecting = true
+        Log.d(TAG, "Starting billing client connection...")
+
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
+                val callbacks: List<Pair<() -> Unit, () -> Unit>>
+                synchronized(this@BillingManager) {
+                    isConnecting = false
+                    callbacks = ArrayList(pendingConnectionCallbacks)
+                    pendingConnectionCallbacks.clear()
+                }
+
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     Log.d(TAG, "Billing client setup finished successfully")
                     querySubscriptionDetails()
                     queryPurchases()
-                    onConnected?.invoke()
+                    callbacks.forEach { (success, _) ->
+                        try {
+                            success()
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error in connection success callback", e)
+                        }
+                    }
                 } else {
                     Log.w(TAG, "Billing setup failed with response code: ${billingResult.responseCode}")
+                    callbacks.forEach { (_, fail) ->
+                        try {
+                            fail()
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error in connection failure callback", e)
+                        }
+                    }
                 }
             }
 
             override fun onBillingServiceDisconnected() {
-                Log.w(TAG, "Billing service disconnected. Will reconnect on next request.")
+                val callbacks: List<Pair<() -> Unit, () -> Unit>>
+                synchronized(this@BillingManager) {
+                    isConnecting = false
+                    callbacks = ArrayList(pendingConnectionCallbacks)
+                    pendingConnectionCallbacks.clear()
+                }
+                Log.w(TAG, "Billing service disconnected.")
+                callbacks.forEach { (_, fail) ->
+                    try {
+                        fail()
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error in connection disconnect callback", e)
+                    }
+                }
             }
         })
     }
 
-    fun querySubscriptionDetails() {
+    fun querySubscriptionDetails(onComplete: ((Boolean) -> Unit)? = null) {
+        if (!billingClient.isReady) {
+            startConnection(
+                onConnected = { querySubscriptionDetails(onComplete) },
+                onFailed = { onComplete?.invoke(false) }
+            )
+            return
+        }
+
         val queryProductDetailsParams = QueryProductDetailsParams.newBuilder()
             .setProductList(
                 listOf(
@@ -129,18 +194,23 @@ class BillingManager(private val context: Context) : PurchasesUpdatedListener {
                     _formattedPrice.value = price
                     Log.d(TAG, "Resolved monthly subscription price: $price")
                 }
+                onComplete?.invoke(true)
             } else {
                 Log.w(
                     TAG,
                     "queryProductDetailsAsync failed: code=${billingResult.responseCode}, debugMessage=${billingResult.debugMessage}"
                 )
+                onComplete?.invoke(false)
             }
         }
     }
 
     fun queryPurchases(onComplete: ((Boolean) -> Unit)? = null) {
         if (!billingClient.isReady) {
-            startConnection { queryPurchases(onComplete) }
+            startConnection(
+                onConnected = { queryPurchases(onComplete) },
+                onFailed = { onComplete?.invoke(false) }
+            )
             return
         }
 
@@ -209,6 +279,12 @@ class BillingManager(private val context: Context) : PurchasesUpdatedListener {
     }
 
     fun launchBillingFlow(activity: Activity): Boolean {
+        if (!billingClient.isReady) {
+            Log.w(TAG, "launchBillingFlow: billingClient is not ready, reconnecting")
+            startConnection(onConnected = { querySubscriptionDetails() })
+            return false
+        }
+
         val details = _productDetails.value
         if (details == null) {
             Log.w(TAG, "launchBillingFlow: productDetails not loaded yet")
