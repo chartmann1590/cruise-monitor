@@ -2,10 +2,12 @@ import { env, applyD1Migrations, createExecutionContext, waitOnExecutionContext 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import worker, { runWeeklySync } from '../src/index';
 
-declare module 'cloudflare:test' {
-	interface ProvidedEnv {
-		DB: D1Database;
-		GITHUB_TOKEN: string;
+declare global {
+	namespace Cloudflare {
+		interface Env {
+			DB: D1Database;
+			GITHUB_TOKEN: string;
+		}
 	}
 }
 
