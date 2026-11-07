@@ -52,7 +52,7 @@ class BillingManager(private val context: Context) : PurchasesUpdatedListener {
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    private val _isSubscribed = MutableStateFlow(prefs.getBoolean(KEY_IS_SUBSCRIBED, false))
+    private val _isSubscribed = MutableStateFlow(!(com.cruisewatch.app.BuildConfig.STORE == "amazon") && prefs.getBoolean(KEY_IS_SUBSCRIBED, false))
     val isSubscribed: StateFlow<Boolean> = _isSubscribed.asStateFlow()
 
     private val _productDetails = MutableStateFlow<ProductDetails?>(null)
@@ -86,6 +86,11 @@ class BillingManager(private val context: Context) : PurchasesUpdatedListener {
         onConnected: (() -> Unit)? = null,
         onFailed: (() -> Unit)? = null,
     ) {
+        // Amazon Appstore build: no Google Play Billing; always the free (ads) tier.
+        if (com.cruisewatch.app.BuildConfig.STORE == "amazon") {
+            onFailed?.invoke()
+            return
+        }
         if (billingClient.isReady) {
             onConnected?.invoke()
             return
@@ -279,6 +284,7 @@ class BillingManager(private val context: Context) : PurchasesUpdatedListener {
     }
 
     fun launchBillingFlow(activity: Activity): Boolean {
+        if (com.cruisewatch.app.BuildConfig.STORE == "amazon") return false // Amazon Appstore build: no Play purchases
         if (!billingClient.isReady) {
             Log.w(TAG, "launchBillingFlow: billingClient is not ready, reconnecting")
             startConnection(onConnected = { querySubscriptionDetails() })
@@ -329,6 +335,7 @@ class BillingManager(private val context: Context) : PurchasesUpdatedListener {
     }
 
     fun openManageSubscriptions(context: Context) {
+        if (com.cruisewatch.app.BuildConfig.STORE == "amazon") return // Amazon Appstore build: no Play subscriptions
         val uri = Uri.parse("https://play.google.com/store/account/subscriptions?sku=$PRODUCT_ID_AD_FREE_MONTHLY&package=${context.packageName}")
         val intent = Intent(Intent.ACTION_VIEW, uri).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

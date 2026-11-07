@@ -149,8 +149,11 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth().clickable { showLanguagePicker = true },
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            SubscriptionSection()
+            // Amazon Appstore build: no Play subscription (free + ads), so no subscription section.
+            if (!(com.cruisewatch.app.BuildConfig.STORE == "amazon")) {
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                SubscriptionSection()
+            }
 
             if (authViewModel != null) {
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -231,7 +234,8 @@ fun SettingsScreen(
                 viewModel = crosspromoViewModel,
                 modifier = Modifier.padding(vertical = 8.dp),
                 onAppOpened = { app ->
-                    val url = app.storeUrl ?: "https://play.google.com/store/apps/details?id=${app.packageName}"
+                    val url = if (com.cruisewatch.app.BuildConfig.STORE == "amazon") "https://www.amazon.com/gp/mas/dl/android?p=${app.packageName}" // Amazon Appstore build: never a Play link
+                        else app.storeUrl ?: "https://play.google.com/store/apps/details?id=${app.packageName}"
                     uriHandler.openUri(url)
                 },
             )

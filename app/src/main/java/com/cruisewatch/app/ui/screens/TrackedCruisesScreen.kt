@@ -148,7 +148,7 @@ fun TrackedCruisesScreen(
                 }
             }
 
-            if (!isSubscribed) {
+            if (!isSubscribed && !(com.cruisewatch.app.BuildConfig.STORE == "amazon")) { // Amazon Appstore build: no "Remove ads" upsell
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 2.dp),
                     horizontalArrangement = Arrangement.End,
