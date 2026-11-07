@@ -10,8 +10,13 @@ tap (?i)^email$
 type amazon-ci-cruisewatch@mail.tab.bot
 tap (?i)^password$
 type AmzCi2026test
+wait 1
+back
+wait 2
+shot 02b-filled
 tap (?i)^create account$
 wait 10
+shot 02c-after-create
 tap (?i)already have an account\? sign in
 tap (?i)^sign in$
 wait 10
