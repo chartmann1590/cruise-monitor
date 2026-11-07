@@ -43,6 +43,7 @@ jobs:
         ADMOB_INTERSTITIAL_AD_UNIT_ID: ${{ secrets.ADMOB_INTERSTITIAL_AD_UNIT_ID }}
       run: |
         set -o pipefail
+        chmod +x gradlew
         ./gradlew :app:assembleRelease -Pstore=direct --no-daemon --stacktrace 2>&1 | tee -a /tmp/dsk-build.log
         cd "$GITHUB_WORKSPACE"
         mkdir -p dsk-apk
