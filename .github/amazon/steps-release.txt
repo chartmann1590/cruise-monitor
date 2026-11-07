@@ -8,7 +8,10 @@ shot 02-sign-in
 tap (?i)new here\? create an account
 tap (?i)^email$
 type amazon-ci-cruisewatch@mail.tab.bot
+back
+wait 2
 tap (?i)^password$
+wait 1
 type AmzCi2026test
 wait 1
 back
