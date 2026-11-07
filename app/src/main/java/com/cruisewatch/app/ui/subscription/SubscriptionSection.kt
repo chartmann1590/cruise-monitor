@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cruisewatch.app.R
 import com.cruisewatch.app.billing.BillingManager
+import com.hartmannstudios.direct.DirectBilling
 import com.cruisewatch.app.i18n.tr
 import kotlinx.coroutines.launch
 
@@ -111,12 +112,12 @@ fun SubscriptionSection(
                                 contentDescription = null,
                                 modifier = Modifier.size(18.dp).padding(end = 4.dp),
                             )
-                            Text(tr(R.string.subscription_manage_button))
+                            Text(if (DirectBilling.isDirect) "Manage subscription" else tr(R.string.subscription_manage_button))
                         }
 
                         OutlinedButton(
                             onClick = {
-                                billingManager.restorePurchases { active ->
+                                billingManager.restorePurchases(context as? Activity) { active ->
                                     val msg = if (active) {
                                         context.getString(R.string.subscription_restore_success)
                                     } else {
@@ -178,7 +179,7 @@ fun SubscriptionSection(
                     BenefitRow(text = tr(R.string.subscription_benefit_no_banners))
                     BenefitRow(text = tr(R.string.subscription_benefit_no_interstitials))
                     BenefitRow(text = tr(R.string.subscription_benefit_support))
-                    BenefitRow(text = tr(R.string.subscription_benefit_cancel))
+                    BenefitRow(text = if (DirectBilling.isDirect) "Cancel anytime (Manage subscription). Secure checkout by Stripe, prices in USD." else tr(R.string.subscription_benefit_cancel))
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -221,7 +222,7 @@ fun SubscriptionSection(
                     ) {
                         TextButton(
                             onClick = {
-                                billingManager.restorePurchases { active ->
+                                billingManager.restorePurchases(context as? Activity) { active ->
                                     val msg = if (active) {
                                         context.getString(R.string.subscription_restore_success)
                                     } else {

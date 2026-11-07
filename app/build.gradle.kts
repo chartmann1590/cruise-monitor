@@ -50,10 +50,15 @@ val crossPromoBaseUrl = System.getenv("CROSS_PROMO_BASE_URL")
     ?: "https://cruisewatch-crosspromo.charles-h-hartmann1.workers.dev"
 
 android {
+    // DirectBilling: real Stripe client in direct builds, a no-op stub in Play builds
+    sourceSets.getByName("main").java.srcDir(if (((project.findProperty("store") as String?) ?: "play") == "direct") "src/hsdirect/java" else "src/hsplay/java")
     namespace = "com.cruisewatch.app"
     compileSdk = 36
 
     defaultConfig {
+        // Store this build is for: "play" (default) or "direct" (./gradlew ... -Pstore=direct, GitHub/charleshartmann.com APK).
+        // Direct builds use Stripe Checkout (DirectBilling) instead of Google Play Billing, and drop Play links + the Play review prompt.
+        buildConfigField("String", "STORE", "\"${(project.findProperty("store") as String?) ?: "play"}\"")
         applicationId = "com.cruisewatch.app"
         minSdk = 26
         targetSdk = 36

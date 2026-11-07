@@ -231,7 +231,7 @@ fun SettingsScreen(
                 viewModel = crosspromoViewModel,
                 modifier = Modifier.padding(vertical = 8.dp),
                 onAppOpened = { app ->
-                    val url = app.storeUrl ?: "https://play.google.com/store/apps/details?id=${app.packageName}"
+                    val url = app.storeUrl ?: (if (com.cruisewatch.app.BuildConfig.STORE == "direct") "https://charleshartmann.com/apps/" else "https://play.google.com/store/apps/details?id=${app.packageName}")
                     uriHandler.openUri(url)
                 },
             )

@@ -1,0 +1,40 @@
+launch
+wait 15
+taploop (?i)^(next|continue|get started|skip|allow|while using the app|only this time|ok|got it|not now|later|no thanks|done|english)$
+adclose
+wait 3
+shot 02-sign-in
+tap (?i)new here\? create an account
+tap (?i)^email$
+type amazon-ci-cruisewatch@mail.tab.bot
+back
+wait 2
+tap (?i)^password$
+wait 1
+type AmzCi2026test
+wait 1
+back
+wait 2
+tap (?i)^create account$
+wait 10
+shot 02c-after-create
+tap (?i)already have an account\? sign in
+tap (?i)^sign in$
+wait 10
+taploop (?i)^(next|continue|get started|skip|allow|while using the app|only this time|ok|got it|not now|later|no thanks|done|english)$
+adclose
+adclose
+shot 20-cruises
+tap (?i)^settings$
+wait 4
+adclose
+scrollto (?i)^restore purchases$
+wait 3
+shot 21-restore-email
+type hartmannstudios@mail.tab.bot
+tap (?i)^continue$
+wait 15
+shot 22-after-restore
+swipedown
+shot 23-settings-active
+sh logcat -d -s DirectBilling

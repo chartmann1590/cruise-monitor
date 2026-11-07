@@ -1,0 +1,51 @@
+launch
+wait 15
+shot 01-launch
+taploop (?i)^(next|continue|get started|skip|allow|while using the app|only this time|ok|got it|not now|later|no thanks|done|english)$
+adclose
+wait 3
+shot 02-sign-in
+tap (?i)new here\? create an account
+tap (?i)^email$
+type amazon-ci-cruisewatch@mail.tab.bot
+back
+wait 2
+tap (?i)^password$
+wait 1
+type AmzCi2026test
+wait 1
+back
+wait 2
+tap (?i)^create account$
+wait 10
+shot 02c-after-create
+tap (?i)already have an account\? sign in
+tap (?i)^sign in$
+wait 10
+taploop (?i)^(next|continue|get started|skip|allow|while using the app|only this time|ok|got it|not now|later|no thanks|done|english)$
+adclose
+adclose
+shot 03-cruises
+tap (?i)^alerts$
+wait 4
+adclose
+shot 04-alerts
+tap (?i)^policies$
+wait 4
+shot 05-policies
+tap (?i)^cruises$
+wait 3
+tap (?i)^settings$
+wait 4
+adclose
+shot 07-settings
+scrollto (?i)^subscribe for .*month$
+wait 3
+shot 11-email
+type hartmannstudios@mail.tab.bot
+tap (?i)^continue$
+wait 25
+shot 12-stripe-checkout
+tap (?i)^close$
+wait 3
+shot 13-after-close
