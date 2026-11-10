@@ -54,6 +54,15 @@ object DirectBilling {
     private val listeners = CopyOnWriteArrayList<() -> Unit>()
     /** HTTP status of the last license-server call on this thread (0 = no answer). 429 = the server's per-email lookup limit. */
     private val lastHttpCode = ThreadLocal<Int>()
+    /** The text Restore shows when the license server refuses the email lookup (HTTP 429, its per-email limit). */
+    const val RATE_LIMITED_MESSAGE = "Too many restore attempts — try again later."
+    /** True when the last [restore] was refused by the license server's per-email limit (HTTP 429). Screens that show
+     *  their own "nothing found" text after Restore should show [RATE_LIMITED_MESSAGE] instead. */
+    @JvmStatic @Volatile var lastRestoreRateLimited = false
+        private set
+    /** True when the last [restore] got no usable answer from the license server (offline / server error). */
+    @JvmStatic @Volatile var lastRestoreUnreachable = false
+        private set
 
     /** Call once from Application.onCreate (or the first Activity). [app] is the app key, e.g. "nightsay". */
     @JvmStatic
@@ -121,7 +130,9 @@ object DirectBilling {
                 main.post {
                     dlg.dismiss()
                     val owned = isEntitled()
-                    toast(activity, if (limited) "Too many restore attempts — try again later." else if (!ok) "Couldn't reach the license server. Try again." else if (owned) "Purchases restored. Thank you!" else "No purchases found for $email.")
+                    lastRestoreRateLimited = limited
+                    lastRestoreUnreachable = !ok && !limited
+                    toast(activity, if (limited) RATE_LIMITED_MESSAGE else if (!ok) "Couldn't reach the license server. Try again." else if (owned) "Purchases restored. Thank you!" else "No purchases found for $email.")
                     onResult?.invoke(ok && owned)
                 }
             }.start()

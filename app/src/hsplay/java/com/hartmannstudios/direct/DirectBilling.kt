@@ -21,4 +21,7 @@ object DirectBilling {
     @JvmStatic @JvmOverloads fun restore(activity: Activity, onResult: ((Boolean) -> Unit)? = null) {}
     @JvmStatic fun manageSubscription(activity: Activity) {}
     @JvmStatic fun openDownloadPage(context: Context) {}
+    const val RATE_LIMITED_MESSAGE = "Too many restore attempts — try again later."
+    @JvmStatic val lastRestoreRateLimited: Boolean get() = false
+    @JvmStatic val lastRestoreUnreachable: Boolean get() = false
 }

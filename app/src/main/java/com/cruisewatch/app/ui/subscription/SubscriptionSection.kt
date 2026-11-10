@@ -120,6 +120,10 @@ fun SubscriptionSection(
                                 billingManager.restorePurchases(context as? Activity) { active ->
                                     val msg = if (active) {
                                         context.getString(R.string.subscription_restore_success)
+                                    } else if (DirectBilling.isDirect && DirectBilling.lastRestoreRateLimited) {
+                                        DirectBilling.RATE_LIMITED_MESSAGE
+                                    } else if (DirectBilling.isDirect && DirectBilling.lastRestoreUnreachable) {
+                                        "Couldn't reach the license server. Try again."
                                     } else {
                                         context.getString(R.string.subscription_restore_none)
                                     }
@@ -225,6 +229,10 @@ fun SubscriptionSection(
                                 billingManager.restorePurchases(context as? Activity) { active ->
                                     val msg = if (active) {
                                         context.getString(R.string.subscription_restore_success)
+                                    } else if (DirectBilling.isDirect && DirectBilling.lastRestoreRateLimited) {
+                                        DirectBilling.RATE_LIMITED_MESSAGE
+                                    } else if (DirectBilling.isDirect && DirectBilling.lastRestoreUnreachable) {
+                                        "Couldn't reach the license server. Try again."
                                     } else {
                                         context.getString(R.string.subscription_restore_none)
                                     }
