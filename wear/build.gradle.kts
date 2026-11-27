@@ -99,8 +99,11 @@ dependencies {
 
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.wear:wear-input:1.2.0")
-    implementation("androidx.wear.compose:compose-material:1.4.0")
-    implementation("androidx.wear.compose:compose-foundation:1.4.0")
+    implementation("androidx.wear.compose:compose-material:1.4.1")
+    // 1.4.1 guards the reduce_motion settings read: on Wear OS 5 the platform
+    // throws SecurityException for apps targeting SDK 35+ when
+    // ScalingLazyColumn queries LocalReduceMotion, crashing every list screen.
+    implementation("androidx.wear.compose:compose-foundation:1.4.1")
     implementation("androidx.wear:wear-tooling-preview:1.0.0")
     implementation("androidx.compose.material:material-icons-extended:1.6.8")
 
