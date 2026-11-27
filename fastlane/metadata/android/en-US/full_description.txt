@@ -9,7 +9,7 @@ HOW IT WORKS
 • Every alert shows exactly what to do next: the cruise line's phone number, a ready-to-read script, and your claim deadline — pulled from each line's actual price-drop / "Best Price Guarantee" policy.
 
 ON-DEVICE AI REFUND ASSISTANT
-Have a question about your specific alert? Open the built-in AI assistant for step-by-step help getting your refund or onboard credit. It runs entirely on your device — your booking details never leave your phone.
+Have a question about your specific alert? Open the built-in AI assistant for step-by-step help getting your refund or onboard credit. It runs entirely on your device — your questions and booking details are processed on your phone, not sent to a server. The only exception: if you flag one of its responses as inaccurate or unsafe, just that one exchange is sent to us so we can fix it.
 
 WEAR OS COMPANION
 Install the CruiseWatch app on your Android phone and the Wear OS companion comes with it automatically. See price-drop alerts and your claim history right on your watch — no need to pull out your phone.

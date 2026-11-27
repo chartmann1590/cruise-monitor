@@ -9,7 +9,7 @@ COMMENT ÇA MARCHE
 • Chaque alerte indique exactement quoi faire : le numéro de téléphone de la compagnie, un script prêt à lire, et votre date limite de réclamation — tirés de la politique réelle de baisse de prix de chaque compagnie.
 
 ASSISTANT IA DE REMBOURSEMENT SUR L'APPAREIL
-Une question sur une alerte précise ? Ouvrez l'assistant IA intégré pour obtenir de l'aide étape par étape afin d'obtenir votre remboursement ou crédit à bord. Il fonctionne entièrement sur votre appareil — vos informations de réservation ne quittent jamais votre téléphone.
+Une question sur une alerte précise ? Ouvrez l'assistant IA intégré pour obtenir de l'aide étape par étape afin d'obtenir votre remboursement ou crédit à bord. Il fonctionne entièrement sur votre appareil — vos questions et vos informations de réservation sont traitées sur votre téléphone, sans être envoyées à un serveur. Seule exception : si vous signalez une de ses réponses comme inexacte ou dangereuse, seul cet échange nous est envoyé afin que nous puissions le corriger.
 
 COMPAGNON WEAR OS
 Installez CruiseWatch sur votre téléphone Android et l'application Wear OS s'installe automatiquement avec elle. Consultez vos alertes de baisse de prix et votre historique de réclamations directement sur votre montre.

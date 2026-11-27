@@ -175,6 +175,12 @@ private fun ChatView(viewModel: AssistantViewModel) {
                 }
             }
         }
+        Text(
+            tr(R.string.assistant_ai_disclaimer),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
+        )
         Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
                 value = input,

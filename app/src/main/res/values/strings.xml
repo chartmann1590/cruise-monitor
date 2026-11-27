@@ -42,7 +42,8 @@
     <string name="assistant_setup_title">Set up your assistant</string>
     <string name="assistant_download_size">%1$d MB one-time download, then runs fully offline on your device.</string>
     <string name="assistant_download_button">Download and set up</string>
-    <string name="assistant_privacy_note">Everything you ask stays on this device — nothing is sent anywhere.</string>
+    <string name="assistant_privacy_note">Everything you ask is processed on this device and isn\'t sent anywhere — the only exception is if you choose to report a response, which sends just that one exchange to us so we can fix it.</string>
+    <string name="assistant_ai_disclaimer">AI can make mistakes. Always confirm refund steps and deadlines with your cruise line before you act.</string>
     <string name="assistant_downloading">Downloading %1$s…</string>
     <string name="assistant_download_progress">%1$d MB / %2$d MB</string>
     <string name="assistant_thinking">Thinking…</string>

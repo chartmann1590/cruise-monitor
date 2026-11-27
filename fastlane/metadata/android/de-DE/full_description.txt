@@ -9,7 +9,7 @@ SO FUNKTIONIERT ES
 • Jede Benachrichtigung zeigt genau, was zu tun ist: die Telefonnummer der Reederei, einen vorgefertigten Gesprächsleitfaden und Ihre Frist — basierend auf der tatsächlichen Preisschutz-Richtlinie der jeweiligen Reederei.
 
 KI-ASSISTENT FÜR RÜCKERSTATTUNGEN AUF DEM GERÄT
-Fragen zu einer bestimmten Benachrichtigung? Öffnen Sie den integrierten KI-Assistenten für eine Schritt-für-Schritt-Anleitung zur Rückerstattung oder Bordgutschrift. Er läuft vollständig auf Ihrem Gerät — Ihre Buchungsdaten verlassen niemals Ihr Telefon.
+Fragen zu einer bestimmten Benachrichtigung? Öffnen Sie den integrierten KI-Assistenten für eine Schritt-für-Schritt-Anleitung zur Rückerstattung oder Bordgutschrift. Er läuft vollständig auf Ihrem Gerät — Ihre Fragen und Buchungsdaten werden auf Ihrem Telefon verarbeitet, nicht an einen Server gesendet. Einzige Ausnahme: Wenn Sie eine Antwort als falsch oder unsicher melden, wird nur dieser eine Austausch an uns gesendet, damit wir ihn korrigieren können.
 
 WEAR-OS-BEGLEIT-APP
 Installieren Sie CruiseWatch auf Ihrem Android-Telefon, und die Wear-OS-App wird automatisch mitinstalliert. Sehen Sie Preisalarme und Ihren vollständigen Reklamationsverlauf direkt an Ihrem Handgelenk.
