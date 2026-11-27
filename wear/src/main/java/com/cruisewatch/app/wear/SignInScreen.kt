@@ -168,6 +168,9 @@ fun WearSignInScreen(
                     label = {
                         Text(
                             if (email.isBlank()) "Enter email" else email,
+                            // 12sp: with the chip icon present, the default
+                            // size truncates the placeholder labels.
+                            style = MaterialTheme.typography.button.copy(fontSize = 12.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -184,6 +187,10 @@ fun WearSignInScreen(
                     label = {
                         Text(
                             if (password.isBlank()) "Enter password" else "••••••••",
+                            // 12sp: at the default size this rendered as
+                            // "Enter pass…" on the round emulator (watch-shapes
+                            // truncation pattern, 2026-09-25 rejection).
+                            style = MaterialTheme.typography.button.copy(fontSize = 12.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
