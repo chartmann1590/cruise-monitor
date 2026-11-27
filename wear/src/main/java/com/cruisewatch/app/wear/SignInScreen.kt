@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
@@ -128,6 +129,12 @@ fun WearSignInScreen(
                     label = {
                         Text(
                             "Continue with Google",
+                            // 13sp so the full label fits inside the chip's
+                            // round-safe width — at the default button size it
+                            // ellipsized to "Continue with G…" (the truncation
+                            // pattern cited in the 2026-09-25 watch-shapes
+                            // rejection).
+                            style = MaterialTheme.typography.button.copy(fontSize = 13.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
