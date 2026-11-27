@@ -133,7 +133,7 @@ fun WearSignInScreen(
                         )
                     },
                     colors = ChipDefaults.chipColors(backgroundColor = Color.White.copy(alpha = 0.14f)),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp),
                 )
             }
             if (googleSignInError != null) {
@@ -167,7 +167,7 @@ fun WearSignInScreen(
                     secondaryLabel = { Text("Email") },
                     icon = { Icon(Icons.Filled.Email, contentDescription = null) },
                     colors = ChipDefaults.secondaryChipColors(),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp),
                 )
             }
             item {
@@ -183,7 +183,7 @@ fun WearSignInScreen(
                     secondaryLabel = { Text("Password") },
                     icon = { Icon(Icons.Filled.Lock, contentDescription = null) },
                     colors = ChipDefaults.secondaryChipColors(),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp),
                 )
             }
             if (error != null) {
@@ -218,7 +218,7 @@ fun WearSignInScreen(
                     },
                     label = { Text(if (isLoading) "Signing in…" else "Sign in") },
                     colors = ChipDefaults.primaryChipColors(),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp),
                 )
             }
         }
