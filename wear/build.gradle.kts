@@ -20,7 +20,7 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.cruisewatch.app.wear"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         // Must match the phone app's applicationId — Play Store delivers the watch
@@ -28,13 +28,13 @@ android {
         // based on matching package name, not via the legacy wearApp() embedding.
         applicationId = "com.cruisewatch.app"
         minSdk = 30
-        targetSdk = 35
+        targetSdk = 36
         // Google Play requires versionCodes to be unique across the whole app, not
         // just per track/form-factor — a +1000 offset from the phone app's versionCode
         // (app/build.gradle.kts) guarantees the wear and phone artifacts never collide,
         // without having to hand-coordinate two counters on every release.
-        versionCode = 1015
-        versionName = "0.5.0"
+        versionCode = 1016
+        versionName = "0.5.1"
     }
 
     signingConfigs {
