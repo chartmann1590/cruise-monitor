@@ -24,6 +24,7 @@ class InterstitialAdManager(private val context: Context) {
     private var isLoading = false
 
     fun preload() {
+        if (!ConsentManager.canRequestAds(context)) return
         if (BillingManager.getInstance(context).isSubscribed.value) {
             interstitialAd = null
             return

@@ -57,8 +57,8 @@ android {
         applicationId = "com.cruisewatch.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 15
-        versionName = "0.5.0"
+        versionCode = 16
+        versionName = "0.5.1"
 
         manifestPlaceholders["admobAppId"] = admobAppId
         buildConfigField("String", "ADMOB_BANNER_AD_UNIT_ID", "\"$admobBannerAdUnitId\"")
@@ -155,6 +155,9 @@ dependencies {
     implementation("com.android.billingclient:billing:8.0.0")
 
     implementation("com.google.android.gms:play-services-ads:23.2.0")
+    // Google User Messaging Platform — consent must be gathered before the
+    // Mobile Ads SDK initializes or any ad is requested (see ads/ConsentManager.kt).
+    implementation("com.google.android.ump:user-messaging-platform:2.2.0")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("com.google.android.gms:play-services-wearable:18.2.0")
     implementation("com.google.mlkit:translate:17.0.3")

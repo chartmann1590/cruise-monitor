@@ -5,13 +5,14 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import com.cruisewatch.app.widget.WidgetRefreshWorker
-import com.google.android.gms.ads.MobileAds
 
 class CruiseWatchApp : Application() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        MobileAds.initialize(this)
+        // The Mobile Ads SDK is NOT initialized here: UMP consent must be
+        // gathered first. MainActivity runs ConsentManager.gatherConsent(),
+        // which initializes MobileAds once ads may be requested.
         WidgetRefreshWorker.schedule(this)
     }
 
