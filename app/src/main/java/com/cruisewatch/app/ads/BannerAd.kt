@@ -22,6 +22,10 @@ fun BannerAd(modifier: Modifier = Modifier) {
 
     if (isSubscribed) return
 
+    // No ad request until UMP consent allows it (see ConsentManager, which
+    // MainActivity runs at startup before any screen composes).
+    if (!ConsentManager.canRequestAds(context)) return
+
     AndroidView(
         modifier = modifier.fillMaxWidth(),
         factory = { ctx ->

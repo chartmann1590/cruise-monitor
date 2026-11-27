@@ -3,6 +3,7 @@ package com.cruisewatch.app.wear
 import android.app.RemoteInput
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
@@ -127,13 +129,26 @@ fun WearSignInScreen(
                     onClick = onGoogleSignInClick,
                     label = {
                         Text(
-                            "Continue with Google",
+                            "Continue with",
+                            // Two-line chip: primary "Continue with" with
+                            // "Google" as the secondary label. The old
+                            // single-line "Continue with Google" ellipsized to
+                            // "Continue with G…" — the truncation pattern cited
+                            // in the 2026-09-25 watch-shapes rejection. Even
+                            // split across two lines, 13sp still ellipsized on
+                            // the 180dp square emulator ("Continue w…"), so
+                            // this chip uses 12sp, slimmer content padding
+                            // (10dp) and 20dp outer padding to buy the width
+                            // back; verified untruncated on both shapes.
+                            style = MaterialTheme.typography.button.copy(fontSize = 12.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
                     },
+                    secondaryLabel = { Text("Google") },
                     colors = ChipDefaults.chipColors(backgroundColor = Color.White.copy(alpha = 0.14f)),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+                    contentPadding = PaddingValues(start = 10.dp, top = 6.dp, end = 10.dp, bottom = 6.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                 )
             }
             if (googleSignInError != null) {
@@ -159,15 +174,25 @@ fun WearSignInScreen(
                     onClick = { launchEmailInput() },
                     label = {
                         Text(
-                            if (email.isBlank()) "Enter email" else email,
+                            // Field name as the primary label: short enough
+                            // to never ellipsize on round or square. The full
+                            // "Enter email" prompt lives on the RemoteInput
+                            // screen this chip opens; the entered address
+                            // shows as the secondary label once provided.
+                            "Email",
+                            style = MaterialTheme.typography.button.copy(fontSize = 12.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
                     },
-                    secondaryLabel = { Text("Email") },
+                    secondaryLabel = if (email.isNotBlank()) {
+                        { Text(email, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    } else {
+                        null
+                    },
                     icon = { Icon(Icons.Filled.Email, contentDescription = null) },
                     colors = ChipDefaults.secondaryChipColors(),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp),
                 )
             }
             item {
@@ -175,15 +200,25 @@ fun WearSignInScreen(
                     onClick = { launchPasswordInput() },
                     label = {
                         Text(
-                            if (password.isBlank()) "Enter password" else "••••••••",
+                            // Same restructure as the email chip: "Enter
+                            // password" rendered as "Enter pass…" as a
+                            // primary label (watch-shapes truncation pattern,
+                            // 2026-09-25 rejection); the prompt lives on the
+                            // RemoteInput screen this chip opens.
+                            "Password",
+                            style = MaterialTheme.typography.button.copy(fontSize = 12.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
                     },
-                    secondaryLabel = { Text("Password") },
+                    secondaryLabel = if (password.isNotBlank()) {
+                        { Text("••••••••", maxLines = 1) }
+                    } else {
+                        null
+                    },
                     icon = { Icon(Icons.Filled.Lock, contentDescription = null) },
                     colors = ChipDefaults.secondaryChipColors(),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp),
                 )
             }
             if (error != null) {
@@ -218,7 +253,7 @@ fun WearSignInScreen(
                     },
                     label = { Text(if (isLoading) "Signing in…" else "Sign in") },
                     colors = ChipDefaults.primaryChipColors(),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp),
                 )
             }
         }

@@ -9,7 +9,7 @@ COME FUNZIONA
 • Ogni avviso mostra esattamente cosa fare: il numero di telefono della compagnia, uno script pronto da leggere e la scadenza per reclamare — tutto basato sulla reale politica di protezione prezzo di ogni compagnia.
 
 ASSISTENTE IA PER RIMBORSI SUL DISPOSITIVO
-Hai dubbi su un avviso specifico? Apri l'assistente IA integrato per un aiuto passo dopo passo per ottenere il tuo rimborso o credito di bordo. Funziona interamente sul tuo dispositivo — i dati della tua prenotazione non lasciano mai il telefono.
+Hai dubbi su un avviso specifico? Apri l'assistente IA integrato per un aiuto passo dopo passo per ottenere il tuo rimborso o credito di bordo. Funziona interamente sul tuo dispositivo — le tue domande e i dati della tua prenotazione vengono elaborati sul telefono, senza essere inviati a un server. Unica eccezione: se segnali una sua risposta come imprecisa o non sicura, solo quello scambio ci viene inviato in modo da poterlo correggere.
 
 COMPAGNO WEAR OS
 Installa CruiseWatch sul tuo telefono Android e l'app Wear OS si installa automaticamente insieme. Consulta gli avvisi di calo prezzo e lo storico completo dei reclami direttamente dal polso.

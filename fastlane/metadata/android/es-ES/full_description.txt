@@ -9,7 +9,7 @@ CÓMO FUNCIONA
 • Cada alerta te muestra exactamente qué hacer: el número de teléfono de la naviera, un guion listo para leer y tu fecha límite para reclamar, extraídos de la política real de cada línea de cruceros.
 
 ASISTENTE DE REEMBOLSO CON IA EN EL DISPOSITIVO
-¿Tienes dudas sobre una alerta concreta? Abre el asistente de IA integrado para obtener ayuda paso a paso para conseguir tu reembolso o crédito a bordo. Funciona completamente en tu dispositivo: los datos de tu reserva nunca salen de tu teléfono.
+¿Tienes dudas sobre una alerta concreta? Abre el asistente de IA integrado para obtener ayuda paso a paso para conseguir tu reembolso o crédito a bordo. Funciona completamente en tu dispositivo: tus preguntas y los datos de tu reserva se procesan en tu teléfono, no se envían a un servidor. La única excepción: si marcas una de sus respuestas como inexacta o insegura, solo ese intercambio se nos envía para que podamos corregirlo.
 
 COMPAÑERO PARA WEAR OS
 Instala CruiseWatch en tu teléfono Android y la app para Wear OS se instala automáticamente junto con ella. Consulta tus alertas de bajada de precio y tu historial de reclamaciones directamente en tu reloj.

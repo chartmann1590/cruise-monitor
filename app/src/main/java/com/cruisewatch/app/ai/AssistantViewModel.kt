@@ -56,8 +56,21 @@ class AssistantViewModel(application: Application) : AndroidViewModel(applicatio
         val savedId = prefs.getString(KEY_MODEL_ID, null)
         val model = savedId?.let { LlmModelCatalog.byId(it) } ?: LlmModelCatalog.recommended(recommendedTier)
         val existing = ModelDownloadManager.localFile(getApplication(), model)
-        _state.value = if (existing != null) AssistantState.Ready.also { loadEngine(existing) }
-        else AssistantState.NeedsSetup(model)
+        if (existing == null) {
+            _state.value = AssistantState.NeedsSetup(model)
+            return
+        }
+        // Fail closed: the on-disk model is only trusted after its SHA-256
+        // matches the pin in LlmModelCatalog. A mismatch deletes the file
+        // (inside verifyIntegrity) and drops the user back to setup.
+        _state.value = AssistantState.CheckingModel
+        viewModelScope.launch {
+            if (ModelDownloadManager.verifyIntegrity(getApplication(), model)) {
+                loadEngine(existing)
+            } else {
+                _state.value = AssistantState.NeedsSetup(model)
+            }
+        }
     }
 
     fun startSetup(model: LlmModel) {

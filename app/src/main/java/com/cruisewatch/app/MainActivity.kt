@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.cruisewatch.app.ads.ConsentManager
 import com.cruisewatch.app.ads.InterstitialAdManager
 import com.cruisewatch.app.auth.AuthViewModel
 import com.cruisewatch.app.data.CruiseRepository
@@ -73,7 +74,11 @@ class MainActivity : ComponentActivity() {
             authViewModel.registerFcmTokenIfAvailable(token)
         }
 
-        interstitialAdManager.preload()
+        // Gather UMP consent before the ads SDK initializes or any ad is
+        // requested; the interstitial preload happens once ads are allowed.
+        ConsentManager.gatherConsent(this) {
+            interstitialAdManager.preload()
+        }
 
         setContent {
             CruiseWatchTheme {
