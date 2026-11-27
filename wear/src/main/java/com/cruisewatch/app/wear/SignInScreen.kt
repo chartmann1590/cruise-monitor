@@ -129,12 +129,13 @@ fun WearSignInScreen(
                     label = {
                         Text(
                             "Continue with Google",
-                            // 13sp so the full label fits inside the chip's
+                            // 11sp so the full label fits inside the chip's
                             // round-safe width — at the default button size it
                             // ellipsized to "Continue with G…" (the truncation
                             // pattern cited in the 2026-09-25 watch-shapes
-                            // rejection).
-                            style = MaterialTheme.typography.button.copy(fontSize = 13.sp),
+                            // rejection). Verified untruncated on the Wear OS 5
+                            // round emulator at this size + 22dp chip padding.
+                            style = MaterialTheme.typography.button.copy(fontSize = 11.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
