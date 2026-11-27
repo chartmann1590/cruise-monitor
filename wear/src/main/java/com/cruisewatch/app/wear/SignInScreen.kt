@@ -128,18 +128,20 @@ fun WearSignInScreen(
                     onClick = onGoogleSignInClick,
                     label = {
                         Text(
-                            "Continue with Google",
-                            // 11sp so the full label fits inside the chip's
-                            // round-safe width — at the default button size it
-                            // ellipsized to "Continue with G…" (the truncation
-                            // pattern cited in the 2026-09-25 watch-shapes
-                            // rejection). Verified untruncated on the Wear OS 5
-                            // round emulator at this size + 22dp chip padding.
-                            style = MaterialTheme.typography.button.copy(fontSize = 11.sp),
+                            "Continue with",
+                            // Two-line chip: primary "Continue with" at 13sp
+                            // with "Google" as the secondary label. The old
+                            // single-line "Continue with Google" ellipsized to
+                            // "Continue with G…" at every size that stayed
+                            // legible — the truncation pattern cited in the
+                            // 2026-09-25 watch-shapes rejection — on both the
+                            // round and the 180dp square emulators.
+                            style = MaterialTheme.typography.button.copy(fontSize = 13.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
                     },
+                    secondaryLabel = { Text("Google") },
                     colors = ChipDefaults.chipColors(backgroundColor = Color.White.copy(alpha = 0.14f)),
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp),
                 )
@@ -167,15 +169,22 @@ fun WearSignInScreen(
                     onClick = { launchEmailInput() },
                     label = {
                         Text(
-                            if (email.isBlank()) "Enter email" else email,
-                            // 12sp: with the chip icon present, the default
-                            // size truncates the placeholder labels.
+                            // Field name as the primary label: short enough
+                            // to never ellipsize on round or square. The full
+                            // "Enter email" prompt lives on the RemoteInput
+                            // screen this chip opens; the entered address
+                            // shows as the secondary label once provided.
+                            "Email",
                             style = MaterialTheme.typography.button.copy(fontSize = 12.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
                     },
-                    secondaryLabel = { Text("Email") },
+                    secondaryLabel = if (email.isNotBlank()) {
+                        { Text(email, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    } else {
+                        null
+                    },
                     icon = { Icon(Icons.Filled.Email, contentDescription = null) },
                     colors = ChipDefaults.secondaryChipColors(),
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp),
@@ -186,16 +195,22 @@ fun WearSignInScreen(
                     onClick = { launchPasswordInput() },
                     label = {
                         Text(
-                            if (password.isBlank()) "Enter password" else "••••••••",
-                            // 12sp: at the default size this rendered as
-                            // "Enter pass…" on the round emulator (watch-shapes
-                            // truncation pattern, 2026-09-25 rejection).
+                            // Same restructure as the email chip: "Enter
+                            // password" rendered as "Enter pass…" as a
+                            // primary label (watch-shapes truncation pattern,
+                            // 2026-09-25 rejection); the prompt lives on the
+                            // RemoteInput screen this chip opens.
+                            "Password",
                             style = MaterialTheme.typography.button.copy(fontSize = 12.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
                     },
-                    secondaryLabel = { Text("Password") },
+                    secondaryLabel = if (password.isNotBlank()) {
+                        { Text("••••••••", maxLines = 1) }
+                    } else {
+                        null
+                    },
                     icon = { Icon(Icons.Filled.Lock, contentDescription = null) },
                     colors = ChipDefaults.secondaryChipColors(),
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp),
