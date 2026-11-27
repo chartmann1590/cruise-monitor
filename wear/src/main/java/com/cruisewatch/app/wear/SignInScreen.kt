@@ -3,6 +3,7 @@ package com.cruisewatch.app.wear
 import android.app.RemoteInput
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -129,21 +130,25 @@ fun WearSignInScreen(
                     label = {
                         Text(
                             "Continue with",
-                            // Two-line chip: primary "Continue with" at 13sp
-                            // with "Google" as the secondary label. The old
+                            // Two-line chip: primary "Continue with" with
+                            // "Google" as the secondary label. The old
                             // single-line "Continue with Google" ellipsized to
-                            // "Continue with G…" at every size that stayed
-                            // legible — the truncation pattern cited in the
-                            // 2026-09-25 watch-shapes rejection — on both the
-                            // round and the 180dp square emulators.
-                            style = MaterialTheme.typography.button.copy(fontSize = 13.sp),
+                            // "Continue with G…" — the truncation pattern cited
+                            // in the 2026-09-25 watch-shapes rejection. Even
+                            // split across two lines, 13sp still ellipsized on
+                            // the 180dp square emulator ("Continue w…"), so
+                            // this chip uses 12sp, slimmer content padding
+                            // (10dp) and 20dp outer padding to buy the width
+                            // back; verified untruncated on both shapes.
+                            style = MaterialTheme.typography.button.copy(fontSize = 12.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
                     },
                     secondaryLabel = { Text("Google") },
                     colors = ChipDefaults.chipColors(backgroundColor = Color.White.copy(alpha = 0.14f)),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 26.dp),
+                    contentPadding = PaddingValues(start = 10.dp, top = 6.dp, end = 10.dp, bottom = 6.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                 )
             }
             if (googleSignInError != null) {
