@@ -56,7 +56,7 @@
 <div class="wrap">
   <a class="back" href="index.html">← CruiseWatch</a>
   <h1>Privacy Policy</h1>
-  <p class="updated">Last updated: September 12, 2026 · <a href="terms.html">Terms of Service</a></p>
+  <p class="updated">Last updated: November 26, 2026 · <a href="terms.html">Terms of Service</a></p>
 
   <div class="callout">
     <p>
@@ -69,7 +69,7 @@
   <h2>1. Who this policy covers</h2>
   <p>
     This policy applies to the CruiseWatch Android app (<code>com.cruisewatch.app</code>), the CruiseWatch Wear
-    OS companion app (<code>com.cruisewatch.app.wear</code>), and this website. CruiseWatch is developed and
+    OS companion app (distributed under the same package name, <code>com.cruisewatch.app</code>), and this website. CruiseWatch is developed and
     operated independently and is <strong>not affiliated with, endorsed by, or operated by</strong> Royal
     Caribbean, Celebrity Cruises, Carnival, Princess Cruises, or Norwegian Cruise Line.
   </p>
@@ -136,7 +136,10 @@
     The optional AI chat assistant runs a language model <strong>entirely on your device</strong> after a
     one-time model download. Your questions, the assistant's answers, and the cruise/alert data it references
     are processed locally and are <strong>never sent to CruiseWatch, Google, or any third party</strong>. The
-    only network activity involved is the initial model file download from the public model host.
+    only network activity involved is the initial model file download from <strong>Hugging Face</strong>
+    (the public <code>litert-community</code> model repositories at huggingface.co). The download is pinned
+    to a specific, verified model file — the app checks the file's cryptographic hash (SHA-256) before
+    using it and rejects the download if it does not match.
   </p>
 
   <h3>Reporting a bad AI response (opt-in)</h3>
@@ -147,18 +150,24 @@
     and stored in <strong>Cloudflare D1</strong>. This is the one deliberate exception to the assistant's
     otherwise fully on-device operation described above, and it only happens when you explicitly choose to
     report a message — nothing is sent automatically. No account information, device identifier, or other
-    cruise data is included. Reported exchanges may be copied into an issue in the developer's private GitHub
-    repository so problems can be reviewed and fixed; they are never used for advertising or shared with any
-    other party.
+    cruise data is included. Reported exchanges are also copied into an issue in the developer's
+    <strong>public</strong> GitHub repository (<a href="https://github.com/chartmann1590/cruise-monitor" target="_blank" rel="noopener">github.com/chartmann1590/cruise-monitor</a>)
+    so problems can be reviewed and fixed — which means the question and response you report may be
+    <strong>publicly visible</strong> there. Please don't include sensitive personal information in a
+    report. Reported exchanges are never used for advertising.
   </p>
 
   <h3>In-app support and feedback (opt-in)</h3>
   <p>
     If you choose to submit a bug report, suggestion, or question via the in-app support section, the text you
     enter, your optional contact email, any screenshot you choose to attach, and basic device diagnostics
-    (device model, Android OS version, and app version) are sent to our Cloudflare Worker to help investigate
-    and resolve the issue. This data is used solely to respond to your inquiry and improve the app — never for
-    advertising or profiling.
+    (device model, Android OS version, and app version) are sent to our Cloudflare Worker, which files them
+    as an issue in our <strong>public</strong> GitHub repository
+    (<a href="https://github.com/chartmann1590/cruise-monitor" target="_blank" rel="noopener">github.com/chartmann1590/cruise-monitor</a>)
+    so the report can be tracked and fixed. That means your report text, your contact email (if you provide
+    one), the diagnostics, and any screenshot you attach may be <strong>publicly visible</strong> — please
+    don't include sensitive personal information in a report. This data is used solely to respond to your
+    inquiry and improve the app — never for advertising or profiling.
   </p>
 
   <h3>Cross-promotion</h3>
@@ -187,8 +196,9 @@
     <tr><td>Advertising</td><td>Google AdMob</td><td>Serves the banner and interstitial ads that keep the app free</td></tr>
     <tr><td>Sign-in option</td><td>Google Sign-In</td><td>Optional one-tap sign-in on phone and watch</td></tr>
     <tr><td>App translation</td><td>Google ML Kit Translate</td><td>Downloads the language file for your chosen language; the actual translation runs on your device</td></tr>
-    <tr><td>AI response reports (opt-in)</td><td>Cloudflare (Workers &amp; D1)</td><td>Stores only the specific AI messages you explicitly flag as bad, to help fix the assistant</td></tr>
-    <tr><td>In-app feedback (opt-in)</td><td>Cloudflare (Workers)</td><td>Processes user support and feedback submissions</td></tr>
+    <tr><td>AI response reports (opt-in)</td><td>Cloudflare (Workers &amp; D1) and GitHub (public issue tracker)</td><td>Stores only the specific AI messages you explicitly flag as bad, and files them as publicly visible issues to help fix the assistant</td></tr>
+    <tr><td>In-app feedback (opt-in)</td><td>Cloudflare (Workers) and GitHub (public issue tracker)</td><td>Processes user support and feedback submissions and files them as publicly visible issues for tracking</td></tr>
+    <tr><td>AI model download</td><td>Hugging Face</td><td>Hosts the on-device AI model file the app downloads once during assistant setup</td></tr>
     <tr><td>Cross-promotion</td><td>Cloudflare (Workers &amp; D1)</td><td>Delivers recommendations for our other apps and anonymous interaction counts</td></tr>
   </table>
   <p>
